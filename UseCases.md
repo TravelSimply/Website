@@ -31,7 +31,7 @@ When a user requests to join a travel group, members of the travel group will be
 When a user chooses to create a travel group, he will first choose a name (optional) for the group. Then, the group will be created with the user who created it designated as the owner.
 
 ## Invite User to Travel Group
-Any user in a travel group can invite other users to the group. If the user accepts the invitation, his request to join will need to be accepted by all the users in the travel group.
+Any user in a travel group can request to invite someone to the travel group. The owner of the group must accept this request before the invitation goes through. If the receiving user accepts the invitation, they will be added to the group.
 
 ## Remove User from Travel Group
 Only the owner can remove a user from a travel group. When a user is removed, calculations invoving the user (e.g. such as shared costs) will be recalculated. 
