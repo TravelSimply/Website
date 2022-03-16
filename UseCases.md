@@ -43,7 +43,7 @@ Any member can leave a travel group, and if the owner leaves a travel group, he 
 A travel group can be deleted by the owner. When a travel group is deleted, all users inside of it will be removed from the group as well (obviously), and all invitations or join requests related to it will be deleted.
 
 ## Modify Travel Group Travel Info
-Any user within a travel group can modify its info. The information a travel group contains will include (we may add more later) a destination, basic itinerary, and estimated costs with per user breakdown. Specific information can be chosen to be made public to other users previewing their travel group. 
+Any user within a travel group can modify its info. The information a travel group contains will include (we may add more later) a destination, basic itinerary, and estimated costs with per user breakdown. Specific information can be chosen to be made public to other users previewing their travel group. For the destination that a user selects, we will show them information about it such as COVID statistics, cost of living, crime rates, etc.
 
 ## Modify Travel Group Settings
 Only the owner can modify the travel group settings. The owner can make the travel group public or private. If public, other users who are friends with users in the trave group can preview the group and request to join. If private, only users invited by authorized users within the travel group can join. The owner can also choose to change invite priveleges to include only himself or the anyone in the group (does not matter whether or not the group is public or private).
