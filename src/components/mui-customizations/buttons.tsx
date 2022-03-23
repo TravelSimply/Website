@@ -1,6 +1,17 @@
 import {Button, Grid, Typography, Box, SvgIcon} from '@mui/material'
 import {styled} from '@mui/material/styles'
 
+export const OrangePrimaryButton = styled(Button)(({theme}) => ({
+    background: theme.palette.primary.main,
+    color: '#fff',
+    borderRadius: theme.spacing(1),
+    padding: `${theme.spacing(2)} ${theme.spacing(3)}`,
+    transition: 'background 300ms',
+    '&:hover': {
+        background: theme.palette.primary.dark
+    }
+}))
+
 export const OrangeSecondaryButton = styled(Button)(({theme}) => ({
     background: 'transparent',
     border: '1px solid #000',
@@ -30,7 +41,7 @@ export function GoogleSignIn({onClick}:GoogleSignInProps) {
                     </Box>
                 </Grid>
                 <Grid item>
-                    <Box textAlign="center">
+                    <Box>
                         <Typography variant="body1">
                             Sign in with Google
                         </Typography>
