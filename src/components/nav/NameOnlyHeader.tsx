@@ -8,7 +8,7 @@ export default function Header() {
         <Box my={3} textAlign="center">
             <Link href="/">
                 <a>
-                    <Typography color="primary.main"  variant="h2">
+                    <Typography color="primary.main"  variant="h3">
                         Travel Simply
                     </Typography>
                 </a>
