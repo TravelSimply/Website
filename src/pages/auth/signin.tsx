@@ -4,6 +4,7 @@ import {BuiltInProviderType} from 'next-auth/providers'
 import { getUser, getUserFromEmail } from '../../utils/users';
 import styles from '../../styles/pages/HeaderOnly.module.css'
 import NameOnlyHeader from '../../components/nav/NameOnlyHeader'
+import Main from '../../components/auth/signin/Main'
 
 interface Props {
     providers: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null;
@@ -11,21 +12,12 @@ interface Props {
 
 export default function SignIn({providers}:Props) {
     return (
-        // <div>
-        //     {Object.values(providers).map(provider => (
-        //         <div key={provider.name}>
-        //             <button onClick={() => signIn(provider.id)}>
-        //                 Sign in with {provider.name}
-        //             </button>
-        //         </div>
-        //     ))}
-        // </div>
         <div className={styles.root}>
             <div>
                 <NameOnlyHeader />
             </div>
             <div>
-                this is the main section
+                <Main providers={providers} />
             </div>
         </div>
     )
