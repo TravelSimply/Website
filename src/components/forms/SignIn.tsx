@@ -23,7 +23,7 @@ export default function SignIn({vals, onSubmit}:Props) {
         <Box>
             <Formik validationSchema={object({
                 email: string().required('Please enter your email.').email('Please enter a valid email.'),
-                password: string().required('Please enter a password.').min(8).max(128)
+                password: string().required('Please enter a password.')
             })} initialValues={initialVals} onSubmit={(values, actions) => onSubmit(values, actions)}>
                 {({values, errors, isSubmitting, isValidating}) => (
                     <Form>
