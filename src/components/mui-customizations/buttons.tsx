@@ -28,9 +28,10 @@ export const OrangeSecondaryButton = styled(Button)(({theme}) => ({
 
 interface GoogleSignInProps {
     onClick: () => void;
+    isSignUp?: boolean;
 }
 
-export function GoogleSignIn({onClick}:GoogleSignInProps) {
+export function GoogleSignIn({onClick, isSignUp}:GoogleSignInProps) {
 
     return (
         <OrangeSecondaryButton onClick={onClick} fullWidth>
@@ -43,7 +44,7 @@ export function GoogleSignIn({onClick}:GoogleSignInProps) {
                 <Grid item>
                     <Box>
                         <Typography variant="body1">
-                            Sign in with Google
+                            Sign {isSignUp ? 'up' : 'in'} with Google
                         </Typography>
                     </Box>
                 </Grid>

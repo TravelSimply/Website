@@ -4,8 +4,8 @@ import {BuiltInProviderType} from 'next-auth/providers'
 import { getUser, getUserFromEmail } from '../../utils/users';
 import styles from '../../styles/pages/HeaderOnly.module.css'
 import NameOnlyHeader from '../../components/nav/NameOnlyHeader'
-import Main from '../../components/auth/signin/Main'
 import { mustNotBeAuthenticated } from '../../utils/auth';
+import Main from '../../components/auth/signup/Main'
 
 interface Props {
     providers: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null;
@@ -18,7 +18,7 @@ export default function SignUp({providers}:Props) {
                 <NameOnlyHeader />
             </div>
             <div>
-                main section
+                <Main providers={providers} />
             </div>
         </div>
     )
