@@ -2,7 +2,7 @@ import client from '../database/fauna'
 import {query as q} from 'faunadb'
 import {VerificationToken} from '../database/interfaces'
 
-export async function isVerificationTokenWithEmail(email:string) {
+export async function isVerificationTokenWithEmail(email:string):Promise<boolean> {
 
     if (!email) {
         return true
@@ -13,6 +13,24 @@ export async function isVerificationTokenWithEmail(email:string) {
             q.Exists(q.Match(q.Index('verificationTokens_by_email'), email)),
             true,
             false
+        )
+    )
+}
+
+export async function getVerificationTokenWithEmail(email:string):Promise<VerificationToken> {
+
+    if (!email) {
+        return null
+    }
+
+    return await client.query(
+        q.Let(
+            {tokenRef: q.Match(q.Index('verificationTokens_by_email'), email)},
+            q.If(
+                q.Exists(q.Var('tokenRef')),
+                q.Get(q.Var('tokenRef')),
+                null
+            )
         )
     )
 }

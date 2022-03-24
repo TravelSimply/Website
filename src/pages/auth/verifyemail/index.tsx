@@ -5,6 +5,7 @@ import NameOnlyHeader from '../../../components/nav/NameOnlyHeader'
 import styles from '../../../styles/pages/HeaderOnly.module.css'
 import EmailSent from '../../../components/auth/verifyemail/EmailSent'
 import Verify from '../../../components/auth/verifyemail/Verify'
+import Resend from '../../../components/auth/verifyemail/Resend'
 
 export default function VerifyEmail() {
 
@@ -20,7 +21,7 @@ export default function VerifyEmail() {
                     <NameOnlyHeader />
                 </div>
                 <div>
-                    {email ? <EmailSent email={email.toString()} /> : token ? <Verify token={token.toString()} /> : ''}
+                    {email ? <EmailSent email={email.toString()} /> : token ? <Verify token={token.toString()} /> : <Resend />}
                 </div>
             </div>
         </>
