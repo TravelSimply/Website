@@ -6,6 +6,7 @@ import styles from '../../styles/pages/HeaderOnly.module.css'
 import NameOnlyHeader from '../../components/nav/NameOnlyHeader'
 import Main from '../../components/auth/signin/Main'
 import { mustNotBeAuthenticated } from '../../utils/auth';
+import Head from 'next/head'
 
 interface Props {
     providers: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null;
@@ -13,14 +14,19 @@ interface Props {
 
 export default function SignIn({providers}:Props) {
     return (
-        <div className={styles.root}>
-            <div>
-                <NameOnlyHeader />
+        <>
+            <Head>
+                <title>Sign in | Travel Simply</title>
+            </Head>
+            <div className={styles.root}>
+                <div>
+                    <NameOnlyHeader />
+                </div>
+                <div>
+                    <Main providers={providers} />
+                </div>
             </div>
-            <div>
-                <Main providers={providers} />
-            </div>
-        </div>
+        </>
     )
 }
 
