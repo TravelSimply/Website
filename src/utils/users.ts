@@ -61,6 +61,21 @@ export async function getUserFromEmail(email:string) {
     return user
 }
 
+export async function isUserWithEmail(email:string) {
+
+    if (!email) {
+        return true
+    }
+
+    return await client.query(
+        q.If(
+            q.Exists(q.Match(q.Index('users_by_email'), email)),
+            true,
+            false
+        )
+    )
+}
+
 export async function getUser(id:string) {
 
     const user:User = await client.query(q.Get(q.Ref(q.Collection('users'), id)))
