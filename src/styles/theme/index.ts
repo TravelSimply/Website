@@ -23,6 +23,9 @@ export default createTheme({
             main: 'hsl(30, 96%, 53%)', // orange,
             dark: 'hsl(30, 96%, 45%)'
         },
+        secondary: {
+            main: 'hsl(209, 93%, 62%)'
+        },
         background: {
             default: 'hsl(30, 98%, 98%)', // white with slight tint of orange
             paper: '#fff', // white

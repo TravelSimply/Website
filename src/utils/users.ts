@@ -1,6 +1,6 @@
 import client from '../database/fauna'
 import {query as q} from 'faunadb'
-import { User } from '../database/interfaces'
+import { User, VerificationToken } from '../database/interfaces'
 
 function filterName(name:string) {
     return name.split('').slice(0, 50 < name.length ? 50 : name.length).map(char => {
@@ -36,6 +36,15 @@ export async function createUser(email:string, name:string, picture:string) {
             status: [],
             username
         }})
+    )
+
+    return user
+}
+
+export async function createUserFromToken(token:VerificationToken) {
+
+    const user:User = await client.query(
+        q.Create(q.Collection('users'), {data: {email: token.data.email, password: token.data.password}})
     )
 
     return user

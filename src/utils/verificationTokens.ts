@@ -17,9 +17,29 @@ export async function isVerificationTokenWithEmail(email:string) {
     )
 }
 
+export async function getVerificationTokenWithToken(token:string) {
+
+    const verificationToken:VerificationToken = await client.query(
+        q.If(
+            q.Exists(q.Match(q.Index('verificationTokens_by_token'), token)),
+            q.Get(q.Match(q.Index('verificationTokens_by_token'), token)),
+            null
+        )
+    )
+
+    return verificationToken
+}
+
 export async function createVerificationToken(token:string, userInfo:{email:string, password:string}) {
 
     await client.query(
         q.Create(q.Collection('verificationTokens'), {data: {token, ...userInfo}})
+    )
+}
+
+export async function deleteVerificationToken(id:string) {
+
+    await client.query(
+        q.Delete(q.Ref(q.Collection('verificationTokens'), id))
     )
 }
