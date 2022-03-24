@@ -45,8 +45,9 @@ export default function Main({providers}:Props) {
                     <Box px={3} py={3} bgcolor="orangeBg.light">
                         <Box maxWidth={400} mx="auto">
                             <Typography display="inline" variant="body1">
-                                New here?{' '}
+                                New here?
                             </Typography>
+                            <span style={{marginLeft: 8}} />
                             <PrimaryLink href="/auth/signup" variant="body1">
                                 Create an account.
                             </PrimaryLink>
