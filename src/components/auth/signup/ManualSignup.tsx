@@ -16,7 +16,8 @@ export default function ManualSignUp() {
             })
 
             Router.push({
-                pathname: '/auth/verifyemail'
+                pathname: '/auth/verifyemail',
+                query: {email: vals.email}
             })
         } catch (e: any | AxiosError) {
             if (axios.isAxiosError(e) && e.response.status == 409) {
