@@ -11,14 +11,14 @@ interface Props {
     providers: Record<LiteralUnion<BuiltInProviderType, string>, ClientSafeProvider> | null;
 }
 
-export default function SignIn({providers}:Props) {
+export default function SignUp({providers}:Props) {
     return (
         <div className={styles.root}>
             <div>
                 <NameOnlyHeader />
             </div>
             <div>
-                <Main providers={providers} />
+                main section
             </div>
         </div>
     )
