@@ -91,3 +91,10 @@ export async function getUser(id:string) {
 
     return user
 }
+
+export async function updateUserPassword(id:string, password:string) {
+
+    await client.query(
+        q.Update(q.Ref(q.Collection('users'), id), {data: {password}})
+    )
+}

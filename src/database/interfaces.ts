@@ -27,3 +27,12 @@ export interface VerificationToken {
         password: string;
     }
 }
+
+export interface PasswordResetToken {
+    ref: Ref;
+    data: {
+        token: string;
+        email: string;
+        userId: string;
+    }
+}

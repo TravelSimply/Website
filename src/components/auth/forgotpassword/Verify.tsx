@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
+import ResetPasswordForm, {Props as ResetPasswordFormProps} from '../../forms/ResetPassword'
+import {FormikHelpers} from 'formik'
 import axios, {AxiosError} from 'axios'
-import {Box, CircularProgress, Typography} from '@mui/material'
+import {Box, Typography, CircularProgress, Paper} from '@mui/material'
+import Link from 'next/link'
 import CheckIcon from '@mui/icons-material/CheckCircleOutline'
 import ErrorIcon from '@mui/icons-material/ErrorOutline'
-import Link from 'next/link'
 import { OrangePrimaryButton } from '../../mui-customizations/buttons'
 
 interface Props {
@@ -19,7 +21,7 @@ export function LoadingScreen() {
             </Box>
             <Box textAlign="center">
                 <Typography variant="h6">
-                    Verifying Account
+                    Verifying Token
                 </Typography>
             </Box>
         </>
@@ -39,16 +41,11 @@ export function SuccessScreen() {
                         You're all set!
                     </Typography>
                 </Box>
-                <Box mb={2} textAlign="center">
-                    <Typography variant="h6">
-                        Continue to finish setting up your account! 
-                    </Typography>
-                </Box>
                 <Box textAlign="center">
-                    <Link href="/account/setup">
+                    <Link href="/auth/signup">
                         <a>
                             <OrangePrimaryButton style={{minWidth: 200}}>
-                                Continue
+                                Sign In
                             </OrangePrimaryButton>
                         </a>
                     </Link>
@@ -73,7 +70,7 @@ export function ErrorScreen() {
                 </Box>
                 <Box textAlign="center">
                     <Typography variant="h6">
-                        An error occurred while verifying your account. Please try verifying again later.
+                        An error occurred while resetting your password. Please try again later.
                     </Typography>
                 </Box>
             </Box>
@@ -96,8 +93,8 @@ export function TokenNotFoundScreen() {
                 </Box>
                 <Box textAlign="center">
                     <Typography variant="h6">
-                        We couldn't find a verification token for your account. If you created your account over 2 days ago, the token
-                        has expired and you will need to create a new account.
+                        We couldn't find a reset token for your account. If you requested to reset your password over 2 days ago, the token
+                        has expired and you will need to request a new password reset.
                     </Typography>
                 </Box>
             </Box>
@@ -108,37 +105,62 @@ export function TokenNotFoundScreen() {
 export default function Verify({token}:Props) {
 
     const [loading, setLoading] = useState(true)
-    const [result, setResult] = useState({success: false, tokenNotFound: false, serverError: false})
+    const [result, setResult] = useState({tokenError: false, serverError: false, success: false})
+
+    const onSubmit = async (vals:ResetPasswordFormProps['vals'], actions:FormikHelpers<ResetPasswordFormProps['vals']>) => {
+        try {
+            await axios({
+                method: 'POST',
+                url: '/api/auth/forgot-password/reset',
+                data: {...vals, token}
+            })
+
+            setResult({...result, success: true})
+        } catch (e) {
+            setResult({...result, serverError: true})
+        }
+    }
 
     useEffect(() => {
-        const validateToken = async () => {
+        const verifyToken = async () => {
             try {
                 await axios({
                     method: 'POST',
-                    url: '/api/auth/verifyemail',
+                    url: '/api/auth/forgot-password/verify-token',
                     data: {token}
                 })
                 setLoading(false)
-                setResult({...result, success: true})
             } catch (e) {
-                setLoading(false)
-                if ((e as AxiosError).response.status === 500) {
-                    setResult({...result, serverError: true})
-                } else {
-                    setResult({...result, tokenNotFound: true})
+                if ((e as AxiosError).response?.status === 409) {
+                    setLoading(false)
+                    return setResult({...result, tokenError: true})
                 }
+                setLoading(false)
+                setResult({...result, serverError: true})
             }
         }
-        validateToken()
+        verifyToken()
     }, [])
 
     return (
         <Box>
-            <Box mx="auto" maxWidth={600}>
+            <Box maxWidth={600} mx="auto">
                 {loading ? <LoadingScreen /> : 
+                result.tokenError ? <TokenNotFoundScreen /> :
+                result.serverError ? <ErrorScreen /> : 
                 result.success ? <SuccessScreen /> :
-                result.serverError ? <ErrorScreen /> :
-                <TokenNotFoundScreen />}
+                <Paper style={{borderRadius: 15}} elevation={5}>
+                    <Box py={3} mx={3}>
+                        <Box mb={3} textAlign="center">
+                            <Typography variant="h4">
+                                Reset Your Password
+                            </Typography>
+                        </Box>
+                        <Box my={3} mx="auto" maxWidth={400}>
+                            <ResetPasswordForm vals={{password: ''}} onSubmit={onSubmit} /> 
+                        </Box>
+                    </Box>
+                </Paper>}
             </Box>
         </Box>
     )
