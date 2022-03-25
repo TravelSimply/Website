@@ -1,6 +1,9 @@
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { getSession } from "next-auth/react";
+import { parseCookies } from "nookies";
 import { getUserFromEmail } from "./users";
+import jwt from 'jsonwebtoken'
+import { isVerificationTokenWithEmail } from "./verificationTokens";
 
 export interface AuthToken {
     email: string;
@@ -10,16 +13,36 @@ export interface AuthToken {
     iat?: string;
 }
 
+export async function getManualUserAuthToken(ctx:GetServerSidePropsContext) {
+
+    const {auth} = parseCookies(ctx)
+
+    if (!auth) return null
+
+    return new Promise<AuthToken>((res, rej) => {
+        jwt.verify(auth, process.env.TOKEN_SIGNATURE, (err, decoded) => {
+            if (!err && decoded) res(decoded)
+            res(null)
+        })
+    })
+}
+
 export async function mustNotBeAuthenticated(ctx:GetServerSidePropsContext) {
 
-    const session = await getSession({req: ctx.req})
+    const [session, manualAuthToken] = await Promise.all([getSession({req: ctx.req}), getManualUserAuthToken(ctx)])
 
-    if (!session) return null
+    if (!session && !manualAuthToken) return null
+
+    const authToken = manualAuthToken || session.user
 
     try {
-        const user = await getUserFromEmail(session.user?.email)
+        const user = await getUserFromEmail(authToken.email)
         
-        if (!user) throw 'no user found'
+        if (!user && await isVerificationTokenWithEmail(authToken.email)) {
+            return {props: {}, redirect: {destination: `/auth/verifyemail?email=${encodeURIComponent(authToken.email)}`}}
+        }
+
+        if (!user) throw 'no user found?'
 
         if (!user.data.username) {
             return {props: {}, redirect: {destination: '/account/setup'}}

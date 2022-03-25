@@ -8,14 +8,14 @@ export interface Ref {
 export interface User {
     ref: Ref;
     data: {
-        username: string;
+        username?: string;
         password?: string;
-        firstName: string;
-        lastName: string;
+        firstName?: string;
+        lastName?: string;
         email: string;
-        picture: string;
-        friends: string[];
-        status: any[]; // update later
+        picture?: string;
+        friends?: string[];
+        status?: any[]; // update later
     }
 }
 
