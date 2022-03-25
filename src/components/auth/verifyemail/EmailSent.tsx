@@ -17,7 +17,7 @@ export default function EmailSent({email}:Props) {
                 </Box>
                 <Box textAlign="center">
                     <Typography display="inline" variant="h6">
-                        We've just sent an email to <b>{email}</b>. Click the link you receive to verify it. If you don't receive an email
+                        We've sent an email to <b>{email}</b>. Click the link you receive to verify it. If you don't receive an email
                         after a few minutes,{' '}
                     </Typography>
                     <PrimaryLink variant="h6" href="/auth/verifyemail">
