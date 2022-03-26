@@ -35,19 +35,6 @@ export default NextAuth({
     pages: {
         signIn: '/auth/signin'
     },
-    jwt: {
-        async encode({token, maxAge}) {
-
-            const encodedToken = jwt.sign(token, process.env.TOKEN_SIGNATURE)
-
-            return encodedToken
-        },
-        async decode({token}) {
-            const verify = jwt.verify(token, process.env.TOKEN_SIGNATURE)
-
-            return verify
-        }
-    },
     session: {
         maxAge: 2 * 24 * 60 * 60 // 2 days
     }
