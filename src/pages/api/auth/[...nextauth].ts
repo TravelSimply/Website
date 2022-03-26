@@ -38,10 +38,6 @@ export default NextAuth({
     jwt: {
         async encode({token, maxAge}) {
 
-
-            console.log('TOKEN START')
-            console.log(token)
-            console.log('TOKEN END')
             const encodedToken = jwt.sign(token, process.env.TOKEN_SIGNATURE)
 
             return encodedToken
