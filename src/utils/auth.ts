@@ -5,6 +5,9 @@ import { getUserFromEmail } from "./users";
 import jwt from 'jsonwebtoken'
 import { isVerificationTokenWithEmail } from "./verificationTokens";
 import { User } from "../database/interfaces";
+import axios from 'axios'
+import {signOut as nextAuthSignOut} from 'next-auth/react'
+import Router from 'next/router'
 
 export interface AuthToken {
     email: string;
@@ -78,5 +81,26 @@ export async function getAuthUser(ctx:GetServerSidePropsContext):Promise<{user:U
         return {user, redirect: null}
     } catch (e) {
         return {user:null, redirect: {props: {}, redirect: {destination: '/', permanent: false}}}
+    }
+}
+
+export async function signOut() {
+    
+    const {auth} = parseCookies()
+
+    if (!auth) {
+        return nextAuthSignOut()
+    }
+
+    try {
+        await axios({
+            method: 'POST',
+            url: '/api/auth/manual-signout'
+        })
+        Router.push({
+            pathname: '/auth/signin'
+        })
+    } catch (e) {
+        console.log(e)
     }
 }
