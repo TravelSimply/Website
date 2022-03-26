@@ -42,7 +42,7 @@ export function SuccessScreen() {
                     </Typography>
                 </Box>
                 <Box textAlign="center">
-                    <Link href="/auth/signup">
+                    <Link href="/auth/signin">
                         <a>
                             <OrangePrimaryButton style={{minWidth: 200}}>
                                 Sign In

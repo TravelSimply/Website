@@ -48,7 +48,7 @@ export default function Main({providers}:Props) {
                                 Not your first time?
                             </Typography>
                             <span style={{marginLeft: 8}} />
-                            <PrimaryLink href="/auth/signup" variant="body1">
+                            <PrimaryLink href="/auth/signin" variant="body1">
                                 Sign in.
                             </PrimaryLink>
                         </Box>
