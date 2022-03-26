@@ -13,12 +13,12 @@ export default function ManualSignIn() {
         try {
             await axios({
                 method: 'POST',
-                url: '/api/auth/signin',
+                url: '/api/auth/manual-signin',
                 data: vals
             })
 
             Router.push({
-                pathname: redirect.toString() || '/dashboard'
+                pathname: redirect?.toString() || '/dashboard'
             }) 
         } catch (e) {
             if ((e as AxiosError).response.status === 409) {
