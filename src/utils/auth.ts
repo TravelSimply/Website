@@ -1,9 +1,10 @@
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from "next";
 import { getSession } from "next-auth/react";
 import { parseCookies } from "nookies";
 import { getUserFromEmail } from "./users";
 import jwt from 'jsonwebtoken'
 import { isVerificationTokenWithEmail } from "./verificationTokens";
+import { User } from "../database/interfaces";
 
 export interface AuthToken {
     email: string;
@@ -48,8 +49,34 @@ export async function mustNotBeAuthenticated(ctx:GetServerSidePropsContext) {
             return {props: {}, redirect: {destination: '/account/setup'}}
         }
     } catch (e) {
-        console.log(e)
+        return {props: {}, redirect: {destination: '/'}}
     }
 
-    return {props: {}, redirect: {destination: '/'}}
+    return {props: {}, redirect: {destination: '/dashboard'}}
+}
+
+export async function getAuthUser(ctx:GetServerSidePropsContext):Promise<{user:User, redirect:GetServerSidePropsResult<any>}> {
+
+    const [session, manualAuthToken] = await Promise.all([getSession({req: ctx.req}), getManualUserAuthToken(ctx)])
+
+    if (!session && !manualAuthToken) {
+        return {user: null, redirect: {props: {}, redirect: {destination: '/auth/signin', permanent: false}}}
+    }
+
+    const authToken = manualAuthToken || session.user
+
+    try {
+
+        const user = await getUserFromEmail(authToken.email)
+
+        if (!user) throw 'No user found?'
+
+        if (!user.data.username) {
+            return {user: null, redirect: {props: {}, redirect: {destination: '/account/setup', permanent: false}}}
+        }
+
+        return {user, redirect: null}
+    } catch (e) {
+        return {user:null, redirect: {props: {}, redirect: {destination: '/', permanent: false}}}
+    }
 }
