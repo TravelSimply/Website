@@ -29,7 +29,7 @@ export default async function ResetPassword(req:NextApiRequest, res:NextApiRespo
             }) 
         })
 
-        await Promise.all([updateUserPassword(token.data.userId, req.body.password), deletePasswordResetToken(token.ref.id)])
+        await Promise.all([updateUserPassword(token.data.userId, hashedPassword), deletePasswordResetToken(token.ref.id)])
 
         return res.status(200).json({msg: 'Success'})
     } catch (e) {
