@@ -15,7 +15,7 @@ export interface Props {
     setFormContext?: Dispatch<SetStateAction<any>>;
 }
 
-export default function SignIn({vals, onSubmit, setFormContext}:Props) {
+export default function Username({vals, onSubmit, setFormContext}:Props) {
 
     const initialVals = vals
 
