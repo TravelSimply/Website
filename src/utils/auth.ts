@@ -1,4 +1,4 @@
-import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from "next";
+import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult, NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 import { parseCookies } from "nookies";
 import { getUserFromEmail } from "./users";
@@ -15,6 +15,28 @@ export interface AuthToken {
     picture?: string;
     sub?: string;
     iat?: string;
+}
+
+async function getManualUserAuthTokenFromApiHandler(req:NextApiRequest) {
+    const auth = req.cookies.auth
+
+    if (!auth) return null
+
+    return new Promise<AuthToken>(resolve => {
+        jwt.verify(auth, process.env.TOKEN_SIGNATURE, (err, decoded) => {
+            if (!err && decoded) resolve(decoded)
+            resolve(null)
+        })
+    })
+}
+
+async function getAuthTokenFromApiHandler(req:NextApiRequest) {
+
+    const [session, manualAuthToken] = await Promise.all([getSession({req}), getManualUserAuthTokenFromApiHandler(req)])
+
+    if (!session && !manualAuthToken) return null
+
+    return manualAuthToken || session.user
 }
 
 export async function getManualUserAuthToken(ctx:GetServerSidePropsContext) {
@@ -109,6 +131,27 @@ export async function getNotSetupAuthUser(ctx:GetServerSidePropsContext):Promise
         return {user, redirect: null}
     } catch (e) {
         return {user: null, redirect: {props: {}, redirect: {destination: '/', permanent: false}}}
+    }
+}
+
+export function verifyUser(fn:NextApiHandler) {
+    return (req:NextApiRequest, res:NextApiResponse) => {
+        return new Promise<void>(resolve => {
+            getAuthTokenFromApiHandler(req).then(async (authToken) => {
+                if (!authToken) {
+                    res.status(403).json({msg: 'YOU CANNOT PASS'})
+                    return resolve()
+                }
+                if (req.method !== 'GET') {
+                    req.body.jwtUser = authToken
+                }
+                await fn(req, res)
+                return resolve()
+            }).catch(() => {
+                res.status(500).json({msg: 'Internal Server Error'})
+                return resolve()
+            })
+        })
     }
 }
 
