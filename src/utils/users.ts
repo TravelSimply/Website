@@ -85,6 +85,35 @@ export async function isUserWithEmail(email:string) {
     )
 }
 
+export async function getUserFromUsername(username:string):Promise<User> {
+
+    return await client.query(
+        q.Let(
+            {ref: q.Match(q.Index('users_by_username'), username)}, 
+            q.If(
+                q.Exists(q.Var('ref')),
+                q.Get(q.Var('ref')),
+                null
+            )
+        )
+    )
+}
+
+export async function isUserWithUsername(username:string):Promise<boolean> {
+
+    if (!username) {
+        return true
+    }
+
+    return await client.query(
+        q.If(
+            q.Exists(q.Match(q.Index('users_by_username'), username)),
+            true,
+            false
+        )
+    )
+}
+
 export async function getUser(id:string) {
 
     const user:User = await client.query(q.Get(q.Ref(q.Collection('users'), id)))
@@ -96,5 +125,17 @@ export async function updateUserPassword(id:string, password:string) {
 
     await client.query(
         q.Update(q.Ref(q.Collection('users'), id), {data: {password}})
+    )
+}
+
+export async function updateUserUsernameFromEmail(email:string, username:string) {
+
+    await client.query(
+        q.Update(
+            q.Select(['ref'], q.Get(q.Match(
+                q.Index('users_by_email'), email
+            ))),
+            {data: {username}}
+        )
     )
 }
