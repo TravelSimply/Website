@@ -31,13 +31,20 @@ export async function getManualUserAuthToken(ctx:GetServerSidePropsContext) {
     })
 }
 
-export async function mustNotBeAuthenticated(ctx:GetServerSidePropsContext) {
+export async function getAuthToken(ctx:GetServerSidePropsContext) {
 
     const [session, manualAuthToken] = await Promise.all([getSession({req: ctx.req}), getManualUserAuthToken(ctx)])
 
     if (!session && !manualAuthToken) return null
 
-    const authToken = manualAuthToken || session.user
+    return manualAuthToken || session.user
+}
+
+export async function mustNotBeAuthenticated(ctx:GetServerSidePropsContext) {
+
+    const authToken = await getAuthToken(ctx)
+
+    if (!authToken) return null
 
     try {
         const user = await getUserFromEmail(authToken.email)
@@ -60,13 +67,11 @@ export async function mustNotBeAuthenticated(ctx:GetServerSidePropsContext) {
 
 export async function getAuthUser(ctx:GetServerSidePropsContext):Promise<{user:User, redirect:GetServerSidePropsResult<any>}> {
 
-    const [session, manualAuthToken] = await Promise.all([getSession({req: ctx.req}), getManualUserAuthToken(ctx)])
+    const authToken = await getAuthToken(ctx)
 
-    if (!session && !manualAuthToken) {
+    if (!authToken) {
         return {user: null, redirect: {props: {}, redirect: {destination: '/auth/signin', permanent: false}}}
     }
-
-    const authToken = manualAuthToken || session.user
 
     try {
 
@@ -83,6 +88,10 @@ export async function getAuthUser(ctx:GetServerSidePropsContext):Promise<{user:U
         return {user:null, redirect: {props: {}, redirect: {destination: '/', permanent: false}}}
     }
 }
+
+// export async function getNotSetupAuthUser(ctx:GetServerSidePropsContext):Promise<{user:User, redirect:GetServerSidePropsResult<any>}> {
+
+// }
 
 export async function signOut() {
     
