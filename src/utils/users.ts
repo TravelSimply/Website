@@ -32,7 +32,7 @@ export async function createUser(email:string, name:string, picture:string) {
             email,
             firstName,
             lastName,
-            picture,
+            image: {src: picture},
             status: [],
             username
         }})

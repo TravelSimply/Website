@@ -24,7 +24,7 @@ export default NextAuth({
             if (returningUser) return true
 
             try {
-                await createUser(profile.email, profile.name, profile.image)
+                await createUser(profile.email, profile.name, profile.picture as string || '')
             } catch (e) {
                 return false
             }

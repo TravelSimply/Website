@@ -13,7 +13,10 @@ export interface User {
         firstName?: string;
         lastName?: string;
         email: string;
-        picture?: string;
+        picture?: {
+            src: string;
+            publicId?: string;
+        };
         friends?: string[];
         status?: any[]; // update later
     }
