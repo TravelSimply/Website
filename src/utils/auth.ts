@@ -89,9 +89,28 @@ export async function getAuthUser(ctx:GetServerSidePropsContext):Promise<{user:U
     }
 }
 
-// export async function getNotSetupAuthUser(ctx:GetServerSidePropsContext):Promise<{user:User, redirect:GetServerSidePropsResult<any>}> {
+export async function getNotSetupAuthUser(ctx:GetServerSidePropsContext):Promise<{user:User, redirect:GetServerSidePropsResult<any>}> {
 
-// }
+    const authToken = await getAuthToken(ctx)
+
+    if (!authToken) {
+        return {user: null, redirect: {props: {}, redirect: {destination: '/auth/signin', permanent: false}}}
+    }
+
+    try {
+        const user = await getUserFromEmail(authToken.email)
+
+        if (!user) throw 'No user found?'
+
+        if (user.data.username) {
+            return {user: null, redirect: {props: {}, redirect: {destination: '/dashboard', permanent: false}}}
+        }
+
+        return {user, redirect: null}
+    } catch (e) {
+        return {user: null, redirect: {props: {}, redirect: {destination: '/', permanent: false}}}
+    }
+}
 
 export async function signOut() {
     
