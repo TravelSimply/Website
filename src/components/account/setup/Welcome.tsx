@@ -1,9 +1,11 @@
 import { Box, Typography } from '@mui/material'
 import React from 'react'
 import { OrangePrimaryButton } from '../../mui-customizations/buttons'
-import Router from 'next/router'
+import {useRouter} from 'next/router'
 
 export default function Welcome() {
+
+    const router = useRouter()
 
     return (
         <div>
@@ -19,7 +21,7 @@ export default function Welcome() {
                 </Typography>
             </Box>
             <Box textAlign="center">
-                <OrangePrimaryButton onClick={() => Router.push({query: {step: 0}})}>
+                <OrangePrimaryButton onClick={() => router.push('/account/setup?step=0', undefined, {shallow: true})}>
                     Continue
                 </OrangePrimaryButton>
             </Box>
