@@ -4,6 +4,7 @@ import {TextField, InputAdornment, IconButton} from '@mui/material'
 import VisibilityIcon from '@mui/icons-material/VisibilityOutlined'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOffOutlined'
 import styles from '../../styles/Forms.module.css'
+import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 
 const inputProps = {classes: {root: styles.input, error: styles['error-input']}}
 const inputLabelProps = {classes: {root: styles['text-field'], error: styles['error-label']}}
@@ -18,6 +19,22 @@ export const FormikTextField = (props) => {
         <Field {...props} {...field} as={TextField} error={meta.touched && Boolean(meta.error)}
         helperText={meta.touched && meta.error ? meta.error : ''}
         InputProps={inputProps} InputLabelProps={inputLabelProps} FormHelperTextProps={formHelperTextProps} />
+    )
+}
+
+export const FormikUsernameField = (props) => {
+    const [field, meta] = useField({
+        name: props.name,
+        type: props.type || 'text'
+    })
+    return (
+        <Field {...props} {...field} as={TextField} error={meta.touched && Boolean(meta.error)}
+        helperText={meta.touched && meta.error ? meta.error : ''}
+        InputProps={{...inputProps, startAdornment: (
+                                    <InputAdornment position="start">
+                                        <AlternateEmailIcon />
+                                    </InputAdornment>
+                                )}} InputLabelProps={inputLabelProps} FormHelperTextProps={formHelperTextProps} />
     )
 }
 
