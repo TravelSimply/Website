@@ -19,6 +19,10 @@ export interface User {
     }
 }
 
+export interface ClientUser extends Omit<User, 'ref'>{
+    ref: {'@ref': Ref}
+}
+
 export interface VerificationToken {
     ref: Ref;
     data: {
