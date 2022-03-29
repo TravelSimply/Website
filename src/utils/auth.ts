@@ -155,6 +155,22 @@ export function verifyUser(fn:NextApiHandler) {
     }
 }
 
+export function getAuthFromApi(req:NextApiRequest) {
+    return new Promise<AuthToken | {
+    name?: string;
+    email?: string;
+    image?: string;}>(resolve => {
+        getAuthTokenFromApiHandler(req).then((authToken) => {
+            if (!authToken) {
+                return resolve(null)
+            }
+            return resolve(authToken)
+        }).catch(() => {
+            return resolve(null)
+        })
+    })
+}
+
 export async function signOut() {
     
     const {auth} = parseCookies()
