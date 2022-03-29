@@ -1,6 +1,6 @@
 import client from '../database/fauna'
 import {query as q} from 'faunadb'
-import { User, VerificationToken } from '../database/interfaces'
+import { Ref, User, VerificationToken } from '../database/interfaces'
 
 function filterName(name:string) {
     return name.split('').slice(0, 50 < name.length ? 50 : name.length).map(char => {
@@ -159,5 +159,24 @@ export async function updateUserFromEmail(email:string, properties:{username?:st
             ))),
             {data: {...properties}}
         )
+    )
+}
+
+export async function getUsernamesAndRefsMatchingSearch(search:string):Promise<{ref:Ref;username:string}[]> {
+
+    const lcSearch = search.toLowerCase()
+
+    return await client.query(
+        q.Filter(
+            q.Paginate(q.Match(q.Index('all_users_w_username')), {size: 1000000}),
+            q.Lambda(['refid', 'username'], q.And(q.Not(q.IsNull(q.Var('username'))) ,q.StartsWith(q.LowerCase(q.Var('username')), lcSearch)))
+        )
+    )
+}
+
+export async function getUsernamesAndRefs():Promise<{ref:Ref;username:string}[]> {
+
+    return await client.query(
+        q.Paginate(q.Match(q.Index('all_users_w_username')), {size: 1000000})
     )
 }
