@@ -4,6 +4,7 @@ import React, { useMemo, useState } from 'react'
 import { ClientUser } from '../../../database/interfaces'
 import Welcome from './Welcome'
 import Username from './Username'
+import Profile from './Profile';
 
 interface Props {
     user: ClientUser;
@@ -36,6 +37,7 @@ export default function Main({user}:Props) {
                                     </Stepper>
                                 </Box>
                                 {step === 0 ? <Username /> :
+                                step === 1 ? <Profile user={user} /> :
                                 ''}
                             </>}
                     </Box>
