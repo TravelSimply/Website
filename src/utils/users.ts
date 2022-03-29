@@ -139,3 +139,13 @@ export async function updateUserUsernameFromEmail(email:string, username:string)
         )
     )
 }
+
+export async function updateUserImage(id:string, image:{src:string; publicId:string;}) {
+
+    await client.query(
+        q.Update(
+            q.Ref(q.Collection('users'), id),
+            {data: {image}}
+        )
+    )
+}
