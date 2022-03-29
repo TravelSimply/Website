@@ -149,3 +149,15 @@ export async function updateUserImage(id:string, image:{src:string; publicId:str
         )
     )
 }
+
+export async function updateUserFromEmail(email:string, properties:{username?:string;firstName?:string;lastName?:string}) {
+
+    await client.query(
+        q.Update(
+            q.Select(['ref'], q.Get(q.Match(
+                q.Index('users_by_email'), email
+            ))),
+            {data: {...properties}}
+        )
+    )
+}
