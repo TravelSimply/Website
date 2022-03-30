@@ -89,7 +89,7 @@ export async function getUserFromUsername(username:string):Promise<User> {
 
     return await client.query(
         q.Let(
-            {ref: q.Match(q.Index('users_by_username'), username)}, 
+            {ref: q.Match(q.Index('users_by_caseInsensitiveUsername'), q.Casefold(username))}, 
             q.If(
                 q.Exists(q.Var('ref')),
                 q.Get(q.Var('ref')),
@@ -107,7 +107,7 @@ export async function isUserWithUsername(username:string):Promise<boolean> {
 
     return await client.query(
         q.If(
-            q.Exists(q.Match(q.Index('users_by_username'), username)),
+            q.Exists(q.Match(q.Index('users_by_caseInsensitiveUsername'), q.Casefold(username))),
             true,
             false
         )
@@ -135,7 +135,7 @@ export async function updateUserUsernameFromEmail(email:string, username:string)
             q.Select(['ref'], q.Get(q.Match(
                 q.Index('users_by_email'), email
             ))),
-            {data: {username}}
+            {data: {username, caseInsensitiveUsername: q.Casefold(username)}}
         )
     )
 }
