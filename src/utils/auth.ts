@@ -176,7 +176,7 @@ export async function signOut() {
     const {auth} = parseCookies()
 
     if (!auth) {
-        return nextAuthSignOut()
+        return nextAuthSignOut({callbackUrl: `/auth/signin`})
     }
 
     try {

@@ -30,7 +30,8 @@ export default NextAuth({
             }
 
             return true
-        }
+        },
+        redirect: async ({url, baseUrl}) => new Promise<string>(res => res(url)) 
     },
     pages: {
         signIn: '/auth/signin'
