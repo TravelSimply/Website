@@ -11,7 +11,7 @@ export default function Dashboard({user}:Props) {
 
     return (
         <div>
-            {user.data.toString()}
+            {JSON.stringify(user.data)}
         </div>
     )
 }

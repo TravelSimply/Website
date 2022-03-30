@@ -11,10 +11,21 @@ import Router from 'next/router'
 
 export interface AuthToken {
     email: string;
+    userId: string;
     name?: string;
     picture?: string;
     sub?: string;
     iat?: string;
+    accessToken?:string;
+    refreshToken?:string;
+}
+
+declare module "next-auth" {
+    interface User {}
+    interface Session extends User, AuthToken {
+        accessToken:string;
+        refreshToken:string;
+    }
 }
 
 async function getManualUserAuthTokenFromApiHandler(req:NextApiRequest) {
@@ -36,7 +47,7 @@ async function getAuthTokenFromApiHandler(req:NextApiRequest) {
 
     if (!session && !manualAuthToken) return null
 
-    return manualAuthToken || session.user
+    return manualAuthToken || session
 }
 
 export async function getManualUserAuthToken(ctx:GetServerSidePropsContext) {
@@ -59,7 +70,10 @@ export async function getAuthToken(ctx:GetServerSidePropsContext) {
 
     if (!session && !manualAuthToken) return null
 
-    return manualAuthToken || session.user
+    console.log('session', session)
+    console.log('manualAuth', manualAuthToken)
+
+    return manualAuthToken || session
 }
 
 export async function mustNotBeAuthenticated(ctx:GetServerSidePropsContext) {

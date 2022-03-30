@@ -20,6 +20,9 @@ export interface User {
         };
         friends?: string[];
         status?: any[]; // update later
+        oAuthIdentifier?: {
+            google?: string;
+        }
     }
 }
 
