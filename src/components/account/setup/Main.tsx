@@ -5,6 +5,7 @@ import { ClientUser } from '../../../database/interfaces'
 import Welcome from './Welcome'
 import Username from './Username'
 import Profile from './Profile';
+import Friends from './Friends';
 
 interface Props {
     user: ClientUser;
@@ -38,7 +39,7 @@ export default function Main({user}:Props) {
                                 </Box>
                                 {step === 0 ? <Username /> :
                                 step === 1 ? <Profile user={user} /> :
-                                ''}
+                                <Friends user={user} />}
                             </>}
                     </Box>
                 </Paper>
