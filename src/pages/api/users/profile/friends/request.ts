@@ -10,9 +10,9 @@ export default verifyUser(async function RequestFriends(req:NextApiRequest, res:
 
     try {
 
-        const {emails} = req.body
+        const {ids} = req.body
 
-        await createFriendRequests(emails, req.body.jwtUser.email)
+        await createFriendRequests(ids, req.body.jwtUser.userId)
 
         return res.status(200).json({msg: 'Success'})
     } catch (e) {

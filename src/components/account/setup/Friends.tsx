@@ -18,13 +18,13 @@ export default function Friends({user}:Props) {
     const nextClick = async () => {
         setSubmitting(true)
 
-        const emails = friends.map(friend => friend.data.email)
+        const ids = friends.map(friend => friend.ref['@ref'].id)
 
         try {
             await axios({
                 method: 'POST',
                 url: '/api/users/profile/friends/request',
-                data: {emails}
+                data: {ids}
             })
 
             Router.push({pathname: '/dashboard'})
