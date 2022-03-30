@@ -1,0 +1,19 @@
+.input {
+
+}
+
+.input.error-input::after {
+    border-bottom-color: hsl(5, 95%, 50%) !important;
+}
+
+.text-field {
+
+}
+
+.text-field.error-label {
+    color: hsl(5, 95%, 50%) !important;
+}
+
+.helper-text.helper-text-error {
+    color: hsl(5, 95%, 50%)  !important;
+}
