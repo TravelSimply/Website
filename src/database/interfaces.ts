@@ -9,6 +9,7 @@ export interface User {
     ref: Ref;
     data: {
         username?: string;
+        caseInsensitiveUsername?:string;
         password?: string;
         firstName?: string;
         lastName?: string;
