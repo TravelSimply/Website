@@ -27,6 +27,15 @@ export interface ClientUser extends Omit<User, 'ref'>{
     ref: {'@ref': Ref}
 }
 
+export interface FriendRequest {
+    ref: Ref;
+    data: {
+        to: string; // email
+        from: string; // email
+        timeSent: EpochTimeStamp;
+    }
+}
+
 export interface VerificationToken {
     ref: Ref;
     data: {
