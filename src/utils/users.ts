@@ -98,6 +98,20 @@ export async function isUserWithEmail(email:string) {
     )
 }
 
+export async function getUsersWithEmails(emails:string[]):Promise<{data:User[]}> {
+    
+    return await client.query(q.Map(
+        q.Paginate(q.Union(...emails.map(email => q.Match(q.Index('users_by_email'), email)))),
+        q.Lambda("ref",
+            q.If(
+                q.Exists(q.Var('ref')),
+                q.Get(q.Var('ref')),
+                null
+            )
+        )
+    ))
+}
+
 export async function getUserFromUsername(username:string):Promise<User> {
 
     return await client.query(
