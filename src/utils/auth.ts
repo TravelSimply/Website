@@ -1,7 +1,7 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult, NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 import { parseCookies } from "nookies";
-import { getUserFromEmail } from "./users";
+import { getUser, getUserFromEmail } from "./users";
 import jwt from 'jsonwebtoken'
 import { isVerificationTokenWithEmail } from "./verificationTokens";
 import { User } from "../database/interfaces";
@@ -11,10 +11,21 @@ import Router from 'next/router'
 
 export interface AuthToken {
     email: string;
+    userId: string;
     name?: string;
     picture?: string;
     sub?: string;
     iat?: string;
+    accessToken?:string;
+    refreshToken?:string;
+}
+
+declare module "next-auth" {
+    interface User {}
+    interface Session extends User, AuthToken {
+        accessToken:string;
+        refreshToken:string;
+    }
 }
 
 async function getManualUserAuthTokenFromApiHandler(req:NextApiRequest) {
@@ -36,7 +47,7 @@ async function getAuthTokenFromApiHandler(req:NextApiRequest) {
 
     if (!session && !manualAuthToken) return null
 
-    return manualAuthToken || session.user
+    return manualAuthToken || session
 }
 
 export async function getManualUserAuthToken(ctx:GetServerSidePropsContext) {
@@ -59,7 +70,10 @@ export async function getAuthToken(ctx:GetServerSidePropsContext) {
 
     if (!session && !manualAuthToken) return null
 
-    return manualAuthToken || session.user
+    console.log('session', session)
+    console.log('manualAuth', manualAuthToken)
+
+    return manualAuthToken || session
 }
 
 export async function mustNotBeAuthenticated(ctx:GetServerSidePropsContext) {
@@ -69,7 +83,7 @@ export async function mustNotBeAuthenticated(ctx:GetServerSidePropsContext) {
     if (!authToken) return null
 
     try {
-        const user = await getUserFromEmail(authToken.email)
+        const user = await getUser(authToken.userId)
         
         if (!user && await isVerificationTokenWithEmail(authToken.email)) {
             return {props: {}, redirect: {destination: `/auth/verifyemail?email=${encodeURIComponent(authToken.email)}`}}
@@ -97,7 +111,7 @@ export async function getAuthUser(ctx:GetServerSidePropsContext):Promise<{user:U
 
     try {
 
-        const user = await getUserFromEmail(authToken.email)
+        const user = await getUser(authToken.userId)
 
         if (!user) throw 'No user found?'
 
@@ -120,7 +134,7 @@ export async function getNotSetupAuthUser(ctx:GetServerSidePropsContext):Promise
     }
 
     try {
-        const user = await getUserFromEmail(authToken.email)
+        const user = await getUser(authToken.userId)
 
         if (!user) throw 'No user found?'
 

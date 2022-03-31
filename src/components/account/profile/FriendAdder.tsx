@@ -9,17 +9,22 @@ import ClearIcon from '@mui/icons-material/Clear';
 
 interface Props {
     currentFriends: string[];
-    setAddedFriends: Dispatch<SetStateAction<string[]>>;
+    setAddedFriends: Dispatch<SetStateAction<ClientUser[]>>;
     user: ClientUser;
+    startingAddList: ClientUser[];
 }
 
-export default function FriendAdder({currentFriends, setAddedFriends, user: {data: {username}}}:Props) {
+export default function FriendAdder({currentFriends, setAddedFriends, startingAddList, user: {data: {username}}}:Props) {
 
-    const [friends, setFriends] = useState([])
+    const [friends, setFriends] = useState(startingAddList)
 
     const [options, setOptions] = useState([])
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(false)
+
+    useMemo(() => {
+        setFriends(startingAddList)
+    }, [startingAddList])
 
     useEffect(() => {
         setAddedFriends(friends)
@@ -96,7 +101,7 @@ export default function FriendAdder({currentFriends, setAddedFriends, user: {dat
                                 <ListItemAvatar>
                                     <Avatar src={friend.data.image?.src || '/default_profile.png'} imgProps={{referrerPolicy: 'no-referrer'}} />
                                 </ListItemAvatar>
-                                <ListItemText primary={friend.data.username} />
+                                <ListItemText primary={friend.data.username} secondary={friend.data.firstName + ' ' + friend.data.lastName} />
                             </ListItem>
                             <Divider variant="inset" component="li" />
                         </React.Fragment>

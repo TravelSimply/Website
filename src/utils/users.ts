@@ -1,6 +1,7 @@
 import client from '../database/fauna'
 import {query as q} from 'faunadb'
 import { Ref, User, VerificationToken } from '../database/interfaces'
+import {Profile} from 'next-auth'
 
 function filterName(name:string) {
     return name.split('').slice(0, 50 < name.length ? 50 : name.length).map(char => {
@@ -22,10 +23,8 @@ async function createUniqueUsername(name:string) {
     return uniqueName
 }
 
-export async function createUser(email:string, name:string, picture:string) {
+export async function createUserFromGoogle({email, name, picture}:Profile, identifier:string ) {
     const [firstName, lastName] = name.split(' ')
-
-    const username = ''
 
     const user:User = await client.query(
         q.Create(q.Collection('users'), {data: {
@@ -34,7 +33,7 @@ export async function createUser(email:string, name:string, picture:string) {
             lastName,
             image: {src: picture},
             status: [],
-            username
+            oAuthIdentifier: {google: identifier}
         }})
     )
 
@@ -48,6 +47,20 @@ export async function createUserFromToken(token:VerificationToken) {
     )
 
     return user
+}
+
+export async function getUserFromGoogle(id:string):Promise<User> {
+
+    return await client.query(
+        q.Let(
+            {ref: q.Match(q.Index('users_by_googleIdentifier'), id)}, 
+            q.If(
+                q.Exists(q.Var('ref')),
+                q.Get(q.Var('ref')),
+                null
+            )
+        )
+    )
 }
 
 export async function getUserFromEmail(email:string) {
@@ -83,6 +96,20 @@ export async function isUserWithEmail(email:string) {
             false
         )
     )
+}
+
+export async function getUsersWithEmails(emails:string[]):Promise<{data:User[]}> {
+    
+    return await client.query(q.Map(
+        q.Paginate(q.Union(...emails.map(email => q.Match(q.Index('users_by_email'), email)))),
+        q.Lambda("ref",
+            q.If(
+                q.Exists(q.Var('ref')),
+                q.Get(q.Var('ref')),
+                null
+            )
+        )
+    ))
 }
 
 export async function getUserFromUsername(username:string):Promise<User> {

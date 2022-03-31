@@ -24,6 +24,7 @@
     "faunadb": "^4.5.2",
     "formidable": "^1.2.2",
     "formik": "^2.2.9",
+    "googleapis": "^99.0.0",
     "jsonwebtoken": "^8.5.1",
     "next": "^10.2.3",
     "next-auth": "^4.3.1",

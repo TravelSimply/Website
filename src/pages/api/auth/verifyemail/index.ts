@@ -23,9 +23,9 @@ export default async function VerifyEmail(req:NextApiRequest, res:NextApiRespons
             return res.status(409).json({msg: 'Token not found'})
         }
 
-        await Promise.all([createUserFromToken(verificationToken), deleteVerificationToken(verificationToken.ref.id)])
+        const [user] = await Promise.all([createUserFromToken(verificationToken), deleteVerificationToken(verificationToken.ref.id)])
 
-        const jwtToken = jwt.sign({email: verificationToken.data.email}, process.env.TOKEN_SIGNATURE, {expiresIn: '48hr'})
+        const jwtToken = jwt.sign({email: verificationToken.data.email, userId: user.ref.id}, process.env.TOKEN_SIGNATURE, {expiresIn: '48hr'})
 
         setCookie({res}, 'auth', jwtToken, {
             secure: process.env.NODE_ENV !== 'development',
