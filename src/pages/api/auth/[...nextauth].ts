@@ -23,6 +23,7 @@ export default NextAuth({
             }
         })
     ],
+    secret: process.env.TOKEN_SIGNATURE,
     callbacks: {
         async signIn({account, profile}) {
             const returningUser = await getUserFromGoogle(account.providerAccountId)

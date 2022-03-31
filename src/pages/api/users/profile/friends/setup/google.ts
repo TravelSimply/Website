@@ -41,6 +41,10 @@ export default verifyUser(async function GoogleContacts(req:NextApiRequest, res:
             resolve(connections)
         }))
 
+        if (!connections) {
+            return res.status(200).json({friends: []})
+        }
+
         const emails = []
         connections.forEach(connection => connection.emailAddresses?.map(email => emails.push(email.value)))
 

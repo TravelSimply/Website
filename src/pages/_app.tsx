@@ -4,6 +4,7 @@ import theme from '../styles/theme'
 import '../styles/globals.css'
 import createCache from '@emotion/cache'
 import axios from 'axios'
+import {SessionProvider} from 'next-auth/react'
 
 const clientSideEmotionCache = () => {
   return createCache({key: 'css'})
@@ -21,7 +22,9 @@ function MyApp({ Component, pageProps, emotionCache }) {
     <CacheProvider value={cache}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Component {...pageProps} />
+        <SessionProvider session={pageProps.session}>
+          <Component {...pageProps} />
+        </SessionProvider>
       </ThemeProvider>
     </CacheProvider>
   )
