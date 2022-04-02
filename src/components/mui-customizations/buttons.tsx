@@ -1,4 +1,4 @@
-import {Button, Grid, Typography, Box, SvgIcon} from '@mui/material'
+import {Button, Grid, Typography, Box, SvgIcon, IconButton} from '@mui/material'
 import {styled} from '@mui/material/styles'
 
 export const OrangePrimaryButton = styled(Button)(({theme}) => ({
@@ -35,6 +35,10 @@ export const OrangeSecondaryButton = styled(Button)(({theme}) => ({
         background: theme.palette.primary.dark,
         borderColor: theme.palette.primary.dark
     }
+}))
+
+export const OrangePrimaryIconButton = styled(IconButton)(({theme}) => ({
+    color: theme.palette.primary.main
 }))
 
 interface GoogleSignInProps {
