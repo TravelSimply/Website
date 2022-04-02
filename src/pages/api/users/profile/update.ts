@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { verifyUser } from "../../../../utils/auth";
-import { isUserWithUsername, updateUserFromEmail } from "../../../../utils/users";
+import { isUserWithUsername, updateUser, updateUserFromEmail } from "../../../../utils/users";
 
 const acceptedProperties = ['username', 'firstName', 'lastName']
 
@@ -37,7 +37,7 @@ export default verifyUser(async function UpdateProfile(req:NextApiRequest, res:N
             return res.status(409).json({field: 'username', msg: 'This username is already in use.'})
         }
 
-        await updateUserFromEmail(req.body.jwtUser.email, req.body.data)
+        await updateUser(req.body.jwtUser.userId, req.body.data)
 
         return res.status(200).json({msg: 'Success'})
     } catch (e) {
