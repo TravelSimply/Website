@@ -18,7 +18,7 @@ export const FormikTextField = (props) => {
     return (
         <Field {...props} {...field} as={TextField} error={meta.touched && Boolean(meta.error)}
         helperText={meta.touched && meta.error ? meta.error : ''}
-        InputProps={inputProps} InputLabelProps={inputLabelProps} FormHelperTextProps={formHelperTextProps} />
+        InputProps={{...inputProps, ...props.InputProps}} InputLabelProps={inputLabelProps} FormHelperTextProps={formHelperTextProps} />
     )
 }
 
