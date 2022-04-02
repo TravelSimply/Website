@@ -22,7 +22,7 @@ export default function Username({vals, onSubmit, setFormContext}:Props) {
     return (
         <Box>
             <Formik validationSchema={object({
-                username: string().required('Please enter a username').matches(/^[a-zA-Z0-9_]*$/, 'Can only contain letters, numbers, and underscores')
+                username: string().required('Please enter a username').max(30).matches(/^[a-zA-Z0-9_]*$/, 'Can only contain letters, numbers, and underscores')
             })} initialValues={initialVals} onSubmit={(values, actions) => onSubmit(values, actions)}>
                 {({values, errors, isSubmitting, isValidating}) => (
                     <Form>
