@@ -177,13 +177,33 @@ export async function updateUserImage(id:string, image:{src:string; publicId:str
     )
 }
 
-export async function updateUserFromEmail(email:string, properties:{username?:string;firstName?:string;lastName?:string}) {
+export async function updateUserFromEmail(email:string, 
+    properties:{username?:string;firstName?:string;lastName?:string;caseInsensitiveUsername?:any}) {
+
+    if (properties.username) {
+        properties.caseInsensitiveUsername = q.Casefold(properties.username)
+    }
 
     await client.query(
         q.Update(
             q.Select(['ref'], q.Get(q.Match(
                 q.Index('users_by_email'), email
             ))),
+            {data: {...properties}}
+        )
+    )
+}
+
+export async function updateUser(id:string, 
+    properties:{username?:string;firstName?:string;lastName?:string;caseInsensitiveUsername?:any}) {
+
+    if (properties.username) {
+        properties.caseInsensitiveUsername = q.Casefold(properties.username)
+    }
+
+    await client.query(
+        q.Update(
+            q.Ref(q.Collection('users'), id),
             {data: {...properties}}
         )
     )
