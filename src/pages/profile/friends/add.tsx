@@ -6,37 +6,31 @@ import MainHeader from '../../../components/nav/MainHeader'
 import MainSidebar from '../../../components/nav/MainSidebar'
 import {Box} from '@mui/material'
 import Main from '../../../components/account/profile/friends/index/Main'
-import Head from 'next/head'
 
 interface Props {
     user: ClientUser;
 }
 
-export default function Friends({user}:Props) {
+export default function AddFriends({user}:Props) {
 
     const drawerItems = [
-        {href: '/profile/friends', name: 'Friends', selected: true},
-        {href: '/profile/friends/add', name: 'Add Friends', selected: false},
+        {href: '/profile/friends', name: 'Friends', selected: false},
+        {href: '/profile/friends/add', name: 'Add Friends', selected: true},
         {href: '/profile/friends/requests', name: 'Invites Received', selected: false},
         {href: '/profile/friends/invites', name: 'Invites Sent', selected: false}
     ]
 
     return (
-        <>
-            <Head>
-                <title>Friends | Travel Simply</title> 
-            </Head> 
-            <div className={styles.root}>
-                <MainHeader user={user} drawer={{items: drawerItems, breakpoint: 'sm'}} />
-                <MainSidebar breakpoint="sm" items={drawerItems} />
-                <Box sx={{gridColumn: {xs: '1 / -1', sm: 'auto'}}} >
-                    <Main user={user} />
-                </Box>
-                <div>
-                    footer
-                </div>
+        <div className={styles.root}>
+            <MainHeader user={user} drawer={{items: drawerItems, breakpoint: 'sm'}} />
+            <MainSidebar breakpoint="sm" items={drawerItems} />
+            <Box sx={{gridColumn: {xs: '1 / -1', sm: 'auto'}}} >
+                main section
+            </Box>
+            <div>
+                footer
             </div>
-        </>
+        </div>
     ) 
 }
 

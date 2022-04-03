@@ -63,7 +63,7 @@ export default function Main({user}:Props) {
                     </Typography>
                 </Box>
                 <Box mt={1} textAlign="center">
-                    <Link href="/friends/add">
+                    <Link href="/profile/friends/add">
                         <a>
                             <OrangePrimaryButton>
                                 Add Friends
