@@ -227,3 +227,13 @@ export async function getUsernamesAndRefs():Promise<{ref:Ref;username:string}[]>
         q.Paginate(q.Match(q.Index('all_users_w_username')), {size: 1000000})
     )
 }
+
+export function filterUser(user:User) {
+
+    return {...user, data: {...user.data, password: null}}
+}
+
+export function filterUsers(users:User[]) {
+
+    return users.map(user => filterUser(user))
+}
