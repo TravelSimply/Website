@@ -17,7 +17,7 @@ export default function Main({user}:Props) {
 
     const [searchFriends, setSearchFriends] = useState<number[]>([])
 
-    const {data:friends, error} = useSWR<ClientUser[]>('/api/users/profile/friends/all', {revalidateOnFocus: false, 
+    const {data:friends, error} = useSWR<ClientUser[]>('/api/users/profile/friends', {revalidateOnFocus: false, 
         revalidateOnReconnect: false, dedupingInterval: 3600000})
 
     useMemo(() => {
