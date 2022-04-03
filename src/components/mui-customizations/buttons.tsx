@@ -38,7 +38,18 @@ export const OrangeSecondaryButton = styled(Button)(({theme}) => ({
 }))
 
 export const OrangePrimaryIconButton = styled(IconButton)(({theme}) => ({
-    color: theme.palette.primary.main
+    color: theme.palette.primary.main,
+    transition: 'color 300ms',
+    '&:hover': {
+        color: theme.palette.primary.dark
+    }
+}))
+
+export const OrangeSecondaryIconButton = styled(IconButton)(({theme}) => ({
+    transition: 'color 300ms',
+    '&:hover': {
+        color: theme.palette.primary.dark
+    }
 }))
 
 interface GoogleSignInProps {
