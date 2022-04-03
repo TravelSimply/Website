@@ -75,7 +75,7 @@ export default function Friends({user}:Props) {
                 </Box>}
                 <Box mb={3}>
                     <Box maxWidth={400} mx="auto">
-                        <FriendAdder startingAddList={startingAddList} user={user} currentFriends={[]} setAddedFriends={setFriends} />
+                        <FriendAdder startingAddList={startingAddList} currentFriends={[]} setAddedFriends={setFriends} />
                     </Box>
                 </Box>
             </Box>

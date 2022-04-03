@@ -10,11 +10,10 @@ import ClearIcon from '@mui/icons-material/Clear';
 interface Props {
     currentFriends: string[];
     setAddedFriends: Dispatch<SetStateAction<ClientUser[]>>;
-    user: ClientUser;
     startingAddList: ClientUser[];
 }
 
-export default function FriendAdder({currentFriends, setAddedFriends, startingAddList, user: {data: {username}}}:Props) {
+export default function FriendAdder({currentFriends, setAddedFriends, startingAddList}:Props) {
 
     const [friends, setFriends] = useState(startingAddList)
 
