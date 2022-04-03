@@ -8,7 +8,6 @@ import { User } from "../database/interfaces";
 import axios from 'axios'
 import {signOut as nextAuthSignOut} from 'next-auth/react'
 import Router from 'next/router'
-import { Session } from "next-auth";
 
 export interface AuthToken {
     email: string;
@@ -171,7 +170,7 @@ export function verifyUser(fn:NextApiHandler) {
 }
 
 export function getAuthFromApi(req:NextApiRequest) {
-    return new Promise<AuthToken | Session>(resolve => {
+    return new Promise<AuthToken | any>(resolve => {
         getAuthTokenFromApiHandler(req).then((authToken) => {
             if (!authToken) {
                 return resolve(null)
