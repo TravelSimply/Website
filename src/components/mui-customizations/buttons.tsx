@@ -37,6 +37,20 @@ export const OrangeSecondaryButton = styled(Button)(({theme}) => ({
     }
 }))
 
+export const OrangeDenseSecondaryButton = styled(Button)(({theme}) => ({
+    background: 'transparent',
+    border: '1px solid #000',
+    borderRadius: theme.spacing(1),
+    padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
+    transition: 'background 300ms',
+    color: '#000',
+    '&:hover': {
+        color: '#fff',
+        background: theme.palette.primary.dark,
+        borderColor: theme.palette.primary.dark
+    }
+}))
+
 export const OrangePrimaryIconButton = styled(IconButton)(({theme}) => ({
     color: theme.palette.primary.main,
     transition: 'color 300ms',
