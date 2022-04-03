@@ -24,7 +24,11 @@ export default async function Friends(req:NextApiRequest, res:NextApiResponse) {
             (await getFriendsInviting(user.ref.id)).map(friend => ({...friend, status: 'inviting'}))
         ])
 
-        return res.status(200).json(filterUsers([...friends, ...friendsInvited, ...friendsInviting]))
+        const filteredUsers = filterUsers([...friends, ...friendsInvited, ...friendsInviting])
+
+        filteredUsers.sort((a, b) => (a.data.caseInsensitiveUsername || '').localeCompare(b.data.caseInsensitiveUsername || ''))
+
+        return res.status(200).json(filteredUsers)
     } catch (e) {
         return res.status(500).json({msg: 'Internal Server Error'})
     }
