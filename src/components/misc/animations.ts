@@ -6,3 +6,11 @@ export const darkPrimaryOnHover = {
         cursor: 'pointer'
     }
 }
+
+export const primaryLightBgOnHover = {
+    transition: 'color backgroundColor 100ms',
+    '&:hover': {
+        color: '#fff',
+        backgroundColor: 'primary.light'
+    }
+}
