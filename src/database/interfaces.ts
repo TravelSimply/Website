@@ -5,29 +5,39 @@ export interface Ref {
     id: string;
 }
 
+interface UserData {
+    username?: string;
+    caseInsensitiveUsername?:string;
+    password?: string;
+    firstName?: string;
+    lastName?: string;
+    email: string;
+    image?: {
+        src: string;
+        publicId?: string;
+    };
+    friends?: string[];
+    status?: any[]; // update later
+    oAuthIdentifier?: {
+        google?: string;
+    }
+}
+
 export interface User {
     ref: Ref;
-    data: {
-        username?: string;
-        caseInsensitiveUsername?:string;
-        password?: string;
-        firstName?: string;
-        lastName?: string;
-        email: string;
-        image?: {
-            src: string;
-            publicId?: string;
-        };
-        friends?: string[];
-        status?: any[]; // update later
-        oAuthIdentifier?: {
-            google?: string;
-        }
-    }
+    data: UserData;
 }
 
 export interface ClientUser extends Omit<User, 'ref'>{
     ref: {'@ref': Ref}
+}
+
+interface FilteredUserData extends Omit<UserData, 'password'> {
+    password: null;
+}
+
+export interface ClientFilteredUser extends Omit<ClientUser, 'data'> {
+    data: FilteredUserData;
 }
 
 export interface FriendRequest {
