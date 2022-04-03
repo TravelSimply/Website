@@ -19,6 +19,12 @@ export function PrimarySearchBar({search, setSearch}:Props) {
         if (e.key === 'Enter') searchBtnRef.current.click()
     }
 
+    const handleBlur = () => {
+        if (!input) {
+            setSearch(input)
+        }
+    }
+
     return (
         <FormControl variant="outlined" fullWidth>
             <OutlinedInput placeholder="Bobby..." value={input} onChange={(e) => setInput(e.target.value)}
@@ -33,7 +39,7 @@ export function PrimarySearchBar({search, setSearch}:Props) {
                 }} edge="end">
                     <CloseIcon />
                 </OrangeSecondaryIconButton>
-            </InputAdornment>} onKeyUp={(e) => handleKeyPress(e)} />
+            </InputAdornment>} onKeyUp={(e) => handleKeyPress(e)} onBlur={() => handleBlur()} />
         </FormControl>
     )
 }
