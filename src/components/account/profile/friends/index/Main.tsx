@@ -17,7 +17,7 @@ export default function Main({user}:Props) {
 
     const [searchFriends, setSearchFriends] = useState<number[]>([])
 
-    const {data:friends, error} = useSWR<ClientUser[]>('/api/users/profile/friends', {revalidateOnFocus: false, 
+    const {data:friends, error} = useSWR<ClientUser[]>('/api/users/profile/friends/all', {revalidateOnFocus: false, 
         revalidateOnReconnect: false, dedupingInterval: 3600000})
 
     useMemo(() => {
@@ -72,7 +72,7 @@ export default function Main({user}:Props) {
                     </Link>
                 </Box>
             </Box> : <Box>
-                <Grid container spacing={3}>
+                <Grid container justifyContent="center" spacing={3}>
                     {searchFriends.map((friendIndex) => (
                         <Grid item key={friendIndex}>
                             <FriendCard users={friends} friendIndex={friendIndex} />
