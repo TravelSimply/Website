@@ -17,8 +17,8 @@ export default function Friends({user}:Props) {
     const drawerItems = [
         {href: '/profile/friends', name: 'Friends', selected: true},
         {href: '/profile/friends/add', name: 'Add Friends', selected: false},
-        {href: '/profile/friends/requests', name: 'Invites Received', selected: false},
-        {href: '/profile/friends/invites', name: 'Invites Sent', selected: false}
+        {href: '/profile/friends/invites-received', name: 'Invites Received', selected: false},
+        {href: '/profile/friends/invites-sent', name: 'Invites Sent', selected: false}
     ]
 
     return (
