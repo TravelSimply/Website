@@ -1,6 +1,6 @@
-import client from '../database/fauna'
+import client from '../fauna'
 import {query as q} from 'faunadb'
-import {VerificationToken} from '../database/interfaces'
+import {VerificationToken} from '../interfaces'
 
 export async function isVerificationTokenWithEmail(email:string):Promise<boolean> {
 

@@ -1,6 +1,6 @@
 import {NextApiRequest, NextApiResponse} from 'next'
 import { isUserWithEmail } from '../../../database/utils/users'
-import { createVerificationToken, isVerificationTokenWithEmail } from '../../../utils/verificationTokens'
+import { createVerificationToken, isVerificationTokenWithEmail } from '../../../database/utils/verificationTokens'
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import { sendToken } from '../../../utils/emails'
