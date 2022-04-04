@@ -66,8 +66,8 @@ export default function Main({user}:Props) {
                 data: {operation: 'accept', id}
             })
 
-            mutate('/api/users/profile/friends/requests-received', invites.filter(inv => inv.ref['@ref'].id !== id), false)
             setSnackbarMsg({type: 'success', content: 'Friend Added!'})
+            mutate('/api/users/profile/friends/requests-received', invites.filter(inv => inv.ref['@ref'].id !== id), false)
         } catch (e) {
             loadingCopy[i] = false
             setLoading(loadingCopy)
