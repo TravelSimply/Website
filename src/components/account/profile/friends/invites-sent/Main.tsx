@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import useSWR, { mutate } from "swr";
 import { ClientPopulatedToFriendRequest, ClientUser } from "../../../../../database/interfaces";
 import { PrimarySearchBar } from "../../../../misc/searchBars";
-import { OrangeDensePrimaryButton, OrangeDenseSecondaryButton, OrangePrimaryButton } from "../../../../mui-customizations/buttons";
+import { OrangeDensePrimaryButton, OrangePrimaryButton } from "../../../../mui-customizations/buttons";
 import InviteCard from "../InviteCard";
 import Snackbar from '../../../../misc/snackbars'
 

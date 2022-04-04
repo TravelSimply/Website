@@ -1,7 +1,7 @@
 import { Avatar, Box, Grid, ListItemText, Paper, Typography } from '@mui/material';
 import React, { useMemo, useState } from 'react'
 import { ClientFilteredUser, ClientUser } from '../../../../../database/interfaces'
-import { OrangeDensePrimaryButton, OrangeDenseSecondaryButton } from '../../../../mui-customizations/buttons';
+import { OrangeDensePrimaryButton} from '../../../../mui-customizations/buttons';
 import {mutate} from 'swr'
 
 interface Props {
@@ -16,6 +16,7 @@ export default function FriendCard({users, friendIndex}:Props) {
     const [loading, setLoading] = useState(false)
 
     const removeFriend = async () => {
+        setLoading(true)
         try {
 
             // make post request to remove friend
@@ -27,7 +28,7 @@ export default function FriendCard({users, friendIndex}:Props) {
 
             mutate('/api/users/profile/friends', usersCopy, false)
         } catch (e) {
-
+            setLoading(false)
         }
     }
 
