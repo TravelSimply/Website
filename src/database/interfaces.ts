@@ -45,7 +45,7 @@ export interface FriendRequest {
     data: {
         to: string; // email
         from: string; // email
-        timeSent: EpochTimeStamp;
+        timeSent: Date;
     }
 }
 
@@ -58,6 +58,14 @@ export interface ClientPopulatedToFriendRequest extends Omit<ClientFriendRequest
         to: ClientFilteredUser;
         from: string;
         timeSent: {'@ts': string;};
+    }
+}
+
+export interface PopulatedFromFriendRequest extends Omit<FriendRequest, 'data'> {
+    data: {
+        to: string;
+        from: User;
+        timeSent: Date;
     }
 }
 
