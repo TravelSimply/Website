@@ -1,7 +1,7 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult, NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 import { parseCookies } from "nookies";
-import { getUser, getUserFromEmail } from "./users";
+import { getUser, getUserFromEmail } from "../database/utils/users";
 import jwt from 'jsonwebtoken'
 import { isVerificationTokenWithEmail } from "./verificationTokens";
 import { User } from "../database/interfaces";

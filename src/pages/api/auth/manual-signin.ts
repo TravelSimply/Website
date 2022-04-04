@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getUserFromEmail } from "../../../utils/users";
+import { getUserFromEmail } from "../../../database/utils/users";
 import { isVerificationTokenWithEmail } from "../../../utils/verificationTokens";
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getPasswordResetTokenWithToken } from "../../../../database/utils/passwordResetTokens";
 import bcrypt from 'bcryptjs'
-import { updateUserPassword } from "../../../../utils/users";
+import { updateUserPassword } from "../../../../database/utils/users";
 import {deletePasswordResetToken} from '../../../../database/utils/passwordResetTokens'
 
 export default async function ResetPassword(req:NextApiRequest, res:NextApiResponse) {

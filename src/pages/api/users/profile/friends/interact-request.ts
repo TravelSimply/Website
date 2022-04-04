@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { verifyUser } from "../../../../../utils/auth";
 import { deleteFriendRequest, getFriendRequest } from "../../../../../database/utils/friendRequests";
 import { addFriend } from "../../../../../database/utils/friends";
-import { getUser } from "../../../../../utils/users";
+import { getUser } from "../../../../../database/utils/users";
 
 export default verifyUser(async function InteractRequest(req:NextApiRequest, res:NextApiResponse) {
 

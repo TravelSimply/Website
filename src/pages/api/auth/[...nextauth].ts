@@ -1,7 +1,7 @@
 import NextAuth from "next-auth/next";
 import GoogleProvider from 'next-auth/providers/google'
 import jwt from 'jsonwebtoken'
-import { createUserFromGoogle, getUserFromEmail, getUserFromGoogle } from "../../../utils/users";
+import { createUserFromGoogle, getUserFromEmail, getUserFromGoogle } from "../../../database/utils/users";
 
 const googleScopes = [
     'https://www.googleapis.com/auth/userinfo.email',

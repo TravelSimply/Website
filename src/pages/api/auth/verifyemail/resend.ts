@@ -1,6 +1,6 @@
 import {NextApiRequest, NextApiResponse} from 'next'
 import { sendToken } from '../../../../utils/emails'
-import {isUserWithEmail} from '../../../../utils/users'
+import {isUserWithEmail} from '../../../../database/utils/users'
 import {getVerificationTokenWithEmail} from '../../../../utils/verificationTokens'
 
 export default async function Resend(req:NextApiRequest, res:NextApiResponse) {

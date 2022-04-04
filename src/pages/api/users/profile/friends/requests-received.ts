@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getAuthFromApi } from "../../../../../utils/auth";
 import { getFriendRequestsFromUser, getFriendRequestsToUser, getToOfFriendRequestsFromUser } from "../../../../../database/utils/friendRequests";
-import { filterUser, getUser } from "../../../../../utils/users";
+import { filterUser, getUser } from "../../../../../database/utils/users";
 
 export default async function FriendRequestsReceived(req:NextApiRequest, res:NextApiResponse) {
 

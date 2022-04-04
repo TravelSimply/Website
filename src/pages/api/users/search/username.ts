@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getUsernamesAndRefsMatchingSearch, getUsernamesAndRefs, getUserFromUsername } from "../../../../utils/users";
+import { getUsernamesAndRefsMatchingSearch, getUsernamesAndRefs, getUserFromUsername } from "../../../../database/utils/users";
 
 export default async function SearchUsername(req:NextApiRequest, res:NextApiResponse) {
 

@@ -1,6 +1,6 @@
-import client from '../database/fauna'
+import client from '../fauna'
 import {query as q} from 'faunadb'
-import { Ref, User, VerificationToken } from '../database/interfaces'
+import { Ref, User, VerificationToken } from '../interfaces'
 import {Profile} from 'next-auth'
 
 function filterName(name:string) {

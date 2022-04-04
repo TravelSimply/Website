@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getUserFromUsername, isUserWithUsername, updateUserUsernameFromEmail } from "../../../../utils/users";
+import { getUserFromUsername, isUserWithUsername, updateUserUsernameFromEmail } from "../../../../database/utils/users";
 import {verifyUser} from '../../../../utils/auth'
 
 export default verifyUser(async function ChangeUsername(req:NextApiRequest, res:NextApiResponse) {

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { sendPasswordResetToken } from "../../../../utils/emails";
 import { createPasswordResetToken, getPasswordResetTokenWithEmail } from "../../../../database/utils/passwordResetTokens";
-import { getUserFromEmail } from "../../../../utils/users";
+import { getUserFromEmail } from "../../../../database/utils/users";
 import crypto from 'crypto'
 
 export default async function SendEmail(req:NextApiRequest, res:NextApiResponse) {

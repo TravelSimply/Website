@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { verifyUser } from "../../../../utils/auth";
-import { isUserWithUsername, updateUser, updateUserFromEmail } from "../../../../utils/users";
+import { isUserWithUsername, updateUser, updateUserFromEmail } from "../../../../database/utils/users";
 
 const acceptedProperties = ['username', 'firstName', 'lastName']
 

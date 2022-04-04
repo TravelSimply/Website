@@ -1,6 +1,6 @@
 import {NextApiRequest, NextApiResponse} from 'next'
 import {getVerificationTokenWithToken, deleteVerificationToken} from '../../../../utils/verificationTokens'
-import {createUserFromToken} from '../../../../utils/users'
+import {createUserFromToken} from '../../../../database/utils/users'
 import jwt from 'jsonwebtoken'
 import {setCookie} from 'nookies'
 
