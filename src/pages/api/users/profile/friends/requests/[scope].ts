@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getAuthFromApi } from "../../../../../../utils/auth";
-import { getFromOfFriendRequestsToUser, getToOfFriendRequestsFromUser } from "../../../../../../utils/friendRequests";
+import { getFromOfFriendRequestsToUser, getToOfFriendRequestsFromUser } from "../../../../../../database/utils/friendRequests";
 
 async function getToAndFrom(id:string) {
     const [to, from] = await Promise.all([getToOfFriendRequestsFromUser(id), getFromOfFriendRequestsToUser(id)])

@@ -1,6 +1,6 @@
 import {query as q} from 'faunadb'
-import client from '../database/fauna'
-import { FriendRequest, User } from '../database/interfaces'
+import client from '../fauna'
+import { FriendRequest, User } from '../interfaces'
 
 export async function createFriendRequests(to:string[], from:string) {
 
