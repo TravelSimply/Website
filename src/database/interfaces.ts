@@ -49,6 +49,18 @@ export interface FriendRequest {
     }
 }
 
+export interface ClientFriendRequest extends Omit<FriendRequest, 'ref'> {
+    ref: {'@ref': Ref}
+}
+
+export interface ClientPopulatedToFriendRequest extends Omit<ClientFriendRequest, 'data'> {
+    data: {
+        to: ClientFilteredUser;
+        from: string;
+        timeSent: {'@ts': string;};
+    }
+}
+
 export interface VerificationToken {
     ref: Ref;
     data: {
