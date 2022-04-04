@@ -39,7 +39,11 @@ export default function FriendAdder({setAddedFriends, startingAddList, children}
                 data: {username: search}
             })
 
-            setOptions([user])
+            if (!user) {
+                setOptions([])
+            } else {
+                setOptions([user])
+            }
         } catch (e) {
 
         }
@@ -85,7 +89,7 @@ export default function FriendAdder({setAddedFriends, startingAddList, children}
                     </Box>
                     {option.data.username}
                 </li>
-            )} getOptionLabel={(option) => option.data?.username || option} />
+            )} getOptionLabel={(option) => option?.data?.username || option}  />
             {children}
             <Box mt={3}>
                 <List>
