@@ -5,7 +5,8 @@ import styles from '../../../styles/pages/HeaderSidebarFooter.module.css'
 import MainHeader from '../../../components/nav/MainHeader'
 import MainSidebar from '../../../components/nav/MainSidebar'
 import {Box} from '@mui/material'
-import Main from '../../../components/account/profile/friends/index/Main'
+import Head from 'next/head'
+import Main from '../../../components/account/profile/friends/add/Main'
 
 interface Props {
     user: ClientUser;
@@ -21,16 +22,21 @@ export default function AddFriends({user}:Props) {
     ]
 
     return (
-        <div className={styles.root}>
-            <MainHeader user={user} drawer={{items: drawerItems, breakpoint: 'sm'}} />
-            <MainSidebar breakpoint="sm" items={drawerItems} />
-            <Box sx={{gridColumn: {xs: '1 / -1', sm: 'auto'}}} >
-                main section
-            </Box>
-            <div>
-                footer
+        <>
+            <Head>
+                <title>Add Friends | Travel Simply</title>
+            </Head>
+            <div className={styles.root}>
+                <MainHeader user={user} drawer={{items: drawerItems, breakpoint: 'sm'}} />
+                <MainSidebar breakpoint="sm" items={drawerItems} />
+                <Box sx={{gridColumn: {xs: '1 / -1', sm: 'auto'}}} >
+                    <Main user={user} />
+                </Box>
+                <div>
+                    footer
+                </div>
             </div>
-        </div>
+        </>
     ) 
 }
 
