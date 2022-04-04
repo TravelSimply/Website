@@ -1,7 +1,19 @@
 import {query as q} from 'faunadb'
 import client from '../fauna'
+import { User } from '../interfaces'
 import { getFriendRequestsFromUser, getFriendRequestsToUser } from './friendRequests'
 import { getUser } from './users'
+
+export async function getFriends(ids:string[]):Promise<User[]> {
+
+    if (!ids) {
+        return []
+    }
+
+    return await client.query(
+        q.Map(ids.map(id => q.Ref(q.Collection('users'), id)), q.Lambda('ref', q.Get(q.Var('ref'))))
+    )
+}
 
 export async function getFriendsInvited(id:string) {
 

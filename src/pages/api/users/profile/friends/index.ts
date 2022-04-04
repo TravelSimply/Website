@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getAuthFromApi, verifyUser } from "../../../../../utils/auth";
 import { filterUsers, getUser } from "../../../../../database/utils/users";
+import { getFriends } from "../../../../../database/utils/friends";
 
 export default async function Friends(req:NextApiRequest, res:NextApiResponse) {
 
@@ -21,10 +22,11 @@ export default async function Friends(req:NextApiRequest, res:NextApiResponse) {
             return res.status(200).json([])
         }
 
-        const [...friends] = await Promise.all(user.data.friends.map(friend => getUser(friend)))
+        const friends = await getFriends(user.data.friends)
 
         return res.status(200).json(filterUsers(friends))
     } catch (e) {
+        console.log(e)
         return res.status(500).json({msg: 'Internal Server Error'})
     }
 }
