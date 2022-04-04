@@ -45,6 +45,10 @@ export default function Main({user}:Props) {
             setAlert(`@${addedUser.data.username} has already sent you an invite!`)
             return setStartingAddList(addedFriends.slice(0, -1))
         }
+        if (user.data.friends?.includes(addedUser.ref['@ref'].id)) {
+            setAlert(`@${addedUser.data.username} is already a friend!`)
+            return setStartingAddList(addedFriends.slice(0, -1))
+        }
         
     }, [addedFriends])
 
@@ -75,7 +79,7 @@ export default function Main({user}:Props) {
                 {!requestIds ? <Box textAlign="center">
                     <CircularProgress />
                 </Box> :
-                <FriendAdder currentFriends={user.data.friends || []} setAddedFriends={setAddedFriends} 
+                <FriendAdder setAddedFriends={setAddedFriends} 
                 startingAddList={startingAddList}>
                     {alert && <Box mt={1}>
                         <Collapse in={Boolean(alert)}>
