@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { verifyUser } from "../../../../../utils/auth";
-import { removeFriend } from "../../../../../utils/friends";
+import { removeFriend } from "../../../../../database/utils/friends";
 
 export default verifyUser(async function RemvoeFriend(req:NextApiRequest, res:NextApiResponse) {
 

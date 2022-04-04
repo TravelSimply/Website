@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getAuthFromApi, verifyUser } from "../../../../../utils/auth";
-import { getFriendsInvited, getFriendsInviting } from "../../../../../utils/friends";
+import { getFriendsInvited, getFriendsInviting } from "../../../../../database/utils/friends";
 import { getUser, filterUsers } from "../../../../../utils/users";
 
 export default async function Friends(req:NextApiRequest, res:NextApiResponse) {
