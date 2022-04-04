@@ -33,6 +33,15 @@ export default verifyUser(async function InteractRequest(req:NextApiRequest, res
             return res.status(200).json({msg: 'Success'})
         }
 
+        if (operation === 'reject') {
+            const invite = await getFriendRequest(id)
+            if (!invite || invite.data.to !== req.body.jwtUser.userId) {
+                return res.status(403).json({msg: 'Cannot reject'})
+            }
+            await deleteFriendRequest(id)
+            return res.status(200).json({msg: 'Success'})
+        }
+
         return res.status(400).json({msg: 'No valid operation given'})
     } catch (e) {
         console.log(e)

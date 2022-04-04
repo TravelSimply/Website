@@ -75,6 +75,27 @@ export default function Main({user}:Props) {
         }
     }
 
+    const rejectFriendRequest = async (id:string, i:number) => {
+        const loadingCopy = [...loading]
+        loadingCopy[i] = true
+        setLoading(loadingCopy)
+
+        try {
+            await axios({
+                method: 'POST',
+                url: '/api/users/profile/friends/interact-request',
+                data: {operation: 'reject', id}
+            })
+
+            mutate('/api/users/profile/friends/requests-received', invites.filter(inv => inv.ref['@ref'].id !== id), false)
+            setSnackbarMsg({type: 'success', content: 'Invite Rejected'})
+        } catch (e) {
+            loadingCopy[i] = false
+            setLoading(loadingCopy)
+            setSnackbarMsg({type: 'error', content: 'Failed to Reject Invite'})
+        }
+    }
+
     return (
         <Box maxWidth="md" m={3}>
             <Box mb={3}>
@@ -118,7 +139,8 @@ export default function Main({user}:Props) {
                                                 </OrangeDensePrimaryButton>
                                             </Grid>
                                             <Grid item>
-                                                <OrangeDenseSecondaryButton>
+                                                <OrangeDenseSecondaryButton disabled={loading[i]}
+                                                onClick={() => rejectFriendRequest(invite.ref['@ref'].id, i)}>
                                                     Reject
                                                 </OrangeDenseSecondaryButton>
                                             </Grid>
