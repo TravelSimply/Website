@@ -11,9 +11,10 @@ interface Props {
     currentFriends: string[];
     setAddedFriends: Dispatch<SetStateAction<ClientUser[]>>;
     startingAddList: ClientUser[];
+    children?: React.ReactNode;
 }
 
-export default function FriendAdder({currentFriends, setAddedFriends, startingAddList}:Props) {
+export default function FriendAdder({currentFriends, setAddedFriends, startingAddList, children}:Props) {
 
     const [friends, setFriends] = useState(startingAddList)
 
@@ -88,6 +89,7 @@ export default function FriendAdder({currentFriends, setAddedFriends, startingAd
                     {option.data.username}
                 </li>
             )} getOptionLabel={(option) => option.data?.username || option} />
+            {children}
             <Box mt={3}>
                 <List>
                     {friends.map((friend, i) => (
