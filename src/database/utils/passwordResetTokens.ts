@@ -1,5 +1,5 @@
-import {PasswordResetToken} from '../database/interfaces'
-import client from '../database/fauna'
+import {PasswordResetToken} from '../interfaces'
+import client from '../fauna'
 import {query as q} from 'faunadb'
 
 export async function createPasswordResetToken(token:string, email:string, userId: string) {

@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { sendPasswordResetToken } from "../../../../utils/emails";
-import { createPasswordResetToken, getPasswordResetTokenWithEmail } from "../../../../utils/passwordResetTokens";
+import { createPasswordResetToken, getPasswordResetTokenWithEmail } from "../../../../database/utils/passwordResetTokens";
 import { getUserFromEmail } from "../../../../utils/users";
 import crypto from 'crypto'
 
