@@ -9,6 +9,13 @@ export async function createFriendRequests(to:string[], from:string) {
     ) 
 }
 
+export async function getFriendRequest(id:string):Promise<FriendRequest> {
+
+    return await client.query(
+        q.Get(q.Ref(q.Collection('friendRequests'), id))
+    )
+}
+
 export async function getFriendRequestsFromUser(id:string):Promise<{data: FriendRequest[]}> {
 
     return await client.query(
@@ -34,5 +41,12 @@ export async function getFromOfFriendRequestsToUser(id:string):Promise<{data: st
 
     return await client.query(
         q.Paginate(q.Match(q.Index('friendRequests_by_to_w_from'), id))
+    )
+}
+
+export async function deleteFriendRequest(id:string) {
+
+    await client.query(
+        q.Delete(q.Ref(q.Collection('friendRequests'), id))
     )
 }
