@@ -73,6 +73,8 @@ export default function Main({user}:Props) {
             mutate('/api/users/profile/friends/requests-sent', invites.filter(inv => inv.ref['@ref'].id !== id), false)
             setSnackbarMsg({type: 'success', content: 'Rescinded Invite Successfully'})
         } catch (e) {
+            loadingCopy[i] = false
+            setLoading(loadingCopy)
             setSnackbarMsg({type: 'error', content: 'Failed to Rescind Invite'})
         }
     }
