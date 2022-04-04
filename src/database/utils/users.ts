@@ -1,6 +1,6 @@
-import client from '../database/fauna'
+import client from '../fauna'
 import {query as q} from 'faunadb'
-import { Ref, User, VerificationToken } from '../database/interfaces'
+import { Ref, User, VerificationToken } from '../interfaces'
 import {Profile} from 'next-auth'
 
 function filterName(name:string) {
@@ -177,13 +177,33 @@ export async function updateUserImage(id:string, image:{src:string; publicId:str
     )
 }
 
-export async function updateUserFromEmail(email:string, properties:{username?:string;firstName?:string;lastName?:string}) {
+export async function updateUserFromEmail(email:string, 
+    properties:{username?:string;firstName?:string;lastName?:string;caseInsensitiveUsername?:any}) {
+
+    if (properties.username) {
+        properties.caseInsensitiveUsername = q.Casefold(properties.username)
+    }
 
     await client.query(
         q.Update(
             q.Select(['ref'], q.Get(q.Match(
                 q.Index('users_by_email'), email
             ))),
+            {data: {...properties}}
+        )
+    )
+}
+
+export async function updateUser(id:string, 
+    properties:{username?:string;firstName?:string;lastName?:string;caseInsensitiveUsername?:any}) {
+
+    if (properties.username) {
+        properties.caseInsensitiveUsername = q.Casefold(properties.username)
+    }
+
+    await client.query(
+        q.Update(
+            q.Ref(q.Collection('users'), id),
             {data: {...properties}}
         )
     )
@@ -206,4 +226,14 @@ export async function getUsernamesAndRefs():Promise<{ref:Ref;username:string}[]>
     return await client.query(
         q.Paginate(q.Match(q.Index('all_users_w_username')), {size: 1000000})
     )
+}
+
+export function filterUser(user:User) {
+
+    return {...user, data: {...user.data, password: null}}
+}
+
+export function filterUsers(users:User[]) {
+
+    return users.map(user => filterUser(user))
 }

@@ -1,9 +1,9 @@
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult, NextApiHandler, NextApiRequest, NextApiResponse } from "next";
 import { getSession } from "next-auth/react";
 import { parseCookies } from "nookies";
-import { getUser, getUserFromEmail } from "./users";
+import { getUser, getUserFromEmail } from "../database/utils/users";
 import jwt from 'jsonwebtoken'
-import { isVerificationTokenWithEmail } from "./verificationTokens";
+import { isVerificationTokenWithEmail } from "../database/utils/verificationTokens";
 import { User } from "../database/interfaces";
 import axios from 'axios'
 import {signOut as nextAuthSignOut} from 'next-auth/react'
@@ -170,10 +170,7 @@ export function verifyUser(fn:NextApiHandler) {
 }
 
 export function getAuthFromApi(req:NextApiRequest) {
-    return new Promise<AuthToken | {
-    name?: string;
-    email?: string;
-    image?: string;}>(resolve => {
+    return new Promise<AuthToken | any>(resolve => {
         getAuthTokenFromApiHandler(req).then((authToken) => {
             if (!authToken) {
                 return resolve(null)

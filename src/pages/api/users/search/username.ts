@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getUsernamesAndRefsMatchingSearch, getUsernamesAndRefs, getUserFromUsername } from "../../../../utils/users";
+import { getUsernamesAndRefsMatchingSearch, getUsernamesAndRefs, getUserFromUsername, filterUser } from "../../../../database/utils/users";
 
 export default async function SearchUsername(req:NextApiRequest, res:NextApiResponse) {
 
@@ -9,18 +9,13 @@ export default async function SearchUsername(req:NextApiRequest, res:NextApiResp
 
     try {
 
-        if (!req.body.username) {
-            const users = await getUsernamesAndRefs()
-            return res.status(200).json({users})
-        }
-
         const user = await getUserFromUsername(req.body.username)
 
         if (!user) {
             return res.status(200).json({user})
         }
 
-        return res.status(200).json({user: {...user, data: {...user.data, password: null}}})
+        return res.status(200).json({user: filterUser(user)})
     } catch (e) {
         console.log(e)
         return res.status(500).json({msg: 'Internal Server Error'})

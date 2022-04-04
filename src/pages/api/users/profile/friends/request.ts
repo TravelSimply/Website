@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { verifyUser } from "../../../../../utils/auth";
-import { createFriendRequests } from "../../../../../utils/friendRequests";
+import { createFriendRequests } from "../../../../../database/utils/friendRequests";
 
 export default verifyUser(async function RequestFriends(req:NextApiRequest, res:NextApiResponse) {
 

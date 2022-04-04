@@ -8,13 +8,12 @@ import { ClientUser } from '../../../database/interfaces';
 import ClearIcon from '@mui/icons-material/Clear';
 
 interface Props {
-    currentFriends: string[];
     setAddedFriends: Dispatch<SetStateAction<ClientUser[]>>;
-    user: ClientUser;
     startingAddList: ClientUser[];
+    children?: React.ReactNode;
 }
 
-export default function FriendAdder({currentFriends, setAddedFriends, startingAddList, user: {data: {username}}}:Props) {
+export default function FriendAdder({setAddedFriends, startingAddList, children}:Props) {
 
     const [friends, setFriends] = useState(startingAddList)
 
@@ -40,9 +39,11 @@ export default function FriendAdder({currentFriends, setAddedFriends, startingAd
                 data: {username: search}
             })
 
-            if (currentFriends.includes(user.ref['@ref'].id)) return setLoading(false)
-
-            setOptions([user])
+            if (!user) {
+                setOptions([])
+            } else {
+                setOptions([user])
+            }
         } catch (e) {
 
         }
@@ -88,7 +89,8 @@ export default function FriendAdder({currentFriends, setAddedFriends, startingAd
                     </Box>
                     {option.data.username}
                 </li>
-            )} getOptionLabel={(option) => option.data?.username || option} />
+            )} getOptionLabel={(option) => option?.data?.username || option}  />
+            {children}
             <Box mt={3}>
                 <List>
                     {friends.map((friend, i) => (

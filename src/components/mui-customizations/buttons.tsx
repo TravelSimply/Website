@@ -1,4 +1,4 @@
-import {Button, Grid, Typography, Box, SvgIcon} from '@mui/material'
+import {Button, Grid, Typography, Box, SvgIcon, IconButton} from '@mui/material'
 import {styled} from '@mui/material/styles'
 
 export const OrangePrimaryButton = styled(Button)(({theme}) => ({
@@ -34,6 +34,35 @@ export const OrangeSecondaryButton = styled(Button)(({theme}) => ({
         color: '#fff',
         background: theme.palette.primary.dark,
         borderColor: theme.palette.primary.dark
+    }
+}))
+
+export const OrangeDenseSecondaryButton = styled(Button)(({theme}) => ({
+    background: 'transparent',
+    border: '1px solid #000',
+    borderRadius: theme.spacing(1),
+    padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
+    transition: 'background 300ms',
+    color: '#000',
+    '&:hover': {
+        color: '#fff',
+        background: theme.palette.primary.dark,
+        borderColor: theme.palette.primary.dark
+    }
+}))
+
+export const OrangePrimaryIconButton = styled(IconButton)(({theme}) => ({
+    color: theme.palette.primary.main,
+    transition: 'color 300ms',
+    '&:hover': {
+        color: theme.palette.primary.dark
+    }
+}))
+
+export const OrangeSecondaryIconButton = styled(IconButton)(({theme}) => ({
+    transition: 'color 300ms',
+    '&:hover': {
+        color: theme.palette.primary.dark
     }
 }))
 

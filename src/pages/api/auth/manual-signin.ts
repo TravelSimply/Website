@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getUserFromEmail } from "../../../utils/users";
-import { isVerificationTokenWithEmail } from "../../../utils/verificationTokens";
+import { getUserFromEmail } from "../../../database/utils/users";
+import { isVerificationTokenWithEmail } from "../../../database/utils/verificationTokens";
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import {setCookie} from 'nookies'

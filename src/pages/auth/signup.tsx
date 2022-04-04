@@ -1,7 +1,7 @@
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import {getProviders, signIn, getSession, ClientSafeProvider, LiteralUnion } from 'next-auth/react'
 import {BuiltInProviderType} from 'next-auth/providers'
-import { getUser, getUserFromEmail } from '../../utils/users';
+import { getUser, getUserFromEmail } from '../../database/utils/users';
 import styles from '../../styles/pages/HeaderOnly.module.css'
 import NameOnlyHeader from '../../components/nav/NameOnlyHeader'
 import { mustNotBeAuthenticated } from '../../utils/auth';

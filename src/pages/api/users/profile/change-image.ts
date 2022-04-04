@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getAuthFromApi, verifyUser } from "../../../../utils/auth";
 import {v2 as cloudinary, UploadApiResponse} from 'cloudinary'
 import formidable from 'formidable'
-import { getUserFromEmail, updateUserImage } from "../../../../utils/users";
+import { getUserFromEmail, updateUserImage } from "../../../../database/utils/users";
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_NAME,

@@ -5,29 +5,39 @@ export interface Ref {
     id: string;
 }
 
+interface UserData {
+    username?: string;
+    caseInsensitiveUsername?:string;
+    password?: string;
+    firstName?: string;
+    lastName?: string;
+    email: string;
+    image?: {
+        src: string;
+        publicId?: string;
+    };
+    friends?: string[];
+    status?: any[]; // update later
+    oAuthIdentifier?: {
+        google?: string;
+    }
+}
+
 export interface User {
     ref: Ref;
-    data: {
-        username?: string;
-        caseInsensitiveUsername?:string;
-        password?: string;
-        firstName?: string;
-        lastName?: string;
-        email: string;
-        image?: {
-            src: string;
-            publicId?: string;
-        };
-        friends?: string[];
-        status?: any[]; // update later
-        oAuthIdentifier?: {
-            google?: string;
-        }
-    }
+    data: UserData;
 }
 
 export interface ClientUser extends Omit<User, 'ref'>{
     ref: {'@ref': Ref}
+}
+
+interface FilteredUserData extends Omit<UserData, 'password'> {
+    password: null;
+}
+
+export interface ClientFilteredUser extends Omit<ClientUser, 'data'> {
+    data: FilteredUserData;
 }
 
 export interface FriendRequest {
@@ -35,7 +45,43 @@ export interface FriendRequest {
     data: {
         to: string; // email
         from: string; // email
-        timeSent: EpochTimeStamp;
+        timeSent: Date;
+    }
+}
+
+export interface ClientFriendRequest extends Omit<FriendRequest, 'ref'> {
+    ref: {'@ref': Ref}
+}
+
+export interface PopulatedToFriendRequest extends Omit<FriendRequest, 'data'> {
+    data: {
+        to: User;
+        from: string;
+        timeSent: Date;
+    }
+}
+
+export interface ClientPopulatedToFriendRequest extends Omit<ClientFriendRequest, 'data'> {
+    data: {
+        to: ClientFilteredUser;
+        from: string;
+        timeSent: {'@ts': string;};
+    }
+}
+
+export interface PopulatedFromFriendRequest extends Omit<FriendRequest, 'data'> {
+    data: {
+        to: string;
+        from: User;
+        timeSent: Date;
+    }
+}
+
+export interface ClientPopulatedFromFriendRequest extends Omit<ClientFriendRequest, 'data'> {
+    data: {
+        to: string;
+        from: ClientFilteredUser;
+        timeSent: {'@ts': string};
     }
 }
 

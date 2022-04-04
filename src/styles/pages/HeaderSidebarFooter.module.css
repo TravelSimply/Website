@@ -1,0 +1,16 @@
+
+.root {
+    display: grid;
+    min-height: 100vh;
+    grid-template: auto 1fr auto / auto 1fr;
+}
+
+.root *:first-child {
+    grid-column: span 2;
+}
+
+.sticky {
+    position: sticky;
+    top: 0px;
+    z-index: 2000;
+}

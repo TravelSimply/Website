@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { isPasswordResetTokenWithToken } from "../../../../utils/passwordResetTokens";
+import { isPasswordResetTokenWithToken } from "../../../../database/utils/passwordResetTokens";
 
 export default async function VerifyToken(req:NextApiRequest, res:NextApiResponse) {
 

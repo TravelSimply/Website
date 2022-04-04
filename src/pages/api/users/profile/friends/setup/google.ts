@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { User } from "../../../../../../database/interfaces";
 import { AuthToken, verifyUser } from "../../../../../../utils/auth";
-import { getUser, getUsersWithEmails } from "../../../../../../utils/users";
+import { getUser, getUsersWithEmails } from "../../../../../../database/utils/users";
 import {google, people_v1} from 'googleapis'
 
 export default verifyUser(async function GoogleContacts(req:NextApiRequest, res:NextApiResponse) {
