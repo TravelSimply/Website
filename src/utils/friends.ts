@@ -28,3 +28,34 @@ export async function getFriendsInviting(id:string) {
 
     return users
 }
+
+function appendFriend(id:string) {
+
+    return {data: {friends: q.If(
+        q.ContainsField('friends', q.Select(['data'], q.Var('user'))),
+        q.Append(id, q.Select(['data', 'friends'], q.Var('user'))),
+        [id]
+    )}}
+}
+
+export async function addFriend(a:string, b:string, friendRequestId:string) {
+
+    await client.query(
+        q.Do(
+            q.Map([q.Ref(q.Collection('users'), a), q.Ref(q.Collection('users'), b)], q.Lambda('ref',
+                q.Let(
+                    {'user': q.Get(q.Var('ref'))},
+                    q.Update(
+                        q.Select('ref', q.Var('user')),
+                        q.If(
+                            q.Equals(q.Select(['ref', 'id'], q.Var('user')), a),
+                            appendFriend(b),
+                            appendFriend(a)
+                        )
+                    )
+                )
+            )),
+            q.Delete(q.Ref(q.Collection('friendRequests'), friendRequestId)) 
+        )
+    )
+}

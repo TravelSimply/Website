@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { verifyUser } from "../../../../../utils/auth";
 import { deleteFriendRequest, getFriendRequest } from "../../../../../utils/friendRequests";
+import { addFriend } from "../../../../../utils/friends";
+import { getUser } from "../../../../../utils/users";
 
 export default verifyUser(async function InteractRequest(req:NextApiRequest, res:NextApiResponse) {
 
@@ -21,8 +23,19 @@ export default verifyUser(async function InteractRequest(req:NextApiRequest, res
             return res.status(200).json({msg: 'Success'})
         }
 
+        if (operation === 'accept') {
+            const invite = await getFriendRequest(id)
+            if (!invite || invite.data.to !== req.body.jwtUser.userId) {
+                return res.status(403).json({msg: 'Cannot accept'})
+            }
+            await addFriend(invite.data.to, invite.data.from, invite.ref.id)
+
+            return res.status(200).json({msg: 'Success'})
+        }
+
         return res.status(400).json({msg: 'No valid operation given'})
     } catch (e) {
+        console.log(e)
         return res.status(500).json({msg: 'Internal Server Error'})
     }
 })
