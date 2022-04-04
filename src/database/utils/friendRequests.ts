@@ -1,6 +1,6 @@
 import {query as q} from 'faunadb'
 import client from '../fauna'
-import { FriendRequest, PopulatedFromFriendRequest, User } from '../interfaces'
+import { FriendRequest, PopulatedFromFriendRequest, PopulatedToFriendRequest, User } from '../interfaces'
 
 export async function createFriendRequests(to:string[], from:string) {
 
@@ -20,6 +20,27 @@ export async function getFriendRequestsFromUser(id:string):Promise<{data: Friend
 
     return await client.query(
         q.Map(q.Paginate(q.Match(q.Index('friendRequests_by_from'), id), {size: 100}), (ref) => q.Get(ref))
+    )
+}
+
+export async function getPopulatedFriendRequestsFromUser(userId:string):Promise<PopulatedToFriendRequest[]> {
+
+    return await client.query(
+        q.Let(
+            {
+                'requests': q.Select(['data'], q.Map(q.Paginate(q.Match(q.Index('friendRequests_by_from'), userId), {size: 100}), (ref) => q.Get(ref)))
+            },
+            q.Map(q.Var('requests'), q.Lambda('request', (
+                {
+                    ref: q.Select(['ref'], q.Var('request')),
+                    data: {
+                        from: userId,
+                        to: q.Get(q.Ref(q.Collection('users'), q.Select(['data', 'to'], q.Var('request')))),
+                        timeSent: q.Select(['data', 'timeSent'], q.Var('request'))
+                    }
+                }
+            )))
+        )
     )
 }
 

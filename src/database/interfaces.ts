@@ -53,6 +53,14 @@ export interface ClientFriendRequest extends Omit<FriendRequest, 'ref'> {
     ref: {'@ref': Ref}
 }
 
+export interface PopulatedToFriendRequest extends Omit<FriendRequest, 'data'> {
+    data: {
+        to: User;
+        from: string;
+        timeSent: Date;
+    }
+}
+
 export interface ClientPopulatedToFriendRequest extends Omit<ClientFriendRequest, 'data'> {
     data: {
         to: ClientFilteredUser;
