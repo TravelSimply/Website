@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react'
 import { ClientFilteredUser, ClientUser } from '../../../../../database/interfaces'
 import {PrimarySearchBar} from '../../../../misc/searchBars'
 import useSWR, {mutate} from 'swr'
-import FriendCard from '../FriendCard';
+import FriendCard from './FriendCard';
 import { OrangePrimaryButton } from '../../../../mui-customizations/buttons';
 import Link from 'next/link';
 

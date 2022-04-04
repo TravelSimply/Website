@@ -1,7 +1,7 @@
 import { Avatar, Box, Grid, Paper, Typography } from '@mui/material';
 import React, { useMemo, useState } from 'react'
-import { ClientFilteredUser, ClientUser } from '../../../../database/interfaces'
-import { OrangeDenseSecondaryButton } from '../../../mui-customizations/buttons';
+import { ClientFilteredUser, ClientUser } from '../../../../../database/interfaces'
+import { OrangeDenseSecondaryButton } from '../../../../mui-customizations/buttons';
 import {mutate} from 'swr'
 
 interface Props {
