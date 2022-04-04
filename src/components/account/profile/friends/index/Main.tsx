@@ -6,6 +6,7 @@ import useSWR, {mutate} from 'swr'
 import FriendCard from './FriendCard';
 import { OrangePrimaryButton } from '../../../../mui-customizations/buttons';
 import Link from 'next/link';
+import Snackbar from '../../../../misc/snackbars'
 
 interface Props {
     user: ClientUser;
@@ -14,6 +15,8 @@ interface Props {
 export default function Main({user}:Props) {
 
     const [search, setSearch] = useState('')
+    
+    const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
 
     const [searchFriends, setSearchFriends] = useState<number[]>([])
 
@@ -75,11 +78,12 @@ export default function Main({user}:Props) {
                 <Grid container justifyContent="center" spacing={3}>
                     {searchFriends.map((friendIndex) => (
                         <Grid item key={friendIndex}>
-                            <FriendCard users={friends} friendIndex={friendIndex} />
+                            <FriendCard users={friends} friendIndex={friendIndex} setSnackbarMsg={setSnackbarMsg} />
                         </Grid>
                     ))}
                 </Grid>
             </Box>}
+            <Snackbar msg={snackbarMsg} setMsg={setSnackbarMsg} />
         </Box>
     )
 }

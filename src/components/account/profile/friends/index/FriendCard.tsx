@@ -1,15 +1,17 @@
 import { Avatar, Box, Grid, ListItemText, Paper, Typography } from '@mui/material';
-import React, { useMemo, useState } from 'react'
+import React, { Dispatch, SetStateAction, useMemo, useState } from 'react'
 import { ClientFilteredUser, ClientUser } from '../../../../../database/interfaces'
 import { OrangeDensePrimaryButton} from '../../../../mui-customizations/buttons';
 import {mutate} from 'swr'
+import axios from 'axios';
 
 interface Props {
     users: ClientUser[];
     friendIndex: number;
+    setSnackbarMsg: Dispatch<SetStateAction<{type:string;content:string}>>;
 }
 
-export default function FriendCard({users, friendIndex}:Props) {
+export default function FriendCard({users, friendIndex, setSnackbarMsg}:Props) {
 
     const friend = useMemo(() => users[friendIndex], [friendIndex, users])
 
@@ -19,13 +21,16 @@ export default function FriendCard({users, friendIndex}:Props) {
         setLoading(true)
         try {
 
-            // make post request to remove friend
+            await axios({
+                method: 'POST',
+                url: '/api/users/profile/friends/remove',
+                data: {id: friend.ref['@ref'].id}
+            })
 
             const usersCopy = [...users]
             usersCopy.splice(friendIndex, 1)
 
-            console.log(usersCopy)
-
+            setSnackbarMsg({type: 'success', content: 'Removed Friend'})
             mutate('/api/users/profile/friends', usersCopy, false)
         } catch (e) {
             setLoading(false)

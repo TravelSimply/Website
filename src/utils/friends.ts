@@ -59,3 +59,31 @@ export async function addFriend(a:string, b:string, friendRequestId:string) {
         )
     )
 }
+
+function removeIdFromFriendList(id:string) {
+
+    return {data: {friends: q.If(
+        q.ContainsField('friends', q.Select(['data'], q.Var('user'))),
+        q.Filter(q.Select(['data', 'friends'], q.Var('user')), q.Lambda('friendId', q.Not(q.Equals(q.Var('friendId'), id)))),
+        []
+    )}}
+}
+
+export async function removeFriend(a:string, b:string) {
+
+    await client.query(
+        q.Map([q.Ref(q.Collection('users'), a), q.Ref(q.Collection('users'), b)], q.Lambda('ref', 
+            q.Let(
+                {'user': q.Get(q.Var('ref'))},
+                q.Update(
+                    q.Select('ref', q.Var('user')),
+                    q.If(
+                        q.Equals(q.Select(['ref', 'id'], q.Var('user')), a),
+                        removeIdFromFriendList(b),
+                        removeIdFromFriendList(a) 
+                    )
+                )
+            ) 
+        ))
+    )
+}
