@@ -1,6 +1,6 @@
 import {useState} from 'react'
-import {useField, Field} from 'formik'
-import {TextField, InputAdornment, IconButton} from '@mui/material'
+import {useField, Field, Form} from 'formik'
+import {TextField, InputAdornment, IconButton, Select, FormControl, InputLabel, FormHelperText, Autocomplete} from '@mui/material'
 import VisibilityIcon from '@mui/icons-material/VisibilityOutlined'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOffOutlined'
 import styles from '../../styles/Forms.module.css'
@@ -19,6 +19,19 @@ export const FormikTextField = (props) => {
         <Field {...props} {...field} as={TextField} error={meta.touched && Boolean(meta.error)}
         helperText={meta.touched && meta.error ? meta.error : ''}
         InputProps={{...inputProps, ...props.InputProps}} InputLabelProps={inputLabelProps} FormHelperTextProps={formHelperTextProps} />
+    )
+}
+
+export const FormikSelectField = (props) => {
+    const [field, meta] = useField({
+        name: props.name,
+    })
+    return (
+        <FormControl error={meta.touched && Boolean(meta.error)}>
+            <InputLabel>{props.label}</InputLabel>
+            <Select {...props} {...field} />
+            {meta.touched && meta.error && <FormHelperText>{meta.error}</FormHelperText>}
+        </FormControl>
     )
 }
 
