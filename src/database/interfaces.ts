@@ -102,3 +102,30 @@ export interface PasswordResetToken {
         userId: string;
     }
 }
+
+export interface TravelGroup {
+    ref: Ref;
+    data: {
+        owner: string;
+        members: string[];
+        name: string;
+        desc: string;
+        destination: {
+            combo: string;
+            region: 'Interregional' | 'U.S. & Canada' | 'Central America' | 'South America' | 'Europe' | 'Asia' | 'Africa' | 'Oceania' | 'Antarctica',
+            country?: string;
+            state?: string;
+            city?: string;
+            address?: string;
+        };
+        date: {
+            start: Date;
+            end: Date;
+        };
+        settings: {
+            mode: 'public' | 'private';
+            invitePriveleges: 'ownerOnly' | 'anyMember';
+            joinRequestPriveleges: 'ownerOnly' | 'anyMember';
+        }
+    }
+}
