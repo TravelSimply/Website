@@ -17,7 +17,7 @@ interface UserData {
         publicId?: string;
     };
     friends?: string[];
-    status?: any[]; // update later
+    status?: string; // id of a Status
     oAuthIdentifier?: {
         google?: string;
     }
@@ -38,6 +38,16 @@ interface FilteredUserData extends Omit<UserData, 'password'> {
 
 export interface ClientFilteredUser extends Omit<ClientUser, 'data'> {
     data: FilteredUserData;
+}
+
+interface YearStatus {
+    unavailable: number[];
+    traveling: string[]; // Travel Groups
+}
+
+export interface Status {
+    ref: Ref;
+    data: Map<string, YearStatus>;
 }
 
 export interface FriendRequest {
