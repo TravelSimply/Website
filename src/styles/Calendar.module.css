@@ -57,10 +57,22 @@
     background: #fff;
     transition: 0.25s ease-out;
     padding-top: 1rem;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .calendar .body .cell:hover {
     background: hsl(30, 96%, 62.4%);
+}
+
+.calendar .body .cell.inRange {
+    background: hsl(30, 96%, 62.4%);
+}
+
+.calendar .body .cell.inPrevSelectedRange {
+    background: hsl(30, 96%, 45%);
 }
 
 .calendar .body .row {

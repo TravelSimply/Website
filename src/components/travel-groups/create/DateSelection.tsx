@@ -1,6 +1,7 @@
 import { Box, RadioGroup, Radio, FormControl, FormControlLabel, Container, Grid, FormLabel, Typography, Collapse } from "@mui/material";
 import Calendar from "../../calendar/Calendar";
-import {ChangeEvent} from 'react'
+import {ChangeEvent, useMemo} from 'react'
+import dayjs, { Dayjs } from "dayjs";
 
 export interface Props {
     date: {
@@ -16,6 +17,14 @@ export default function DateSelection({date, setDate}:Props) {
 
     const handleCertaintyChange = (e:ChangeEvent<HTMLInputElement>) => {
         setDate({...date, unknown: e.target.value === 'unknown', roughly: e.target.value === 'roughly'})
+    }
+
+    const dateRange = useMemo<[Dayjs, Dayjs]>(() => {
+        return [date.start ? dayjs(date.start) : null, date.end ? dayjs(date.end) : null]
+    }, [date])
+
+    const onDateChange = ([start, end]:[Dayjs, Dayjs]) => {
+        setDate({...date, start: start.format('YYYY-MM-DD'), end: end.format('YYYY-MM-DD')})
     }
 
     return (
@@ -57,7 +66,7 @@ export default function DateSelection({date, setDate}:Props) {
                                                 </Box>
                                                 <Box>
                                                     <Typography color="rgba(0,0,0,0.7)" variant="subtitle1">
-                                                        e.g. Summer 2024
+                                                        e.g. Sometime in Summer 2024
                                                     </Typography>
                                                 </Box>
                                             </label>
@@ -91,10 +100,12 @@ export default function DateSelection({date, setDate}:Props) {
                 </Container>
             </Box>
             <Collapse in={date.roughly}>
-                
+                <Calendar dateRange={dateRange} onDateRangeChange={onDateChange} />
+                {/* earliest start and end */}
             </Collapse>
             <Collapse in={!date.unknown && !date.roughly}>
-                <Calendar />
+                <Calendar dateRange={dateRange} onDateRangeChange={onDateChange} />
+                {/* start and end  */}
             </Collapse>
         </Box>
     )
