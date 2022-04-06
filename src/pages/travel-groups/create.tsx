@@ -9,10 +9,9 @@ import Main from '../../components/travel-groups/create/Main'
 
 interface Props {
     user: ClientUser;
-    travelDates: {start:{'@ts':string};end:{'@ts':string}}[];
 }
 
-export default function CreateTravelGroup({user, travelDates}:Props) {
+export default function CreateTravelGroup({user}:Props) {
 
     return (
         <>
@@ -22,7 +21,7 @@ export default function CreateTravelGroup({user, travelDates}:Props) {
             <div className={styles.root}>
                 <MainHeader user={user} />
                 <div>
-                    <Main user={user} travelDates={travelDates} />
+                    <Main user={user} />
                 </div>
                 <div>
                     footer
@@ -40,10 +39,7 @@ export const getServerSideProps:GetServerSideProps = async (ctx:GetServerSidePro
         return redirect
     }
 
-    const travelDates = (await getUserTravelGroupDates(user.ref.id)).data.map(date => ({start: date[0], end: date[1]}))
-
     return {props: {
         user: JSON.parse(JSON.stringify(user)),
-        travelDates: JSON.parse(JSON.stringify(travelDates))
     }}
 }

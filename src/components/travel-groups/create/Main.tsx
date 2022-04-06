@@ -10,10 +10,9 @@ import DateSelection from "./DateSelection";
 
 interface Props {
     user: ClientUser;
-    travelDates: {start:{'@ts':string};end:{'@ts':string}}[];
 }
 
-export default function Main({user, travelDates}:Props) {
+export default function Main({user}:Props) {
 
     const displayLabels = useMediaQuery('(min-width:450px)')
 
