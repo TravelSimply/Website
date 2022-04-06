@@ -6,7 +6,7 @@ import {object, string} from 'yup'
 import FormObserver from '../../FormObserver'
 import { TravelGroup } from '../../../../database/interfaces'
 import {MenuItem, Autocomplete, TextField} from '@mui/material'
-import { getCountries, getStates } from 'country-state-picker'
+import { getCountries, getStates, getCountry } from 'country-state-picker'
 
 export interface Props {
     vals: TravelGroup['data']['destination'];
@@ -25,7 +25,7 @@ export default function Destination({vals, onSubmit, setFormContext}:Props) {
 
     const [countryCode, setCountryCode] = useState('')
 
-    const states = useMemo(() => getStates(countryCode), [countryCode])
+    const states = useMemo(() => getStates(countryCode) || getStates(getCountry(vals.country)?.code || ''), [countryCode, vals])
 
     return (
         <Box>
@@ -53,7 +53,7 @@ export default function Destination({vals, onSubmit, setFormContext}:Props) {
                         </Box>
                         {values.region !== 'Interregional' && <Box my={3}>
                             <FormGroup>
-                                <Autocomplete renderInput={(params) => (
+                                <Autocomplete value={values.country} renderInput={(params) => (
                                     <TextField {...params} label="Country" error={touched.country && Boolean(errors.country)}
                                     helperText={touched.country && errors.country ? errors.country : ''} />
                                 )} options={countries.map(country => country)} getOptionLabel={(option:any) => option.name || option} 
