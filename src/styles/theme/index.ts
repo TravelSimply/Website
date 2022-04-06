@@ -20,6 +20,7 @@ export default createTheme({
     palette: {
         mode: 'light',
         primary: {
+            light: 'hsl(30, 96%, 62.4%)',
             main: 'hsl(30, 96%, 53%)', // orange,
             dark: 'hsl(30, 96%, 45%)'
         },

@@ -6,6 +6,7 @@ import { OrangePrimaryButton, OrangeSecondaryButton } from "../../mui-customizat
 import GeneralForm from '../../forms/travel-groups/create/General'
 import DestinationForm from '../../forms/travel-groups/create/Destination'
 import CloseIcon from '@mui/icons-material/Close'
+import DateSelection from "./DateSelection";
 
 interface Props {
     user: ClientUser;
@@ -109,6 +110,7 @@ export default function Main({user, travelDates}:Props) {
                                     step === 1 ? <DestinationForm vals={totalInfo.destination as any} 
                                     onSubmit={onSectionSubmit} setFormContext={updateFormContext} /> : ''}
                                 </Container>
+                                {step === 2 && <DateSelection />}
                             </Box>
                             <Box mt={2}>
                                 <Grid container spacing={3} justifyContent="center">
