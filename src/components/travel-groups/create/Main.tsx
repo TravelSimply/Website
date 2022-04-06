@@ -1,10 +1,11 @@
-import { Box, Container, Paper, Step, StepLabel, Stepper, useMediaQuery, Grid } from "@mui/material";
+import { Box, Container, Paper, Step, StepLabel, Stepper, useMediaQuery, Grid, Alert, AlertTitle, Collapse, IconButton } from "@mui/material";
 import { useMemo, useState } from "react";
 import { ClientUser } from "../../../database/interfaces";
 import {FormikContextType, FormikHelpers} from 'formik'
 import { OrangePrimaryButton, OrangeSecondaryButton } from "../../mui-customizations/buttons";
 import GeneralForm from '../../forms/travel-groups/create/General'
 import DestinationForm from '../../forms/travel-groups/create/Destination'
+import CloseIcon from '@mui/icons-material/Close'
 
 interface Props {
     user: ClientUser;
@@ -17,6 +18,7 @@ export default function Main({user, travelDates}:Props) {
 
     const [step, setStep] = useState(0)
     const [formContexts, setFormContexts] = useState<FormikContextType<any>[]>(Array(4).fill(null))
+    const [destAlert, setDestAlert] = useState(true)
 
     const labels = useMemo(() => ['General', 'Destination', 'Date', 'Settings'] ,[])
 
@@ -91,6 +93,17 @@ export default function Main({user, travelDates}:Props) {
                         <Box minHeight="70vh" display="flex" flexDirection="column" justifyContent="space-between">
                             <Box>
                                 <Container maxWidth="sm">
+                                    {step === 1 && destAlert && <Box>
+                                        <Collapse in={destAlert}>
+                                            <Alert severity="info" action={<IconButton onClick={() => setDestAlert(false)}>
+                                                <CloseIcon /> 
+                                            </IconButton>}>
+                                                <AlertTitle>
+                                                    Provide as detailed information about the destination as possible.     
+                                                </AlertTitle> 
+                                            </Alert>
+                                        </Collapse>
+                                   </Box>}
                                     {step === 0 ? <GeneralForm vals={{name: totalInfo.name, desc: totalInfo.desc}}
                                     onSubmit={onSectionSubmit} setFormContext={updateFormContext} /> : 
                                     step === 1 ? <DestinationForm vals={totalInfo.destination as any} 

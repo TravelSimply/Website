@@ -15,7 +15,7 @@ export interface Props {
 }
 
 const possibleRegions = ['Interregional', 'U.S. & Canada', 'Central America', 'South America', 'Europe', 
-    'Asia', 'Africa', 'Oceania', 'Antarctica']
+    'Asia', 'Africa', 'Oceania', 'Antarctica'].sort()
 
 export default function Destination({vals, onSubmit, setFormContext}:Props) {
 
@@ -59,13 +59,16 @@ export default function Destination({vals, onSubmit, setFormContext}:Props) {
                                 )} options={countries.map(country => country)} getOptionLabel={(option:any) => option.name || option} 
                                 onChange={(e, value) => {
                                     setFieldValue('country', value?.name || '')
+                                    setFieldValue('state', '')
+                                    setFieldValue('city', '')
+                                    setFieldValue('address', '')
                                     setCountryCode(value?.code || '')
                                 }} />
                             </FormGroup>
                         </Box>}
                         {values.country && <Box my={3}>
                             <FormGroup>
-                                <Autocomplete renderInput={(params) => (
+                                <Autocomplete value={values.state} renderInput={(params) => (
                                     <TextField {...params} label="State/Province" error={touched.state && Boolean(errors.state)}
                                     helperText={touched.state && errors.state ? errors.state : ''} />
                                 )} options={states} onChange={(e, value) => setFieldValue('state', value || '')} />
@@ -73,12 +76,12 @@ export default function Destination({vals, onSubmit, setFormContext}:Props) {
                        </Box>}
                         {values.state && <Box my={3}>
                             <FormGroup>
-                                <FormikTextField name="city" label="City" />
+                                <FormikTextField name="city" label="City" value={values.city} />
                             </FormGroup>
                         </Box>}
                         {values.city && <Box my={3}>
                             <FormGroup>
-                                <FormikTextField name="address" label="Address" />
+                                <FormikTextField name="address" label="Address" value={values.address} />
                             </FormGroup> 
                         </Box>}
                     </Form>
