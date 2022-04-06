@@ -53,7 +53,9 @@ export default function Main({user, travelDates}:Props) {
     }
 
     const onSectionSubmit = (values, actions:FormikHelpers<any>) => {
-        updateTotalInfo(values)
+        if (step !== 3) {
+            updateTotalInfo(values)
+        }
         if (step < 3) {
             setStep(step + 1)
         }
@@ -71,7 +73,9 @@ export default function Main({user, travelDates}:Props) {
     }
 
     const back = () => {
-        updateTotalInfo(formContexts[step].values)
+        if (step !== 2) {
+            updateTotalInfo(formContexts[step].values)
+        }
         setStep(step - 1)
     }
 
