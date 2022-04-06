@@ -129,8 +129,10 @@ export interface TravelGroup {
             address?: string;
         };
         date: {
-            start: Date;
-            end: Date;
+            unknown: boolean;
+            roughly: boolean;
+            start: Expr; // Time
+            end: Expr; // Time
         };
         settings: {
             mode: 'public' | 'private';
