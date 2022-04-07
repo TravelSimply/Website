@@ -48,7 +48,10 @@ export default function Main({user}:Props) {
 
     const updateTotalInfo = (values) => {
         if (step === 1) {
-            setTotalInfo({...totalInfo, destination: values})
+            setTotalInfo({...totalInfo, destination: {
+                ...values,
+                combo: [values.region, values.country, values.state, values.city, values.address].join('$$')
+            }})
         } else {
             setTotalInfo({...totalInfo, ...values})
         }
