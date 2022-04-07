@@ -25,7 +25,7 @@ export default function Destination({vals, onSubmit, setFormContext}:Props) {
 
     const [countryCode, setCountryCode] = useState('')
 
-    const states = useMemo(() => getStates(countryCode) || getStates(getCountry(vals.country)?.code || ''), [countryCode, vals])
+    const states = useMemo(() => getStates(countryCode) || getStates(getCountry(vals.country)?.code || '') || [], [countryCode, vals])
 
     return (
         <Box>
@@ -56,14 +56,14 @@ export default function Destination({vals, onSubmit, setFormContext}:Props) {
                                 <Autocomplete value={values.country} renderInput={(params) => (
                                     <TextField {...params} label="Country" error={touched.country && Boolean(errors.country)}
                                     helperText={touched.country && errors.country ? errors.country : ''} />
-                                )} options={countries.map(country => country)} getOptionLabel={(option:any) => option.name || option} 
+                                )} options={[...countries, ""]} getOptionLabel={(option:any) => option.name || option} 
                                 onChange={(e, value) => {
                                     setFieldValue('country', value?.name || '')
                                     setFieldValue('state', '')
                                     setFieldValue('city', '')
                                     setFieldValue('address', '')
                                     setCountryCode(value?.code || '')
-                                }} />
+                                }} isOptionEqualToValue={(option, value) => option?.name === value || option === value} />
                             </FormGroup>
                         </Box>}
                         {values.country && <Box my={3}>
@@ -71,7 +71,7 @@ export default function Destination({vals, onSubmit, setFormContext}:Props) {
                                 <Autocomplete value={values.state} renderInput={(params) => (
                                     <TextField {...params} label="State/Province" error={touched.state && Boolean(errors.state)}
                                     helperText={touched.state && errors.state ? errors.state : ''} />
-                                )} options={states} onChange={(e, value) => setFieldValue('state', value || '')} />
+                                )} options={[...states, ""]} onChange={(e, value) => setFieldValue('state', value || '')} />
                             </FormGroup>
                        </Box>}
                         {values.state && <Box my={3}>
