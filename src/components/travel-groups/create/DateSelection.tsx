@@ -1,4 +1,4 @@
-import { Box, RadioGroup, Radio, FormControl, FormControlLabel, Container, Grid, FormLabel, Typography, Collapse } from "@mui/material";
+import { Box, RadioGroup, Radio, FormControl, FormControlLabel, Container, Grid, FormLabel, Typography, Collapse, TextField, Select, MenuItem, SelectChangeEvent } from "@mui/material";
 import Calendar from "../../calendar/Calendar";
 import {ChangeEvent, useMemo} from 'react'
 import dayjs, { Dayjs } from "dayjs";
@@ -9,6 +9,7 @@ export interface Props {
         roughly: boolean;
         start: string;
         end: string;
+        estLength: [number, string];
     };
     setDate: (date:Props['date']) => void;
 }
@@ -23,8 +24,29 @@ export default function DateSelection({date, setDate}:Props) {
         return [date.start ? dayjs(date.start) : null, date.end ? dayjs(date.end) : null]
     }, [date])
 
-    const onDateChange = ([start, end]:[Dayjs, Dayjs]) => {
+    const onDateRangeChange = ([start, end]:[Dayjs, Dayjs]) => {
         setDate({...date, start: start.format('YYYY-MM-DD'), end: end.format('YYYY-MM-DD')})
+    }
+
+    const handleDateInputChange = (type:string, e:ChangeEvent<HTMLInputElement>) => {
+        if (type === 'start') {
+            setDate({...date, start: e.target.value})
+        } else {
+            setDate({...date, end: e.target.value})
+        }
+    }
+
+    const estLengthMagnitudes = ["days", "weeks", "months"]
+
+    const handleTripLenNumChange = (e:ChangeEvent<HTMLInputElement>) => {
+        if (!parseInt(e.target.value) || parseInt(e.target.value) < 1) {
+            return
+        } 
+        setDate({...date, estLength: [parseInt(e.target.value), date.estLength[1]]})
+    }
+
+    const handleTripLenMagChange = (e:SelectChangeEvent) => {
+        setDate({...date, estLength: [date.estLength[0], e.target.value]})
     }
 
     return (
@@ -99,14 +121,75 @@ export default function DateSelection({date, setDate}:Props) {
                     </Box>
                 </Container>
             </Box>
-            <Collapse in={date.roughly}>
-                <Calendar dateRange={dateRange} onDateRangeChange={onDateChange} />
-                {/* earliest start and end */}
+            <Collapse in={date.unknown || date.roughly}>
+                <Container maxWidth="sm">
+                    <Box mt={8}>
+                        <Box mb={2}>
+                            <Typography variant="h6">
+                                Estimated trip length
+                            </Typography>
+                        </Box>
+                        <Box>
+                            <Grid container spacing={3} alignItems="center">
+                                <Grid item>
+                                    About
+                                </Grid>
+                                <Grid item>
+                                    <Box width={90}>
+                                        <TextField type="number" value={date.estLength[0]}
+                                        onChange={(e) => handleTripLenNumChange(e as ChangeEvent<HTMLInputElement>)} />
+                                    </Box>
+                                </Grid>
+                                <Grid item>
+                                    <Select value={date.estLength[1]}
+                                    onChange={(e) => handleTripLenMagChange(e)} >
+                                        {estLengthMagnitudes.map(mag => (
+                                            <MenuItem value={mag} key={mag}>
+                                                {mag}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </Grid>
+                            </Grid>
+                        </Box>
+                    </Box>
+                </Container>
             </Collapse>
-            <Collapse in={!date.unknown && !date.roughly}>
-                <Calendar dateRange={dateRange} onDateRangeChange={onDateChange} />
-                {/* start and end  */}
+            <Collapse in={!date.unknown}>
+                <Container maxWidth="sm">
+                    <Box mt={8}>
+                        <Typography variant="h6">
+                            {date.roughly ? 'Select the earliest start and end dates for the trip below.' :
+                            'Select the start and end dates for the trip below.'}
+                        </Typography>
+                    </Box>
+                </Container>
+                <Calendar dateRange={dateRange} onDateRangeChange={onDateRangeChange} />
             </Collapse>
+            {!date.unknown && <Box mt={3} mb={8}>
+                <Grid container spacing={3} alignItems="center" justifyContent="center">
+                    {date.roughly && <Grid item>
+                        <Typography variant="body1">
+                            Between
+                        </Typography>
+                    </Grid>}
+                    <Grid item>
+                        <TextField type="date" InputLabelProps={{shrink: true}}
+                         label={date.roughly ? 'Earliest Start' : 'Start'} value={date.start}
+                         onChange={(e) => handleDateInputChange("start", e as ChangeEvent<HTMLInputElement>)} />
+                    </Grid>
+                    <Grid item>
+                        <Typography variant="body1">
+                            {date.roughly ? 'and' : 'to'}
+                        </Typography>
+                    </Grid>
+                    <Grid item>
+                        <TextField type="date" InputLabelProps={{shrink: true}}
+                         label={date.roughly ? 'Latest End' : 'End'} value={date.end}
+                         onChange={(e) => handleDateInputChange("end", e as ChangeEvent<HTMLInputElement>)} />
+                    </Grid>
+                </Grid>
+            </Box>}
         </Box>
     )
 }

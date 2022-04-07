@@ -36,7 +36,8 @@ export default function Main({user}:Props) {
             unknown: true,
             roughly: false,
             start: '',
-            end: ''
+            end: '',
+            estLength: [7, 'days'] as [number, string]
         },
         settings: {
             mode: 'public',

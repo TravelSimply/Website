@@ -132,6 +132,7 @@ export interface TravelGroup {
         date: {
             unknown: boolean;
             roughly: boolean;
+            estLength: [number, string];
             start: Expr; // Time
             end: Expr; // Time
         };
