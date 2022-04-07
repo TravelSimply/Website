@@ -38,7 +38,8 @@ export default createTheme({
             light: 'hsl(30, 98%, 95%)'
         },
         text: {
-            primary: '#000'
+            primary: '#000',
+            secondary: 'rgba(0,0,0,0.7)'
         },
         error: {
             main: 'hsl(5, 95%, 50%)'

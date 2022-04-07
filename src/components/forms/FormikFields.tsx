@@ -1,6 +1,7 @@
 import {useState} from 'react'
 import {useField, Field, Form} from 'formik'
-import {TextField, InputAdornment, IconButton, Select, FormControl, InputLabel, FormHelperText, Autocomplete} from '@mui/material'
+import {TextField, InputAdornment, IconButton, Select, FormControl, InputLabel, FormHelperText, Autocomplete, 
+Grid, Radio, Box, Typography} from '@mui/material'
 import VisibilityIcon from '@mui/icons-material/VisibilityOutlined'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOffOutlined'
 import styles from '../../styles/Forms.module.css'
@@ -67,5 +68,37 @@ export const FormikPasswordField = (props) => {
                 {visible ? <VisibilityIcon /> : <VisibilityOffIcon />}
             </IconButton>
         </InputAdornment>}} InputLabelProps={inputLabelProps} FormHelperTextProps={formHelperTextProps} />
+    )
+}
+
+interface RadioWithDescProps {
+    value: string;
+    selectedValue: string;
+    primaryText: string;
+    secondaryText: string;
+}
+
+export function RadioWithDesc({value, selectedValue, primaryText, secondaryText}:RadioWithDescProps) {
+
+    return (
+        <Grid container wrap="nowrap" alignItems="center">
+            <Grid item>
+                <Radio id={secondaryText + value} value={value} />
+            </Grid>
+            <Grid item>
+                <label htmlFor={secondaryText + value}>
+                    <Box>
+                        <Typography variant={selectedValue === value ? 'h6' : 'body1'}>
+                            {primaryText}
+                        </Typography>
+                    </Box>
+                    {selectedValue === value && <Box>
+                        <Typography color="rgba(0,0,0,0.7)" variant="body2">
+                            {secondaryText}
+                        </Typography>
+                    </Box>}
+                </label>
+            </Grid>
+        </Grid>
     )
 }

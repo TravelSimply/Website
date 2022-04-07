@@ -5,6 +5,7 @@ import {FormikContextType, FormikHelpers} from 'formik'
 import { OrangePrimaryButton, OrangeSecondaryButton } from "../../mui-customizations/buttons";
 import GeneralForm from '../../forms/travel-groups/create/General'
 import DestinationForm from '../../forms/travel-groups/create/Destination'
+import SettingsForm from '../../forms/travel-groups/create/Settings'
 import CloseIcon from '@mui/icons-material/Close'
 import DateSelection, {Props as DateProps} from "./DateSelection";
 
@@ -19,6 +20,7 @@ export default function Main({user}:Props) {
     const [step, setStep] = useState(0)
     const [formContexts, setFormContexts] = useState<FormikContextType<any>[]>(Array(4).fill(null))
     const [destAlert, setDestAlert] = useState(true)
+    const [creatingGroup, setCreatingGroup] = useState(false)
 
     const labels = useMemo(() => ['General', 'Destination', 'Date', 'Settings'] ,[])
 
@@ -58,11 +60,9 @@ export default function Main({user}:Props) {
     }
 
     const onSectionSubmit = (values, actions:FormikHelpers<any>) => {
-        if (step !== 3) {
-            updateTotalInfo(values)
-        }
+        updateTotalInfo(values)
         if (step < 3) {
-            setStep(step + 1)
+            return setStep(step + 1)
         }
     }
 
@@ -73,6 +73,9 @@ export default function Main({user}:Props) {
     }
 
     const next = async () => {
+        if (step === 2) {
+            return setStep(step + 1)
+        }
         formContexts[step].setSubmitting(true)
         await formContexts[step].submitForm()
     }
@@ -86,6 +89,17 @@ export default function Main({user}:Props) {
 
     const setDate = (date:DateProps['date']) => {
         setTotalInfo({...totalInfo, date})
+    }
+
+    const createGroup = async () => {
+        await next()
+        setCreatingGroup(true)
+
+        try {
+            
+        } catch (e) {
+            setCreatingGroup(false)
+        }
     }
 
     return (
@@ -121,7 +135,9 @@ export default function Main({user}:Props) {
                                     {step === 0 ? <GeneralForm vals={{name: totalInfo.name, desc: totalInfo.desc}}
                                     onSubmit={onSectionSubmit} setFormContext={updateFormContext} /> : 
                                     step === 1 ? <DestinationForm vals={totalInfo.destination as any} 
-                                    onSubmit={onSectionSubmit} setFormContext={updateFormContext} /> : ''}
+                                    onSubmit={onSectionSubmit} setFormContext={updateFormContext} /> : 
+                                    step === 3 ? <SettingsForm vals={totalInfo.settings} onSubmit={onSectionSubmit}
+                                    setFormContext={updateFormContext} /> : ''}
                                 </Container>
                                 {step === 2 && <DateSelection date={totalInfo.date} setDate={setDate} />}
                             </Box>
@@ -136,7 +152,8 @@ export default function Main({user}:Props) {
                                         {step < 3 ? <OrangePrimaryButton onClick={() => next()}
                                         disabled={formContexts[step]?.isSubmitting} sx={{minWidth: 150}}>
                                             Next
-                                        </OrangePrimaryButton> : <OrangePrimaryButton sx={{minWidth: 150}}>
+                                        </OrangePrimaryButton> : <OrangePrimaryButton onClick={() => createGroup()}
+                                        disabled={formContexts[step]?.isSubmitting} sx={{minWidth: 150}}>
                                             Finish     
                                         </OrangePrimaryButton>}
                                     </Grid>
