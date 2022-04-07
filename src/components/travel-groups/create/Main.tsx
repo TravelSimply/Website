@@ -8,6 +8,9 @@ import DestinationForm from '../../forms/travel-groups/create/Destination'
 import SettingsForm from '../../forms/travel-groups/create/Settings'
 import CloseIcon from '@mui/icons-material/Close'
 import DateSelection, {Props as DateProps} from "./DateSelection";
+import Router from 'next/router'
+import axios from "axios";
+import Snackbar from '../../misc/snackbars'
 
 interface Props {
     user: ClientUser;
@@ -21,6 +24,7 @@ export default function Main({user}:Props) {
     const [formContexts, setFormContexts] = useState<FormikContextType<any>[]>(Array(4).fill(null))
     const [destAlert, setDestAlert] = useState(true)
     const [creatingGroup, setCreatingGroup] = useState(false)
+    const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
 
     const labels = useMemo(() => ['General', 'Destination', 'Date', 'Settings'] ,[])
 
@@ -54,6 +58,8 @@ export default function Main({user}:Props) {
                 ...values,
                 combo: [values.region, values.country, values.state, values.city, values.address].join('$$')
             }})
+        } else if (step === 3) {
+            setTotalInfo({...totalInfo, settings: values})
         } else {
             setTotalInfo({...totalInfo, ...values})
         }
@@ -96,8 +102,16 @@ export default function Main({user}:Props) {
         setCreatingGroup(true)
 
         try {
-            
+
+            const {data: {id}} = await axios({
+                method: 'POST',
+                url: '/api/travel-groups/create',
+                data: {data: totalInfo}
+            })
+
+            Router.push({pathname: `/travel-groups/${id}`})
         } catch (e) {
+            setSnackbarMsg({type: 'error', content: 'Failed to create Travel Group'})
             setCreatingGroup(false)
         }
     }
@@ -153,7 +167,7 @@ export default function Main({user}:Props) {
                                         disabled={formContexts[step]?.isSubmitting} sx={{minWidth: 150}}>
                                             Next
                                         </OrangePrimaryButton> : <OrangePrimaryButton onClick={() => createGroup()}
-                                        disabled={formContexts[step]?.isSubmitting} sx={{minWidth: 150}}>
+                                        disabled={formContexts[step]?.isSubmitting || creatingGroup} sx={{minWidth: 150}}>
                                             Finish     
                                         </OrangePrimaryButton>}
                                     </Grid>
@@ -163,6 +177,7 @@ export default function Main({user}:Props) {
                     </Box>
                 </Paper>
             </Container>
+            <Snackbar msg={snackbarMsg} setMsg={setSnackbarMsg} />
         </Box>
     )
 }
