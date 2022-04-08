@@ -17,7 +17,6 @@ interface UserData {
         publicId?: string;
     };
     friends?: string[];
-    status?: any[]; // update later
     oAuthIdentifier?: {
         google?: string;
     }
@@ -38,6 +37,19 @@ interface FilteredUserData extends Omit<UserData, 'password'> {
 
 export interface ClientFilteredUser extends Omit<ClientUser, 'data'> {
     data: FilteredUserData;
+}
+
+interface YearStatus {
+    unavailable: number[];
+    available: number[];
+}
+
+export interface Status {
+    ref: Ref;
+    data: {
+        dates: Map<string, YearStatus>;
+        userId: string;
+    };
 }
 
 export interface FriendRequest {
@@ -101,4 +113,46 @@ export interface PasswordResetToken {
         email: string;
         userId: string;
     }
+}
+
+export interface TravelGroupData {
+    owner: string;
+    members: string[];
+    name: string;
+    desc: string;
+    destination: {
+        combo: string;
+        region: 'Interregional' | 'U.S. & Canada' | 'Central America' | 'South America' | 'Europe' | 'Asia' | 'Africa' | 'Oceania' | 'Antarctica',
+        country?: string;
+        state?: string;
+        city?: string;
+        address?: string;
+    };
+    date: {
+        unknown: boolean;
+        roughly: boolean;
+        estLength: [number, string];
+        start: Expr; // Time
+        end: Expr; // Time
+    };
+    settings: {
+        mode: 'public' | 'private';
+        invitePriveleges: 'ownerOnly' | 'anyMember';
+        joinRequestPriveleges: 'ownerOnly' | 'anyMember';
+    }
+}
+
+export interface ClientTravelGroupData extends Omit<TravelGroupData, 'date'> {
+    date: {
+        unknown: boolean;
+        roughly: boolean;
+        estLength: [number, string];
+        start: string;
+        end: string;
+    }
+}
+
+export interface TravelGroup {
+    ref: Ref;
+    data: TravelGroupData;
 }

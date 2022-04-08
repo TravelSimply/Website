@@ -1,0 +1,106 @@
+.row {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.rowMiddle {
+    align-items: center;
+}
+
+.column {
+    flex-grow: 1;
+    flex-basis: 0;
+    max-width: 100%;
+}
+
+.colCenter {
+    display: grid;
+    place-items: center;
+}
+
+.colStart {
+    text-align: start;
+}
+
+.colEnd {
+    text-align: end;
+}
+
+.calendar {
+    display: block;
+    position: relative;
+    height: auto;
+    margin:0 auto;
+}
+
+.calendar .header {
+    padding: 1.5em 0;
+    border-bottom: 1px solid lightgray;
+}
+
+.calendar .days {
+    color: rgba(0, 0, 0, .7);
+    padding: .75em 0;
+    border-bottom: 1px solid rgba(0, 0, 0, .2);
+}
+
+.calendar .body .cell {
+    position: relative;
+    height: 6em;
+    border-right: 1px solid rgba(0, 0, 0, .2);
+    overflow: hidden;
+    cursor: pointer;
+    background: #fff;
+    transition: 0.25s ease-out;
+    padding-top: 1rem;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.calendar .body .cell:hover {
+    background: hsl(30, 96%, 62.4%);
+}
+
+.calendar .body .cell.inRange {
+    background: hsl(30, 96%, 62.4%);
+}
+
+.calendar .body .cell.inPrevSelectedRange {
+    background: hsl(30, 96%, 45%);
+}
+
+.calendar .body .row {
+    border-bottom: 1px solid lightgray;
+}
+
+.calendar .body .row:last-child {
+    border-bottom: none;
+}
+
+.calendar .body .cell:last-child {
+    border-right: none;
+}
+
+.calendar .body .cell .number {
+    position: absolute;
+    font-size: 82.5%;
+    line-height: 1;
+    top: .75em;
+    right: .75em;
+}
+
+.calendar .body .disabled {
+    pointer-events: none;
+}
+
+.calendar .body .column {
+    flex-grow: 0;
+    flex-basis: calc(100%/7);
+    width: calc(100%/7);
+}

@@ -21,6 +21,7 @@
     "axios": "^0.26.1",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.29.0",
+    "country-state-picker": "^1.1.5",
     "dayjs": "^1.11.0",
     "faunadb": "^4.5.2",
     "formidable": "^1.2.2",
