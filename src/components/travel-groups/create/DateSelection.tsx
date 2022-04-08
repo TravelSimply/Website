@@ -164,10 +164,13 @@ export default function DateSelection({date, setDate}:Props) {
                         </Typography>
                     </Box>
                 </Container>
-                <Calendar dateRange={dateRange} onDateRangeChange={onDateRangeChange} />
+                <Box sx={{display: {xs: 'none', sm: 'block'}}}>
+                    <Calendar dateRange={dateRange} onDateRangeChange={onDateRangeChange} />
+                </Box>
             </Collapse>
             {!date.unknown && <Box mt={3} mb={8}>
-                <Grid container spacing={3} alignItems="center" justifyContent="center">
+                <Grid container spacing={3} alignItems="center" justifyContent="center"
+                sx={{flexDirection: {xs: 'column', sm: 'row'}}} wrap="nowrap">
                     {date.roughly && <Grid item>
                         <Typography variant="body1">
                             Between
