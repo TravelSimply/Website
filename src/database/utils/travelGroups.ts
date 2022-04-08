@@ -11,8 +11,6 @@ export async function getUserTravelGroupDates(userId:string):Promise<{data: [str
 
 export async function createTravelGroup(data:ClientTravelGroupData):Promise<TravelGroup> {
 
-    console.log('data', data)
-
     const dbData = {...data, date: {
         ...data.date,
         start: q.Date(data.date.start),

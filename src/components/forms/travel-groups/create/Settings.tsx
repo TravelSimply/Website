@@ -50,7 +50,7 @@ export default function Settings({vals, onSubmit, setFormContext}:Props) {
                         <Box my={5}>
                             <FormGroup>
                                 <FormControl>
-                                    <Typography variant="body1" color="text.secondary">Invite Priveleges</Typography>
+                                    <Typography variant="body1" color="text.secondary">Invite Privileges</Typography>
                                     <RadioGroup value={values.invitePriveleges}
                                      onChange={(e) => setFieldValue('invitePriveleges', e.target.value)}>
                                          <Box my={1}>
@@ -68,7 +68,7 @@ export default function Settings({vals, onSubmit, setFormContext}:Props) {
                         <Box my={5}>
                             <FormGroup>
                                 <FormControl>
-                                    <Typography variant="body1" color="text.secondary">Join Request Priveleges</Typography>
+                                    <Typography variant="body1" color="text.secondary">Join Request Privileges</Typography>
                                     <RadioGroup value={values.joinRequestPriveleges}
                                     onChange={(e) => setFieldValue('joinRequestPriveleges', e.target.value)}>
                                         <Box my={1}>

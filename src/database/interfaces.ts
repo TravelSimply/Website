@@ -41,6 +41,7 @@ export interface ClientFilteredUser extends Omit<ClientUser, 'data'> {
 
 interface YearStatus {
     unavailable: number[];
+    available: number[];
 }
 
 export interface Status {
