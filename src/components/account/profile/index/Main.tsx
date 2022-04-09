@@ -1,6 +1,6 @@
 import { Avatar, Box, Container, Grid, Paper, Typography, IconButton, Badge, CircularProgress, Divider } from '@mui/material';
-import React, {useState, useRef, ChangeEvent} from 'react'
-import { ClientUser } from '../../../../database/interfaces';
+import React, {useState, useRef, ChangeEvent, useMemo} from 'react'
+import { ClientPopulatedAvailability, ClientUser } from '../../../../database/interfaces';
 import FullProfileForm, {Props as FullProfileFormProps} from '../../../forms/FullProfile'
 import {FormikHelpers} from 'formik'
 import CreateIcon from '@mui/icons-material/Create';
@@ -12,18 +12,26 @@ import { uploadImage } from '../../../../utils/images';
 import Calendar from '../../../calendar/Calendar';
 import dayjs from 'dayjs';
 import SmallCalendar from '../../../calendar/SmallCalendar';
+import Link from 'next/link'
 
 interface Props {
     user: ClientUser;
+    availability: ClientPopulatedAvailability;
 }
 
-export default function Main({user}:Props) {
+export default function Main({user, availability}:Props) {
 
     const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
 
     const [uploadingImage, setUploadingImage] = useState(false)
     const [imgSrc, setImgSrc] = useState(user.data.image?.src)
     const imageInputRef = useRef<HTMLInputElement>()
+
+    const availabilityMessage = useMemo(() => {
+        if (!availability) {
+            return 'Your availability for the next week is unknown.'
+        }
+    }, [availability])
 
     const onProfileFormSubmit = async (vals:FullProfileFormProps['vals'], actions:FormikHelpers<FullProfileFormProps['vals']>) => {
 
@@ -132,14 +140,18 @@ export default function Main({user}:Props) {
                                             </Box>
                                             <Box textAlign="center">
                                                 <Typography variant="body1">
-                                                    Your availability for the next week is unknown.     
+                                                    {availabilityMessage}
                                                 </Typography> 
                                             </Box>
                                         </Box>
                                         <Box mt={3} textAlign="center">
-                                            <OrangePrimaryButton>
-                                                Update Availability
-                                            </OrangePrimaryButton>
+                                            <Link href="/profile/availability">
+                                                <a>
+                                                    <OrangePrimaryButton>
+                                                        Update Availability
+                                                    </OrangePrimaryButton>
+                                                </a>
+                                            </Link>
                                         </Box>
                                     </Grid>
                                 </Grid>

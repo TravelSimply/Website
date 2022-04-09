@@ -22,7 +22,7 @@ export default function Profile({user, availability}:Props) {
             <div className={styles.root}>
                 <MainHeader user={user} />
                 <div className={styles.main}>
-                    <Main user={user} />
+                    <Main user={user} availability={availability} />
                 </div>
                 <div>
                     footer
