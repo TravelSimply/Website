@@ -67,6 +67,18 @@
     background: hsl(30, 96%, 62.4%);
 }
 
+.calendar .body .cell.displayOnly {
+    cursor: grab;
+}
+
+.calendar .body .cell.small {
+    height: 3.5em !important;
+}
+
+.calendar .body .cell.displayOnly:hover {
+    background: #fff !important;
+}
+
 .calendar .body .cell.inRange {
     background: hsl(30, 96%, 62.4%);
 }
