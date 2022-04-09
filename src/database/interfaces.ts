@@ -44,7 +44,7 @@ interface YearStatus {
     available: number[];
 }
 
-export interface Status {
+export interface Availability {
     ref: Ref;
     data: {
         dates: Map<string, YearStatus>;
