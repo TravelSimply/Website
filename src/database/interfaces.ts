@@ -44,12 +44,31 @@ interface YearStatus {
     available: number[];
 }
 
+interface PopulatedYearStatus extends YearStatus {
+    travelling: number[];
+}
+
 export interface Availability {
     ref: Ref;
     data: {
         dates: Map<string, YearStatus>;
         userId: string;
     };
+}
+
+export interface PopulatedAvailability extends Omit<Availability, 'data'> {
+    data: {
+        dates: Map<string, PopulatedYearStatus>;
+        userId: string;
+    } 
+}
+
+export interface ClientAvailability extends Omit<Availability, 'ref'> {
+    ref: {'@ref': string};
+}
+
+export interface ClientPopulatedAvailability extends Omit<ClientAvailability, 'data'> {
+    data: PopulatedAvailability['data'];
 }
 
 export interface FriendRequest {
