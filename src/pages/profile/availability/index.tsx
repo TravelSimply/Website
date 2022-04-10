@@ -5,6 +5,7 @@ import { getAuthUser } from "../../../utils/auth";
 import Head from 'next/head'
 import styles from '../../../styles/pages/HeaderFooter.module.css'
 import MainHeader from "../../../components/nav/MainHeader";
+import Main from '../../../components/account/profile/availability/index/Main'
 
 interface Props {
     user: ClientUser;
@@ -24,7 +25,7 @@ export default function Availability({user, availability}:Props) {
             <div className={styles.root}>
                 <MainHeader user={user} />
                 <div>
-                    main section
+                    <Main availability={availability} />
                 </div>
                 <div>
                     footer
