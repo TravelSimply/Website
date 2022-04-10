@@ -39,36 +39,32 @@ export interface ClientFilteredUser extends Omit<ClientUser, 'data'> {
     data: FilteredUserData;
 }
 
-interface YearStatus {
-    unavailable: number[];
-    available: number[];
-}
 
-interface PopulatedYearStatus extends YearStatus {
-    travelling: number[];
+// formatted 'MMDD'
+// e.g. January 2nd would be '0102'
+interface YearStatus {
+    unavailable: string[];
+    available: string[];
+    travelling?: string[];
 }
 
 export interface Availability {
     ref: Ref;
     data: {
-        dates: Map<string, YearStatus>;
+        dates: {
+            [key:string]: YearStatus;
+        };
         userId: string;
     };
-}
-
-export interface PopulatedAvailability extends Omit<Availability, 'data'> {
-    data: {
-        dates: Map<string, PopulatedYearStatus>;
-        userId: string;
-    } 
 }
 
 export interface ClientAvailability extends Omit<Availability, 'ref'> {
     ref: {'@ref': string};
 }
 
+// basically the same as Availability
 export interface ClientPopulatedAvailability extends Omit<ClientAvailability, 'data'> {
-    data: PopulatedAvailability['data'];
+    data: Availability['data'];
 }
 
 export interface FriendRequest {
