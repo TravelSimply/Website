@@ -1,5 +1,6 @@
 import dayjs, {Dayjs} from "dayjs";
 import { useState } from "react";
+import { ClientPopulatedAvailability } from "../../database/interfaces";
 import styles from '../../styles/Calendar.module.css'
 import Cells from "./Cells";
 import Header from './Header'
@@ -8,9 +9,10 @@ import WeekDays from "./WeekDays";
 interface Props {
     dateRange: [Dayjs, Dayjs];
     onDateRangeChange: (dateRange:[Dayjs, Dayjs]) => void;
+    availability: ClientPopulatedAvailability;
 }
 
-export default function Calendar({dateRange, onDateRangeChange}:Props) {
+export default function Calendar({dateRange, onDateRangeChange, availability}:Props) {
 
     const [currentDate, setCurrentDate] = useState(dayjs())
 
@@ -75,7 +77,7 @@ export default function Calendar({dateRange, onDateRangeChange}:Props) {
             <Header currentDate={currentDate} setCurrentDate={setCurrentDate} />
             <WeekDays />
             <Cells dateRange={dateRange} tempRange={tempRange} onMouseDown={onMouseDown} onMouseMove={onMouseMove}
-            onMouseUp={onMouseUp} currentDate={currentDate} />
+            onMouseUp={onMouseUp} currentDate={currentDate} availability={availability} />
         </div>
     )
 }
