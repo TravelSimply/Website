@@ -150,9 +150,12 @@ export default function Main({availability:dbAvailability}:Props) {
                                                             border="1px solid rgba(0,0,0,0.5)" />
                                                         </Grid> 
                                                         <Grid item>
-                                                            <Typography variant="body1">
-                                                                {item.value}
-                                                            </Typography>
+                                                            <Box sx={{'&:hover': {cursor: item.value !== 'Traveling' ? 'Pointer' : 'auto'}}}
+                                                            onClick={() => item.value !== 'Traveling' && setUpdating(item.value.toLowerCase())}>
+                                                                <Typography variant="body1">
+                                                                    {item.value}
+                                                                </Typography>
+                                                            </Box>
                                                         </Grid>
                                                     </Grid>
                                                 </Box>
@@ -171,14 +174,14 @@ export default function Main({availability:dbAvailability}:Props) {
                             <Box>
                                 <Grid container spacing={3}>
                                     <Grid item>
-                                        <OrangePrimaryButton>
+                                        <OrangeSecondaryButton>
                                             All Weekends to Available
-                                        </OrangePrimaryButton>
+                                        </OrangeSecondaryButton>
                                     </Grid>
                                     <Grid item>
-                                        <OrangePrimaryButton>
+                                        <OrangeSecondaryButton>
                                             All Weekdays to Unavailable
-                                        </OrangePrimaryButton>
+                                        </OrangeSecondaryButton>
                                     </Grid>
                                 </Grid>
                             </Box>
