@@ -3,7 +3,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { useCallback, useMemo, useState } from "react";
 import { ClientPopulatedAvailability } from "../../../../../database/interfaces";
 import Calendar from "../../../../calendar/Calendar";
-import { OrangePrimaryButton, OrangeSecondaryButton } from "../../../../mui-customizations/buttons";
+import { OrangeDensePrimaryButton, OrangeDenseSecondaryButton, OrangePrimaryButton, OrangeSecondaryButton } from "../../../../mui-customizations/buttons";
 
 interface Props {
     availability: ClientPopulatedAvailability;
@@ -80,7 +80,7 @@ export default function Main({availability:dbAvailability}:Props) {
     }
 
     const legend = useMemo(() => {
-        return [{color: '#fff', value: 'Unknown'}, {color: 'rgba(0,0,0,0.3)', value: 'Unavailable'},
+        return [{color: '#fff', value: 'Unknown'}, {color: 'rgba(0,0,0,0.4)', value: 'Unavailable'},
         {color: 'hsl(209, 93%, 92%)', value: 'Available'}, {color: 'hsl(30, 96%, 62.4%)', value: 'Traveling'}]
     }, [])
 
@@ -90,45 +90,43 @@ export default function Main({availability:dbAvailability}:Props) {
                 <Paper>
                     <Box p={1}>
                         <Box my={1}>
-                            <Grid container spacing={3} >
+                            <Grid container spacing={3} alignItems="center" >
                                 <Grid item>
-                                    <Box mt={1.75}>
+                                    <Box>
                                         <Typography variant="h6">
                                             Updating days I'm
                                         </Typography>
                                     </Box>
                                 </Grid>
                                 <Grid item>
-                                    <Box mb={3}>
-                                        <ButtonGroup>
-                                            {updating === 'unknown' ? <OrangePrimaryButton>
-                                                Unknown
-                                            </OrangePrimaryButton> : <OrangeSecondaryButton 
-                                            onClick={() => setUpdating('unknown')}>
-                                                Unknown     
-                                            </OrangeSecondaryButton>}
-                                            {updating === 'available' ? <OrangePrimaryButton>
-                                                Available 
-                                            </OrangePrimaryButton> : <OrangeSecondaryButton
-                                            onClick={() => setUpdating('available')}>
-                                                Available 
-                                            </OrangeSecondaryButton>}
-                                            {updating === 'unavailable' ? <OrangePrimaryButton>
-                                                Unavailable 
-                                            </OrangePrimaryButton> : <OrangeSecondaryButton
-                                            onClick={() => setUpdating('unavailable')}>
-                                                Unavailable 
-                                            </OrangeSecondaryButton>}
-                                        </ButtonGroup>
-                                    </Box>
-                                    <Box>
-                                        {changesMade ? <OrangePrimaryButton>
-                                            Save Changes
-                                        </OrangePrimaryButton> :
-                                        <OrangeSecondaryButton disabled>
-                                            Save Changes
-                                        </OrangeSecondaryButton>}
-                                    </Box>
+                                    <ButtonGroup>
+                                        {updating === 'unknown' ? <OrangeDensePrimaryButton>
+                                            Unknown
+                                        </OrangeDensePrimaryButton> : <OrangeDenseSecondaryButton
+                                        onClick={() => setUpdating('unknown')}>
+                                            Unknown     
+                                        </OrangeDenseSecondaryButton>}
+                                        {updating === 'available' ? <OrangeDensePrimaryButton>
+                                            Available 
+                                        </OrangeDensePrimaryButton> : <OrangeDenseSecondaryButton
+                                        onClick={() => setUpdating('available')}>
+                                            Available 
+                                        </OrangeDenseSecondaryButton>}
+                                        {updating === 'unavailable' ? <OrangeDensePrimaryButton>
+                                            Unavailable 
+                                        </OrangeDensePrimaryButton> : <OrangeDenseSecondaryButton
+                                        onClick={() => setUpdating('unavailable')}>
+                                            Unavailable 
+                                        </OrangeDenseSecondaryButton>}
+                                    </ButtonGroup>
+                                </Grid>
+                                <Grid item>
+                                    {changesMade ? <OrangePrimaryButton>
+                                        Save Changes
+                                    </OrangePrimaryButton> :
+                                    <OrangeSecondaryButton disabled>
+                                        Save Changes
+                                    </OrangeSecondaryButton>}
                                 </Grid>
                             </Grid>
                         </Box>
@@ -137,7 +135,8 @@ export default function Main({availability:dbAvailability}:Props) {
                                 <Grid item width={{md: 'auto', xs: '100%'}}>
                                     <Box minWidth={{md: 850, xs: '100%'}}>
                                         <Calendar availability={availability}
-                                         dateRange={dateRange} onDateRangeChange={onDateRangeChange} />
+                                         dateRange={dateRange} onDateRangeChange={onDateRangeChange}
+                                         hoverColor={legend.find(l => l.value.toLowerCase() === updating)?.color} />
                                     </Box>
                                 </Grid>
                                 <Grid item flex={1}>

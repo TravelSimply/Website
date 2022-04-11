@@ -10,9 +10,10 @@ interface Props {
     dateRange: [Dayjs, Dayjs];
     onDateRangeChange: (dateRange:[Dayjs, Dayjs]) => void;
     availability: ClientPopulatedAvailability;
+    hoverColor?: string;
 }
 
-export default function Calendar({dateRange, onDateRangeChange, availability}:Props) {
+export default function Calendar({dateRange, onDateRangeChange, availability, hoverColor}:Props) {
 
     const [currentDate, setCurrentDate] = useState(dayjs())
 
@@ -77,7 +78,8 @@ export default function Calendar({dateRange, onDateRangeChange, availability}:Pr
             <Header currentDate={currentDate} setCurrentDate={setCurrentDate} />
             <WeekDays />
             <Cells dateRange={dateRange} tempRange={tempRange} onMouseDown={onMouseDown} onMouseMove={onMouseMove}
-            onMouseUp={onMouseUp} currentDate={currentDate} availability={availability} />
+            onMouseUp={onMouseUp} currentDate={currentDate} availability={availability}
+            hoverColor={hoverColor} />
         </div>
     )
 }

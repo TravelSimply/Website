@@ -63,10 +63,6 @@
     -ms-user-select: none;
 }
 
-.calendar .body .cell:hover {
-    background: hsl(30, 96%, 45%) !important;
-}
-
 .calendar .body .cell.displayOnly {
     cursor: grab;
 }
@@ -79,16 +75,8 @@
     background: #fff !important;
 }
 
-.calendar .body .cell.inRange {
-    background: hsl(30, 96%, 45%) !important;
-}
-
-.calendar .body .cell.inPrevSelectedRange {
-    background: hsl(30, 96%, 45%) !important;
-}
-
 .calendar .body .cell.unavailable {
-    background: rgba(0,0,0,0.3);
+    background: rgba(0,0,0,0.4);
 }
 
 .calendar .body .cell.available {

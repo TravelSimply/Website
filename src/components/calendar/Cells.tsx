@@ -2,6 +2,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { useCallback, useMemo, useState } from "react";
 import { ClientPopulatedAvailability } from "../../database/interfaces";
 import styles from '../../styles/Calendar.module.css'
+import {Box} from '@mui/material'
 
 interface Props {
     currentDate: Dayjs;
@@ -12,6 +13,7 @@ interface Props {
     onMouseUp: () => void;
     displayOnly?: boolean;
     small?: boolean;
+    hoverColor?: string;
     availability: ClientPopulatedAvailability;
 }
 
@@ -22,7 +24,7 @@ interface Day {
 }
 
 export default function Cells({currentDate, tempRange, dateRange, onMouseDown, onMouseMove, onMouseUp, displayOnly,
-    small, availability}:Props) {
+    small, availability, hoverColor}:Props) {
 
     const calcInTempRange = useCallback((day:Day) => {
         if (tempRange.length === 0) {
@@ -94,14 +96,17 @@ export default function Cells({currentDate, tempRange, dateRange, onMouseDown, o
                         const inDateRange = inTempRange ? false : calcInDateRange(day)
                         const statusBg = calcStatusBg(day.date)
                         return (
-                            <div className={`${styles.column} ${styles.cell} ${day.inMonth ? '' : styles.disabled} 
-                            ${inTempRange ? styles.inRange : ''} ${inDateRange ? styles.inPrevSelectedRange : ''}
+                            <Box className={`${styles.column} ${styles.cell} ${day.inMonth ? '' : styles.disabled} 
                             ${displayOnly ? styles.displayOnly : ''} ${small ? styles.small : ''}
                             ${styles[statusBg]}`} key={col}
                             onMouseDown={() => onMouseDown(day.date)} onMouseUp={() => onMouseUp()}
-                            onMouseMove={() => onMouseMove(day.date)} >
+                            onMouseMove={() => onMouseMove(day.date)} 
+                            sx={{
+                            '&:hover': {background: (hoverColor || 'hsl(30, 96%, 45%)') + ' !important'},
+                            background: inTempRange || inDateRange ? (hoverColor || 'hsl(30, 96%, 45%)') + ' !important' : 'auto'
+                            }} >
                                 {day.inMonth && <span className={styles.number}>{day.date.format('D')}</span>}
-                            </div>
+                            </Box>
                         )
                     })}
                 </div>
