@@ -31,6 +31,49 @@ export default function Main({user, availability}:Props) {
         if (!availability) {
             return 'Your availability for the next week is unknown.'
         }
+
+        const counts = {
+            unknown: 0,
+            unavailable: 0,
+            available: 0,
+            travelling: 0
+        }
+
+        let day = dayjs().startOf('week')
+        let weekText = 'this'
+        if (dayjs().day() > 4) {
+            day = dayjs().add(6, 'days').startOf('week')
+            weekText = 'next'
+        }
+
+        const year = day.format('YYYY')
+        for (let i = 0; i < 7; i++) {
+            const format = day.format('MMDD')
+            if (availability.data.dates[year]?.travelling?.includes(format)) {
+                counts.travelling++
+                continue
+            }
+            if (availability.data.dates[year]?.available.includes(format)) {
+                counts.available++
+                continue
+            }
+            if (availability.data.dates[year]?.unavailable.includes(format)) {
+                counts.unavailable++
+            }
+            day = day.add(1, 'days')
+        }
+
+        if (counts.travelling > 0) {
+            return `You are traveling ${counts.travelling} days ${weekText} week.`
+        }
+        if (counts.available > 0) {
+            return `You are available to travel ${counts.available} days ${weekText} week.`
+        }
+        if (counts.unavailable > 3) {
+            return `You are unavailable to travel most of ${weekText} week.`
+        }
+        return `Your availability for ${weekText} week is mostly unknown.`
+
     }, [availability])
 
     const onProfileFormSubmit = async (vals:FullProfileFormProps['vals'], actions:FormikHelpers<FullProfileFormProps['vals']>) => {
@@ -139,7 +182,7 @@ export default function Main({user, availability}:Props) {
                                                 </Box>
                                             </Box>
                                             <Box textAlign="center">
-                                                <Typography variant="body1">
+                                                <Typography variant="h6">
                                                     {availabilityMessage}
                                                 </Typography> 
                                             </Box>

@@ -14,7 +14,7 @@ export default function SmallCalendar({availability}:Props) {
 
     const [currentDate, setCurrentDate] = useState(dayjs())
     
-    const dateRange = useMemo<[Dayjs, Dayjs]>(() => [dayjs().subtract(1000, 'years'), dayjs().subtract(1000, 'years')], [])
+    const dateRange = useMemo<[Dayjs, Dayjs]>(() => [dayjs(), dayjs()], [])
 
     const tempRange = useMemo(() => [], [])
 
