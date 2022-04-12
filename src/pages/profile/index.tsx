@@ -40,10 +40,14 @@ export const getServerSideProps:GetServerSideProps = async (ctx:GetServerSidePro
         return redirect
     }
 
-    const availability = populateAvailability(await getAvailabilityAndTravelGroupsOfUser(user.ref.id))
+    try {
+        const availability = populateAvailability(await getAvailabilityAndTravelGroupsOfUser(user.ref.id))
 
-    return {props: {
-        user: JSON.parse(JSON.stringify(user)),
-        availability: JSON.parse(JSON.stringify(availability))
-    }}
+        return {props: {
+            user: JSON.parse(JSON.stringify(user)),
+            availability: JSON.parse(JSON.stringify(availability)),
+        }}
+    } catch (e) {
+        return {props: {}, redirect: {destination: '/'}}
+    }
 }

@@ -157,7 +157,7 @@ export default function Main({user, availability}:Props) {
                                 </Grid>
                                 <Grid item>
                                     <Box width={400}>
-                                        <SmallCalendar />
+                                        <SmallCalendar availability={availability} />
                                     </Box>
                                 </Grid>
                             </Grid>
