@@ -27,10 +27,8 @@ function checkProperties(properties:Object) {
         }
         if (key === 'destination') {
             const found = []
-            console.log(value)
             for (const [destKey, destValue] of Object.entries(value)) {
                 found.push(destKey)
-                console.log(destKey)
                 if (!destinationProperties.find(prop => prop === destKey && (typeof destValue === 'string'))) {
                     throw 'This is not an accepted property'
                 }
