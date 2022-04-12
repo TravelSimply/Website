@@ -1,6 +1,6 @@
 import { Box, Container, Paper, Step, StepLabel, Stepper, useMediaQuery, Grid, Alert, AlertTitle, Collapse, IconButton } from "@mui/material";
 import { useMemo, useState } from "react";
-import { ClientUser } from "../../../database/interfaces";
+import { ClientPopulatedAvailability, ClientUser } from "../../../database/interfaces";
 import {FormikContextType, FormikHelpers} from 'formik'
 import { OrangePrimaryButton, OrangeSecondaryButton } from "../../mui-customizations/buttons";
 import GeneralForm from '../../forms/travel-groups/create/General'
@@ -14,9 +14,10 @@ import Snackbar from '../../misc/snackbars'
 
 interface Props {
     user: ClientUser;
+    availability: ClientPopulatedAvailability;
 }
 
-export default function Main({user}:Props) {
+export default function Main({user, availability}:Props) {
 
     const displayLabels = useMediaQuery('(min-width:450px)')
 
@@ -153,7 +154,8 @@ export default function Main({user}:Props) {
                                     step === 3 ? <SettingsForm vals={totalInfo.settings} onSubmit={onSectionSubmit}
                                     setFormContext={updateFormContext} /> : ''}
                                 </Container>
-                                {step === 2 && <DateSelection date={totalInfo.date} setDate={setDate} />}
+                                {step === 2 && <DateSelection date={totalInfo.date} setDate={setDate}
+                                availability={availability} />}
                             </Box>
                             <Box mt={2}>
                                 <Grid container spacing={3} justifyContent="center">
