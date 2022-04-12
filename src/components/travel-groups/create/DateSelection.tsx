@@ -2,6 +2,7 @@ import { Box, RadioGroup, Radio, FormControl, FormControlLabel, Container, Grid,
 import Calendar from "../../calendar/Calendar";
 import {ChangeEvent, useMemo} from 'react'
 import dayjs, { Dayjs } from "dayjs";
+import { ClientPopulatedAvailability } from "../../../database/interfaces";
 
 export interface Props {
     date: {
@@ -12,9 +13,10 @@ export interface Props {
         estLength: [number, string];
     };
     setDate: (date:Props['date']) => void;
+    availability: ClientPopulatedAvailability;
 }
 
-export default function DateSelection({date, setDate}:Props) {
+export default function DateSelection({date, setDate, availability}:Props) {
 
     const handleCertaintyChange = (e:ChangeEvent<HTMLInputElement>) => {
         setDate({...date, unknown: e.target.value === 'unknown', roughly: e.target.value === 'roughly'})
@@ -165,7 +167,8 @@ export default function DateSelection({date, setDate}:Props) {
                     </Box>
                 </Container>
                 <Box sx={{display: {xs: 'none', sm: 'block'}}}>
-                    <Calendar dateRange={dateRange} onDateRangeChange={onDateRangeChange} />
+                    <Calendar dateRange={dateRange} onDateRangeChange={onDateRangeChange}
+                    availability={availability} />
                 </Box>
             </Collapse>
             {!date.unknown && <Box mt={3} mb={8}>

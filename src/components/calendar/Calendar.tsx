@@ -1,5 +1,6 @@
 import dayjs, {Dayjs} from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { ClientPopulatedAvailability } from "../../database/interfaces";
 import styles from '../../styles/Calendar.module.css'
 import Cells from "./Cells";
 import Header from './Header'
@@ -8,9 +9,12 @@ import WeekDays from "./WeekDays";
 interface Props {
     dateRange: [Dayjs, Dayjs];
     onDateRangeChange: (dateRange:[Dayjs, Dayjs]) => void;
+    availability: ClientPopulatedAvailability;
+    hoverColor?: string;
+    onMonthChange?: (day:Dayjs) => void;
 }
 
-export default function Calendar({dateRange, onDateRangeChange}:Props) {
+export default function Calendar({dateRange, onDateRangeChange, availability, hoverColor, onMonthChange}:Props) {
 
     const [currentDate, setCurrentDate] = useState(dayjs())
 
@@ -70,12 +74,19 @@ export default function Calendar({dateRange, onDateRangeChange}:Props) {
         onDateRangeChange([lower, upper])
     }
 
+    useEffect(() => {
+        if (onMonthChange) {
+            onMonthChange(currentDate)
+        }
+    }, [currentDate])
+
     return (
         <div className={styles.calendar}>
             <Header currentDate={currentDate} setCurrentDate={setCurrentDate} />
             <WeekDays />
             <Cells dateRange={dateRange} tempRange={tempRange} onMouseDown={onMouseDown} onMouseMove={onMouseMove}
-            onMouseUp={onMouseUp} currentDate={currentDate} />
+            onMouseUp={onMouseUp} currentDate={currentDate} availability={availability}
+            hoverColor={hoverColor} />
         </div>
     )
 }

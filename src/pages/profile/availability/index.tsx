@@ -1,28 +1,28 @@
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { ClientPopulatedAvailability, ClientUser } from "../../database/interfaces";
-import { getAuthUser } from "../../utils/auth";
-import styles from '../../styles/pages/HeaderFooter.module.css'
+import { ClientPopulatedAvailability, ClientUser } from "../../../database/interfaces";
+import { createAvailability, getAvailabilityAndTravelGroupsOfUser, populateAvailability } from "../../../database/utils/availabilities";
+import { getAuthUser } from "../../../utils/auth";
 import Head from 'next/head'
-import MainHeader from "../../components/nav/MainHeader";
-import Main from '../../components/account/profile/index/Main'
-import { getAvailabilityAndTravelGroupsOfUser, getAvailabilityOfUser, populateAvailability } from "../../database/utils/availabilities";
+import styles from '../../../styles/pages/HeaderFooter.module.css'
+import MainHeader from "../../../components/nav/MainHeader";
+import Main from '../../../components/account/profile/availability/index/Main'
 
 interface Props {
     user: ClientUser;
-    availability: ClientPopulatedAvailability; 
+    availability: ClientPopulatedAvailability;
 }
 
-export default function Profile({user, availability}:Props) {
+export default function Availability({user, availability}:Props) {
 
     return (
         <>
             <Head>
-                <title>Profile | Travel Simply</title>     
-            </Head> 
+                <title>My Availability | Travel Simply</title>
+            </Head>
             <div className={styles.root}>
                 <MainHeader user={user} />
-                <div className={styles.main}>
-                    <Main user={user} availability={availability} />
+                <div>
+                    <Main availability={availability} />
                 </div>
                 <div>
                     footer

@@ -1,17 +1,19 @@
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { ClientUser } from "../../database/interfaces";
+import { ClientPopulatedAvailability, ClientUser } from "../../database/interfaces";
 import { getAuthUser } from "../../utils/auth";
 import Head from 'next/head'
 import styles from '../../styles/pages/HeaderFooter.module.css'
 import MainHeader from "../../components/nav/MainHeader";
 import { getUserTravelGroupDates } from "../../database/utils/travelGroups";
 import Main from '../../components/travel-groups/create/Main'
+import { getAvailabilityAndTravelGroupsOfUser, populateAvailability } from "../../database/utils/availabilities";
 
 interface Props {
     user: ClientUser;
+    availability: ClientPopulatedAvailability;
 }
 
-export default function CreateTravelGroup({user}:Props) {
+export default function CreateTravelGroup({user, availability}:Props) {
 
     return (
         <>
@@ -21,7 +23,7 @@ export default function CreateTravelGroup({user}:Props) {
             <div className={styles.root}>
                 <MainHeader user={user} />
                 <div>
-                    <Main user={user} />
+                    <Main user={user} availability={availability} />
                 </div>
                 <div>
                     footer
@@ -39,7 +41,14 @@ export const getServerSideProps:GetServerSideProps = async (ctx:GetServerSidePro
         return redirect
     }
 
-    return {props: {
-        user: JSON.parse(JSON.stringify(user)),
-    }}
+    try {
+        const availability = populateAvailability(await getAvailabilityAndTravelGroupsOfUser(user.ref.id))
+
+        return {props: {
+            user: JSON.parse(JSON.stringify(user)),
+            availability: JSON.parse(JSON.stringify(availability)),
+        }}
+    } catch (e) {
+        return {props: {}, redirect: {destination: '/'}}
+    }
 }
