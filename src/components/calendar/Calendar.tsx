@@ -1,5 +1,5 @@
 import dayjs, {Dayjs} from "dayjs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ClientPopulatedAvailability } from "../../database/interfaces";
 import styles from '../../styles/Calendar.module.css'
 import Cells from "./Cells";
@@ -11,9 +11,10 @@ interface Props {
     onDateRangeChange: (dateRange:[Dayjs, Dayjs]) => void;
     availability: ClientPopulatedAvailability;
     hoverColor?: string;
+    onMonthChange?: (day:Dayjs) => void;
 }
 
-export default function Calendar({dateRange, onDateRangeChange, availability, hoverColor}:Props) {
+export default function Calendar({dateRange, onDateRangeChange, availability, hoverColor, onMonthChange}:Props) {
 
     const [currentDate, setCurrentDate] = useState(dayjs())
 
@@ -72,6 +73,12 @@ export default function Calendar({dateRange, onDateRangeChange, availability, ho
         setTempRange([])
         onDateRangeChange([lower, upper])
     }
+
+    useEffect(() => {
+        if (onMonthChange) {
+            onMonthChange(currentDate)
+        }
+    }, [currentDate])
 
     return (
         <div className={styles.calendar}>

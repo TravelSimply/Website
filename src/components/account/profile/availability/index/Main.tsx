@@ -14,6 +14,7 @@ interface Props {
 export default function Main({availability:dbAvailability}:Props) {
 
     const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([null, null])
+    const [month, setMonth] = useState(dayjs())
     const [updating, setUpdating] = useState('unknown')
     const [changesMade, setChangesMade] = useState(false)
     const [saving, setSaving] = useState(false)
@@ -21,7 +22,10 @@ export default function Main({availability:dbAvailability}:Props) {
 
     const [availability, setAvailability] = useState(dbAvailability)
 
-    const updateDayStatus = useCallback((year:string, format:string, availabilityCopy:ClientPopulatedAvailability) => {
+    const updateDayStatus = useCallback((year:string, format:string, availabilityCopy:ClientPopulatedAvailability, 
+        overrideStatus?:string) => {
+
+        const status = overrideStatus || updating
         // alas, an O(n^2) tragedy is created.
         for (const day of availabilityCopy.data.dates[year]?.travelling || []) {
             if (day === format) {
@@ -34,7 +38,7 @@ export default function Main({availability:dbAvailability}:Props) {
             if (day !== format) {
                 continue
             }
-            if (updating === 'available') {
+            if (status === 'available') {
                 return false
             }
             removedVal = true
@@ -46,7 +50,7 @@ export default function Main({availability:dbAvailability}:Props) {
             if (day !== format) {
                 continue
             }
-            if (updating === 'unavailable') {
+            if (status === 'unavailable') {
                 return false
             }
             removedVal = true
@@ -60,8 +64,8 @@ export default function Main({availability:dbAvailability}:Props) {
                 travelling: []
             }
         }
-        if (updating !== 'unknown') {
-            availabilityCopy.data.dates[year][updating].push(format)
+        if (status !== 'unknown') {
+            availabilityCopy.data.dates[year][status].push(format)
         } else if (!removedVal) {
             return false 
         }
@@ -70,7 +74,7 @@ export default function Main({availability:dbAvailability}:Props) {
 
     const onDateRangeChange = (dateRange:[Dayjs, Dayjs]) => {
         let change = false
-        const availabilityCopy = {...availability}
+        const availabilityCopy = JSON.parse(JSON.stringify(availability))
         for (let day = dateRange[0]; day.isBefore(dateRange[1]) || day.isSame(dateRange[1], 'day'); day = day.add(1, 'day')) {
             const year = day.format('YYYY')
             const format = day.format('MMDD')
@@ -118,6 +122,39 @@ export default function Main({availability:dbAvailability}:Props) {
         }
 
         setSaving(false)
+    }
+
+    const onMonthChange = (day:Dayjs) => {
+        setMonth(day)
+    }
+
+    const changeMonth = (days:number[], status:string) => {
+        let change = false
+        const start = month.startOf('month')
+        const end = month.endOf('month')
+        const availabilityCopy = JSON.parse(JSON.stringify(availability))
+        const year = start.format('YYYY')
+        for (let day = start; day.isBefore(end) || day.isSame(end, 'day'); day = day.add(1, 'day')) {
+            if (!days.includes(day.day())) {
+                continue
+            }
+            const format = day.format('MMDD')
+            if (updateDayStatus(year, format, availabilityCopy, status)) {
+                change = true
+            }
+        }
+        if (change) {
+            setAvailability(availabilityCopy)
+            setChangesMade(true)
+        }
+    }
+
+    const setWeekendsToAvailable = () => {
+        changeMonth([0, 6], 'available')
+    }
+
+    const setWeekdaysToUnavailable = () => {
+        changeMonth([1, 2, 3, 4, 5], 'unavailable')
     }
 
     return (
@@ -173,7 +210,8 @@ export default function Main({availability:dbAvailability}:Props) {
                                     <Box minWidth={{md: 850, xs: '100%'}}>
                                         <Calendar availability={availability}
                                          dateRange={dateRange} onDateRangeChange={onDateRangeChange}
-                                         hoverColor={legend.find(l => l.value.toLowerCase() === updating)?.color} />
+                                         hoverColor={legend.find(l => l.value.toLowerCase() === updating)?.color}
+                                         onMonthChange={onMonthChange} />
                                     </Box>
                                 </Grid>
                                 <Grid item flex={1}>
@@ -205,18 +243,18 @@ export default function Main({availability:dbAvailability}:Props) {
                         <Box mt={6}>
                             <Box mb={2}>
                                 <Typography variant="h6">
-                                    For month displayed, set 
+                                    For {month.format('MMMM')}, set 
                                 </Typography>
                             </Box>
                             <Box>
                                 <Grid container spacing={3}>
                                     <Grid item>
-                                        <OrangeSecondaryButton>
+                                        <OrangeSecondaryButton onClick={() => setWeekendsToAvailable()}>
                                             All Weekends to Available
                                         </OrangeSecondaryButton>
                                     </Grid>
                                     <Grid item>
-                                        <OrangeSecondaryButton>
+                                        <OrangeSecondaryButton onClick={() => setWeekdaysToUnavailable()}>
                                             All Weekdays to Unavailable
                                         </OrangeSecondaryButton>
                                     </Grid>
