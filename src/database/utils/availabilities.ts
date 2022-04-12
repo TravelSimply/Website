@@ -84,3 +84,10 @@ export async function createAvailability(userId:string):Promise<Availability> {
         q.Create(q.Collection('availabilities'), {data: {userId, dates: {}}})
     )
 }
+
+export async function updateAvailabilityDates(id:string, dates:Availability['data']['dates']) {
+
+    await client.query(
+        q.Update(q.Ref(q.Collection('availabilities'), id), {data: {dates}})
+    )
+}

@@ -1,9 +1,11 @@
 import { Box, Container, Grid, Paper, Typography, ButtonGroup } from "@mui/material";
+import axios from "axios";
 import dayjs, { Dayjs } from "dayjs";
 import { useCallback, useMemo, useState } from "react";
 import { ClientPopulatedAvailability } from "../../../../../database/interfaces";
 import Calendar from "../../../../calendar/Calendar";
 import { OrangeDensePrimaryButton, OrangeDenseSecondaryButton, OrangePrimaryButton, OrangeSecondaryButton } from "../../../../mui-customizations/buttons";
+import Snackbar from '../../../../misc/snackbars'
 
 interface Props {
     availability: ClientPopulatedAvailability;
@@ -14,10 +16,13 @@ export default function Main({availability:dbAvailability}:Props) {
     const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([null, null])
     const [updating, setUpdating] = useState('unknown')
     const [changesMade, setChangesMade] = useState(false)
+    const [saving, setSaving] = useState(false)
+    const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
 
     const [availability, setAvailability] = useState(dbAvailability)
 
     const updateDayStatus = useCallback((year:string, format:string, availabilityCopy:ClientPopulatedAvailability) => {
+        // alas, an O(n^2) tragedy is created.
         for (const day of availabilityCopy.data.dates[year]?.travelling || []) {
             if (day === format) {
                 return false
@@ -84,6 +89,37 @@ export default function Main({availability:dbAvailability}:Props) {
         {color: 'hsl(209, 93%, 92%)', value: 'Available'}, {color: 'hsl(30, 96%, 62.4%)', value: 'Traveling'}]
     }, [])
 
+    const saveChanges = async () => {
+        setSaving(true)
+
+        try {
+
+            const availabilityCopy:ClientPopulatedAvailability = JSON.parse(JSON.stringify(availability))
+
+            for (const [key, value] of Object.entries(availabilityCopy.data.dates)) {
+                if (value.travelling) {
+                    delete value.travelling
+                }
+            }
+
+            await axios({
+                method: 'POST',
+                url: '/api/users/profile/availability/update',
+                data: {
+                    id: availability.ref['@ref'].id,
+                    dates: availabilityCopy.data.dates
+                }
+            })
+
+            setSnackbarMsg({type: 'success', content: 'Availability Saved Successfully'})
+            setChangesMade(false)
+        } catch (e) {
+            setSnackbarMsg({type: 'error', content: 'Failed to Save Availability'})
+        }
+
+        setSaving(false)
+    }
+
     return (
         <Box m={3}>
             <Container maxWidth="lg">
@@ -121,7 +157,8 @@ export default function Main({availability:dbAvailability}:Props) {
                                     </ButtonGroup>
                                 </Grid>
                                 <Grid item>
-                                    {changesMade ? <OrangePrimaryButton>
+                                    {changesMade ? <OrangePrimaryButton disabled={saving}
+                                    onClick={() => saveChanges()}>
                                         Save Changes
                                     </OrangePrimaryButton> :
                                     <OrangeSecondaryButton disabled>
@@ -189,6 +226,7 @@ export default function Main({availability:dbAvailability}:Props) {
                     </Box>
                 </Paper>
             </Container>
+            <Snackbar msg={snackbarMsg} setMsg={setSnackbarMsg} />
         </Box>
     )
 }
