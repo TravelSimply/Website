@@ -14,9 +14,6 @@ interface Props {
 
 export default function Availability({user, availability}:Props) {
 
-    console.log(availability)
-    // console.log(noPrevStatus)
-
     return (
         <>
             <Head>
