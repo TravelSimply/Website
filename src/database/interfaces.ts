@@ -59,7 +59,7 @@ export interface Availability {
 }
 
 export interface ClientAvailability extends Omit<Availability, 'ref'> {
-    ref: {'@ref': string};
+    ref: {'@ref': Ref};
 }
 
 // basically the same as Availability
