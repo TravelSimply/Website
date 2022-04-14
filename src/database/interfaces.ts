@@ -171,3 +171,13 @@ export interface TravelGroup {
     ref: Ref;
     data: TravelGroupData;
 }
+
+export interface TravelGroupStringDates {
+    ref: Ref;
+    data: ClientTravelGroupData;
+}
+
+export interface ClientTravelGroup {
+    ref: {'@ref': string};
+    data: ClientTravelGroupData;
+}

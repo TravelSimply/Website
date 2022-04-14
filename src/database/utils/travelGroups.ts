@@ -1,6 +1,6 @@
 import {query as q} from 'faunadb'
 import client from '../fauna'
-import { ClientTravelGroupData, TravelGroup } from '../interfaces'
+import { ClientTravelGroupData, TravelGroup, TravelGroupStringDates } from '../interfaces'
 
 export async function getUserTravelGroupDates(userId:string):Promise<{data: [string, string][]}> {
 
@@ -20,4 +20,39 @@ export async function createTravelGroup(data:ClientTravelGroupData):Promise<Trav
     return await client.query(
         q.Create(q.Collection('travelGroups'), {data: dbData})
     )
+}
+
+function insertData(d:string) {
+    return q.Select(['data', d], q.Var('travelGroup'))
+}
+
+export async function getUserTravelGroups(userId:string):Promise<{data: TravelGroupStringDates[]}> {
+
+    return await client.query(
+        q.Map(q.Paginate(q.Match(q.Index('travelGroups_by_members'), userId)), q.Lambda('ref',
+            q.Let(
+                {
+                    travelGroup: q.Get(q.Var('ref'))
+                },
+                {
+                    ref: q.Select('ref', q.Var('travelGroup')),
+                    data: {
+                        owner: insertData('owner'),
+                        members: insertData('members'),
+                        name: insertData('name'),
+                        desc: insertData('desc'),
+                        destination: insertData('destination'),
+                        settings: insertData('settings'),
+                        date: {
+                            unknown: q.Select(['data', 'date', 'unknown'], q.Var('travelGroup')),
+                            roughly: q.Select(['data', 'date', 'roughly'], q.Var('travelGroup')),
+                            estLength: q.Select(['data', 'date', 'estLength'], q.Var('travelGroup')),
+                            start: q.ToString(q.Select(['data', 'date', 'start'], q.Var('travelGroup'))),
+                            end: q.ToString(q.Select(['data', 'date', 'end'], q.Var('travelGroup')))
+                        }
+                    }
+                }
+            ) 
+        ))
+    ) 
 }
