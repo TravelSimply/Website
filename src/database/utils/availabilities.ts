@@ -16,7 +16,7 @@ export async function getAvailabilityOfUser(userId:string):Promise<Availability>
 
 interface PopulateAvailabilityProps {
     availability: Availability;
-    travelGroups: {data: [string, string][]};
+    travelGroups: {data: [string, string, boolean, boolean][]};
 }
 
 export function populateAvailability(info:PopulateAvailabilityProps) {
@@ -28,6 +28,9 @@ export function populateAvailability(info:PopulateAvailabilityProps) {
     const {availability, travelGroups} = info
 
     for (const range of travelGroups.data) {
+        if (range[2] || range[3]) {
+            continue
+        }
         const start = dayjs(range[0])
         const end = dayjs(range[1])
         let currDate = start
@@ -62,7 +65,7 @@ export async function getAvailabilityAndTravelGroupsOfUser(userId:string):Promis
                     q.Get(q.Match(q.Index('availabilities_by_userId'), userId)),
                     q.Create(q.Collection('availabilities'), {data: {userId, dates: {}}})
                 ),
-                travelGroups: q.Paginate(q.Match(q.Index('travelGroups_by_members_w_date'), userId))
+                travelGroups: q.Paginate(q.Match(q.Index('travelGroups_by_members_w_date_and_type'), userId))
             },
             {
                 availability: q.Var('availability'),
@@ -70,7 +73,9 @@ export async function getAvailabilityAndTravelGroupsOfUser(userId:string):Promis
                     'travelDates',
                     [
                         q.ToString(q.Select(0, q.Var('travelDates'))),
-                        q.ToString(q.Select(1, q.Var('travelDates')))
+                        q.ToString(q.Select(1, q.Var('travelDates'))),
+                        q.Select(2, q.Var('travelDates')),
+                        q.Select(3, q.Var('travelDates'))
                     ]
                 ))
             }
