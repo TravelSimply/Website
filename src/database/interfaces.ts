@@ -178,6 +178,6 @@ export interface TravelGroupStringDates {
 }
 
 export interface ClientTravelGroup {
-    ref: {'@ref': string};
+    ref: {'@ref': Ref};
     data: ClientTravelGroupData;
 }
