@@ -14,3 +14,10 @@ export const primaryLightBgOnHover = {
         backgroundColor: 'primary.light'
     }
 }
+
+export const enlargeOnHover = {
+    transition: 'transform 300ms',
+    '&:hover': {
+        transform: 'scale(1.05)'
+    }
+}
