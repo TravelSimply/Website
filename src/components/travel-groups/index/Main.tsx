@@ -1,6 +1,7 @@
 import { Box, Container, Paper } from "@mui/material";
 import { ClientTravelGroup, ClientUser } from "../../../database/interfaces";
 import TravelGroupCard from "./TravelGroupCard";
+import NoTravelGroups from './NoTravelGroups'
 
 interface Props {
     user: ClientUser;
@@ -13,7 +14,7 @@ export default function Main({user, travelGroups}:Props) {
         <Box mt={3} ml={3}>
             <Container maxWidth="md">
                 {travelGroups.length === 0 ?
-                'show join or create travel group page' :
+                <NoTravelGroups /> :
                 <Box>
                     {travelGroups.map(group => (
                         <Box key={group.ref['@ref'].id}>
