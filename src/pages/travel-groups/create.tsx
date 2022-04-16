@@ -2,11 +2,13 @@ import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { ClientPopulatedAvailability, ClientUser } from "../../database/interfaces";
 import { getAuthUser } from "../../utils/auth";
 import Head from 'next/head'
-import styles from '../../styles/pages/HeaderFooter.module.css'
+import styles from '../../styles/pages/HeaderSidebarFooter.module.css'
 import MainHeader from "../../components/nav/MainHeader";
 import { getUserTravelGroupDates } from "../../database/utils/travelGroups";
 import Main from '../../components/travel-groups/create/Main'
 import { getAvailabilityAndTravelGroupsOfUser, populateAvailability } from "../../database/utils/availabilities";
+import MainSidebar from "../../components/nav/MainSidebar";
+import { Box } from "@mui/material";
 
 interface Props {
     user: ClientUser;
@@ -15,16 +17,23 @@ interface Props {
 
 export default function CreateTravelGroup({user, availability}:Props) {
 
+    const drawerItems = [
+        {href: '/travel-groups', name: 'My Travel Groups', selected: false},
+        {href: '/travel-groups/create', name: 'Create Travel Group', selected: true},
+        {href: '/travel-groups/find', name: 'Find Travel Groups', selected: false}
+    ]
+
     return (
         <>
             <Head>
                 <title>Create Travel Group | Travel Simply</title>     
             </Head> 
             <div className={styles.root}>
-                <MainHeader user={user} />
-                <div>
+                <MainHeader user={user} drawer={{breakpoint: 'md', items: drawerItems}} />
+                <MainSidebar items={drawerItems} breakpoint="md" />
+                <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
                     <Main user={user} availability={availability} />
-                </div>
+                </Box>
                 <div>
                     footer
                 </div>

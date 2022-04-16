@@ -55,7 +55,7 @@ export default function MainHeader({user, drawer}:Props) {
 
     return (
         <AppBar position="sticky" sx={{backgroundColor: "orangeBg.light"}}>
-            <Container maxWidth="xl" sx={{padding: 0}}>
+            <Box maxWidth="xl" mx={1} >
                 <Box my={1}>
                     <Grid container alignItems="center" justifyContent="space-between">
                         <Grid item>
@@ -151,7 +151,7 @@ export default function MainHeader({user, drawer}:Props) {
                         </Link>
                     </Menu>
                 </Box>
-            </Container>
+            </Box>
             {drawer && displayDrawer && <Drawer anchor="left" open={openDrawer} onClose={() => setOpenDrawer(false)} >
                 <Box height="100%" bgcolor="orangeBg.light">
                     <List>

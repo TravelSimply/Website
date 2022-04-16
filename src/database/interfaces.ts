@@ -154,7 +154,11 @@ export interface TravelGroupData {
         mode: 'public' | 'private';
         invitePriveleges: 'ownerOnly' | 'anyMember';
         joinRequestPriveleges: 'ownerOnly' | 'anyMember';
-    }
+    };
+    image?: {
+        src: string;
+        publicId: string;
+    };
 }
 
 export interface ClientTravelGroupData extends Omit<TravelGroupData, 'date'> {
@@ -170,4 +174,14 @@ export interface ClientTravelGroupData extends Omit<TravelGroupData, 'date'> {
 export interface TravelGroup {
     ref: Ref;
     data: TravelGroupData;
+}
+
+export interface TravelGroupStringDates {
+    ref: Ref;
+    data: ClientTravelGroupData;
+}
+
+export interface ClientTravelGroup {
+    ref: {'@ref': Ref};
+    data: ClientTravelGroupData;
 }
