@@ -11,7 +11,7 @@ interface Props {
 export default function Main({user, travelGroups}:Props) {
 
     return (
-        <Box mt={3} ml={3}>
+        <Box mt={3} mx={3}>
             <Container maxWidth="md">
                 {travelGroups.length === 0 ?
                 <NoTravelGroups /> :
