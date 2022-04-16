@@ -28,9 +28,9 @@ export default function TravelGroups({user, travelGroups}:Props) {
                 <title>My Travel Groups | Travel Simply</title>
             </Head> 
             <div className={styles.root}>
-                <MainHeader user={user} />
-                <MainSidebar items={drawerItems} breakpoint="sm" />
-                <Box sx={{gridColumn: {xs: '1 / -1', sm: 'auto'}}} >
+                <MainHeader user={user} drawer={{breakpoint: 'md', items: drawerItems}} />
+                <MainSidebar items={drawerItems} breakpoint="md" />
+                <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
                     <Main user={user} travelGroups={travelGroups} />
                 </Box>
                 <div>
