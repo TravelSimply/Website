@@ -153,7 +153,7 @@ export default function MainHeader({user, drawer}:Props) {
                 </Box>
             </Box>
             {drawer && displayDrawer && <Drawer anchor="left" open={openDrawer} onClose={() => setOpenDrawer(false)} >
-                <Box height="100%" bgcolor="orangeBg.light">
+                <Box height="100%" bgcolor="orangeBg.light" minWidth={200}>
                     <List>
                         {drawer.items.map((item, i) => (
                             <Link key={i} href={item.href} as={item.as}>
