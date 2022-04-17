@@ -49,7 +49,6 @@ export default function Cells({currentDate, tempRange, dateRange, onMouseDown, o
         const year = day.format('YYYY')
         const monthDay = day.format('MMDD')
         if (!availability.data.dates[year]) {
-            console.log('no year found')
             return ''
         }
         if (availability.data.dates[year].travelling?.includes(monthDay)) {
