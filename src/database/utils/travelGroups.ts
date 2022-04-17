@@ -26,6 +26,25 @@ function insertData(d:string) {
     return q.Select(['data', d], q.Var('travelGroup'))
 }
 
+function dataWithStringDates() {
+
+    return {
+        owner: insertData('owner'),
+        members: insertData('members'),
+        name: insertData('name'),
+        desc: insertData('desc'),
+        destination: insertData('destination'),
+        settings: insertData('settings'),
+        date: {
+            unknown: q.Select(['data', 'date', 'unknown'], q.Var('travelGroup')),
+            roughly: q.Select(['data', 'date', 'roughly'], q.Var('travelGroup')),
+            estLength: q.Select(['data', 'date', 'estLength'], q.Var('travelGroup')),
+            start: q.ToString(q.Select(['data', 'date', 'start'], q.Var('travelGroup'))),
+            end: q.ToString(q.Select(['data', 'date', 'end'], q.Var('travelGroup')))
+        }
+    }
+}
+
 export async function getUserTravelGroups(userId:string):Promise<{data: TravelGroupStringDates[]}> {
 
     return await client.query(
@@ -36,23 +55,28 @@ export async function getUserTravelGroups(userId:string):Promise<{data: TravelGr
                 },
                 {
                     ref: q.Select('ref', q.Var('travelGroup')),
-                    data: {
-                        owner: insertData('owner'),
-                        members: insertData('members'),
-                        name: insertData('name'),
-                        desc: insertData('desc'),
-                        destination: insertData('destination'),
-                        settings: insertData('settings'),
-                        date: {
-                            unknown: q.Select(['data', 'date', 'unknown'], q.Var('travelGroup')),
-                            roughly: q.Select(['data', 'date', 'roughly'], q.Var('travelGroup')),
-                            estLength: q.Select(['data', 'date', 'estLength'], q.Var('travelGroup')),
-                            start: q.ToString(q.Select(['data', 'date', 'start'], q.Var('travelGroup'))),
-                            end: q.ToString(q.Select(['data', 'date', 'end'], q.Var('travelGroup')))
-                        }
-                    }
+                    data: dataWithStringDates()
                 }
             ) 
         ))
     ) 
+}
+
+export async function getTravelGroup(id:string):Promise<TravelGroupStringDates> {
+
+    return await client.query(
+        q.If(
+            q.Exists(q.Ref(q.Collection('travelGroups'), id)),
+            q.Let(
+                {
+                    travelGroup: q.Get(q.Ref(q.Collection('travelGroups'), id))
+                },
+                {
+                    ref: q.Select('ref', q.Var('travelGroup')),
+                    data: dataWithStringDates()
+                }    
+            ),
+            null
+        )
+    )
 }
