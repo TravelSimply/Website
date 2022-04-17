@@ -11,24 +11,25 @@ interface Props {
     user: ClientUser;
 }
 
+export const getDestination = (dest:ClientTravelGroup['data']['destination']) => {
+    if (dest.city) {
+        return `${dest.city}, ${dest.country}`
+    }
+    if (dest.state) {
+        return `${dest.state}, ${dest.country}`
+    }
+    if (dest.country) {
+        return `${dest.country}`
+    }
+    return dest.region
+}
+
 export default function TravelGroupCard({user, travelGroup}:Props) {
 
     const formatDate = (day:Dayjs) => {
         return day.format('MMMM D')
     }
 
-    const getDestination = (dest:ClientTravelGroup['data']['destination']) => {
-        if (dest.city) {
-            return `${dest.city}, ${dest.country}`
-        }
-        if (dest.state) {
-            return `${dest.state}, ${dest.country}`
-        }
-        if (dest.country) {
-            return `${dest.country}`
-        }
-        return dest.region
-    }
 
     return (
         <Box py={3}>
