@@ -1,12 +1,13 @@
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { ClientTravelGroup, ClientUser } from "../../../database/interfaces";
-import { getTravelGroup } from "../../../database/utils/travelGroups";
-import { getAuthUser } from "../../../utils/auth";
-import styles from '../../../styles/pages/HeaderSidebarFooter.module.css'
+import { ClientTravelGroup, ClientUser } from "../../../../database/interfaces";
+import { getTravelGroup } from "../../../../database/utils/travelGroups";
+import { getAuthUser } from "../../../../utils/auth";
+import styles from '../../../../styles/pages/HeaderSidebarFooter.module.css'
 import Head from 'next/head'
-import MainHeader from "../../../components/nav/MainHeader";
-import MainSidebar from "../../../components/nav/MainSidebar";
-import Main from '../../../components/travel-groups/[id]/index/Main'
+import MainHeader from "../../../../components/nav/MainHeader";
+import MainSidebar from "../../../../components/nav/MainSidebar";
+import Main from '../../../../components/travel-groups/[id]/travellers/Main'
+import {getDrawerItems} from '../index'
 import {Box} from '@mui/material'
 
 interface Props {
@@ -14,18 +15,7 @@ interface Props {
     travelGroup: ClientTravelGroup;
 }
 
-export function getDrawerItems(travelGroup:ClientTravelGroup, selected:number) {
-    const id = travelGroup.ref['@ref'].id
-
-    return [
-        {href: '/travel-groups/[id]', as: `/travel-groups/${id}`, name: 'Overview', selected: selected == 0},
-        {href: '/travel-groups/[id]/travelers', as: `/travel-groups/${id}/travelers`, name: 'Travelers', selected: selected == 1},
-        {href: '/travel-groups/[id]/activity', as: `/travel-groups/${id}/activity`, name: 'Activity', selected: selected == 2},
-        {href: '/travel-groups/[id]/settings', as: `/travel-groups/${id}/settings`, name: 'Settings', selected: selected == 3}
-    ]
-}
-
-export default function TravelGroup({user, travelGroup}:Props) {
+export default function Travelers({user, travelGroup}:Props) {
 
     if (!travelGroup) {
         return (
@@ -35,14 +25,12 @@ export default function TravelGroup({user, travelGroup}:Props) {
         )
     }
 
-    const drawerItems = getDrawerItems(travelGroup, 0)
+    const drawerItems = getDrawerItems(travelGroup, 1)
 
     return (
         <>
             <Head>
-                <title>
-                    {travelGroup.data.name} | Travel Simply
-                </title>
+                <title>Travelers | Travel Simply</title>     
             </Head> 
             <div className={styles.root}>
                 <MainHeader user={user} drawer={{breakpoint: 'md', items: drawerItems}} />
