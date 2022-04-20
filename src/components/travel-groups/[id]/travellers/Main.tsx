@@ -30,6 +30,18 @@ export default function Main({user, travelGroup}:Props) {
                             </Box>
                         </Box>
                     </Box>
+                    <Box mb={3}>
+                        <Box>
+                            <Box textAlign="center" color="text.secondary">
+                                <Typography variant="h3">
+                                    Travelers
+                                </Typography>
+                            </Box>
+                            <Box mx="auto" maxWidth={300}>
+                                <Divider />
+                            </Box>
+                        </Box>
+                    </Box>
                 </Container>
             </Box>
         </Box>
