@@ -44,16 +44,18 @@ export interface ContactInfo {
     ref: Ref;
     data: {
         userId: string;
-        phones?: {
-            home?: string;
-            mobile?: string;
-        };
-        email?: string;
-        socials?: {
-            whatsapp?: string;
-            discord?: string;
-            facebook?: string;
-            groupMe?: string;
+        info?: {
+            phones?: {
+                home?: string;
+                mobile?: string;
+            };
+            email?: string;
+            socials?: {
+                whatsapp?: string;
+                discord?: string;
+                facebook?: string;
+                groupMe?: string;
+            }
         }
     }
 }
