@@ -5,7 +5,8 @@ import { getDestination as getGeneralDestination } from "../../index/TravelGroup
 import dayjs from "dayjs";
 import Calendar from "../../../calendar/Calendar";
 import { useMemo } from "react";
-import { OrangePrimaryButton, OrangeSecondaryButton } from "../../../mui-customizations/buttons";
+import { OrangePrimaryButton, OrangePrimaryIconButton, OrangeSecondaryButton } from "../../../mui-customizations/buttons";
+import EditIcon from '@mui/icons-material/Edit';
 
 interface Props {
     user: ClientUser;
@@ -31,7 +32,7 @@ export default function Main({user, travelGroup}:Props) {
             <Container maxWidth="md">
                 <Box mb={3}>
                     <Paper>
-                        <Box p={3}>
+                        <Box position="relative" p={3}>
                             <Box>
                                 <Grid container spacing={3}>
                                     <Grid item>
@@ -72,6 +73,11 @@ export default function Main({user, travelGroup}:Props) {
                                         </Box> 
                                     </Grid>
                                 </Grid>
+                            </Box>
+                            <Box position="absolute" top="0px" right="0px">
+                                <OrangePrimaryIconButton>
+                                    <EditIcon sx={{fontSize: 30}} />
+                                </OrangePrimaryIconButton>
                             </Box>
                         </Box>
                     </Paper>
