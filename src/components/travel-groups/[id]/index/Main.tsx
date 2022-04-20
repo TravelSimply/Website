@@ -4,6 +4,8 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { getDestination as getGeneralDestination } from "../../index/TravelGroupCard";
 import dayjs from "dayjs";
 import Calendar from "../../../calendar/Calendar";
+import { useMemo } from "react";
+import { OrangePrimaryButton, OrangeSecondaryButton } from "../../../mui-customizations/buttons";
 
 interface Props {
     user: ClientUser;
@@ -11,6 +13,18 @@ interface Props {
 }
 
 export default function Main({user, travelGroup}:Props) {
+
+    const [start, end] = useMemo(() => {
+        return [
+            dayjs(travelGroup.data.date.start).format('MMMM D'),
+            dayjs(travelGroup.data.date.end).format('MMMM D')
+        ]
+    }, [])
+
+    const estLength = useMemo(() => {
+        return `${travelGroup.data.date.estLength[0]} 
+        ${travelGroup.data.date.estLength[1].substring(0, travelGroup.data.date.estLength[1].length - 1)}`
+    }, [])
 
     return (
         <Box mt={3} mx={3}>
@@ -68,23 +82,32 @@ export default function Main({user, travelGroup}:Props) {
                             <Box textAlign="center" mb={2}>
                                 <Typography variant="h6">
                                     {travelGroup.data.date.unknown ? 
-                                    `${travelGroup.data.date.estLength[0]} 
-                                    ${travelGroup.data.date.estLength[1].substring(0, travelGroup.data.date.estLength[1].length - 1)}
-                                    trip.` : travelGroup.data.date.roughly ?
-                                    `${travelGroup.data.date.estLength[0]} 
-                                    ${travelGroup.data.date.estLength[1].substring(0, travelGroup.data.date.estLength[1].length - 1)}
-                                    trip sometime between ${dayjs(travelGroup.data.date.start).format('MMMM D')} and 
-                                    ${dayjs(travelGroup.data.date.end).format('MMMM D')}.` :
-                                    `Traveling from ${dayjs(travelGroup.data.date.start).format('MMMM D')} to 
-                                    ${dayjs(travelGroup.data.date.end).format('MMMM D')}.`
+                                    `${estLength} trip.` : 
+                                    travelGroup.data.date.roughly ?
+                                    `${estLength} trip sometime between ${start} and ${end}.` :
+                                    `Traveling from ${start} to ${end}.`
                                     }
                                 </Typography>
                             </Box>
-                            {!travelGroup.data.date.unknown && <Box>
+                            {!travelGroup.data.date.unknown && <Box mb={2}>
                                 <Calendar dateRange={[dayjs(travelGroup.data.date.start), dayjs(travelGroup.data.date.end)]}
                                 onDateRangeChange={(a) => {}} availability={{ref: {'@ref': {id: '1', ref: null}}, data: {userId: '1', dates: {}}}}
                                 displayOnly startDate={dayjs(travelGroup.data.date.start)} />
                             </Box>}
+                            <Box mb={2}>
+                                <Grid container spacing={3} justifyContent="center">
+                                    <Grid item>
+                                        {(travelGroup.data.date.unknown || travelGroup.data.date.roughly) && <OrangePrimaryButton>
+                                            Propose a Travel Date     
+                                        </OrangePrimaryButton>}
+                                    </Grid>
+                                    <Grid item>
+                                        {travelGroup.data.owner === user.ref['@ref'].id && <OrangeSecondaryButton>
+                                            Modify Travel Date Settings     
+                                        </OrangeSecondaryButton>}
+                                    </Grid>
+                                </Grid>
+                            </Box>
                         </Box>
                     </Paper>
                 </Box>
