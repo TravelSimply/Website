@@ -14,26 +14,34 @@ export interface Props {
 }
 
 interface SocialMediaInputProps {
-    val: string;
+    socialSelected: string;
     remove: () => void;
-    setFieldValue:any
+    setFieldValue: (field:string, value:any) => void;
+    changeSocial: (val:string) => void;
+    username: string;
 }
 
-export function SocialMediaInput({val, remove, setFieldValue}:SocialMediaInputProps) {
+export function SocialMediaInput({socialSelected, remove, setFieldValue, changeSocial, username}:SocialMediaInputProps) {
 
-    const [selected, setSelected] = useState(val)
+    const updateUsername = (u:string) => {
+        setFieldValue(`socials.${socialSelected}`, u)
+    }
 
-    const [username, setUsername] = useState('')
+    const changeSocialSelected = (e:React.ChangeEvent<HTMLInputElement>) => {
+        updateUsername('') 
+        changeSocial(e.target.value)
+    }
 
-    useMemo(() => {
-        setFieldValue(`socials.${selected}`, username)
-    }, [username])
+    const onUsernameChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.value.length > 49) return
+        updateUsername(e.target.value)
+    }
 
     return (
         <Box>
             <Grid container spacing={1} wrap="nowrap" alignItems="center">
                 <Grid item>
-                    <TextField select size="small" value={selected} onChange={(e) => setSelected(e.target.value)}>
+                    <TextField select size="small" value={socialSelected} onChange={(e) => changeSocialSelected(e as any)}>
                         <MenuItem dense value="whatsapp">
                             <img src="/whatsapp.svg" style={{width: 32, height: 32}} />
                         </MenuItem>
@@ -43,16 +51,16 @@ export function SocialMediaInput({val, remove, setFieldValue}:SocialMediaInputPr
                         <MenuItem dense value="facebook">
                             <img src="/facebook.svg" style={{width: 32, height: 32}} />
                         </MenuItem>
-                        <MenuItem dense value="groupme">
+                        <MenuItem dense value="groupMe">
                             <img src="/groupme.svg" style={{width: 32, height: 32}} />
                         </MenuItem>
                     </TextField>
                 </Grid> 
                 <Grid sx={{flex: 1}} item>
-                    <TextField label="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+                    <TextField label="Username" value={username} onChange={onUsernameChange} />
                 </Grid>
                 <Grid item>
-                    <RedPrimaryIconButton>
+                    <RedPrimaryIconButton onClick={() => remove()}>
                         <RemoveIcon />
                     </RedPrimaryIconButton> 
                 </Grid>
@@ -69,10 +77,29 @@ export default function SignIn({vals, onSubmit}:Props) {
         socials: vals?.socials || {}
     }
 
-    const [socialInputs, setSocialInput] = useState(0)
+    const [socialInputs, setSocialInputs] = useState(Object.keys(initialVals.socials))
 
-    const addSocialInput = () => {
-        setSocialInput(socialInputs + 1)
+    const addSocialInput = (vals) => {
+        setSocialInputs([...socialInputs, findNextSocial(vals)])
+    }
+
+    const findNextSocial = (vals:(typeof initialVals)) => {
+        if (!vals?.socials?.whatsapp) return 'whatsapp'
+        if (!vals?.socials?.discord) return 'discord'
+        if (!vals?.socials?.groupMe) return 'groupMe'
+        return 'facebook'
+    }
+
+    const changeSocial = (social:string, i:number) => {
+        const socialCopy = [...socialInputs]
+        socialCopy[i] = social
+        setSocialInputs(socialCopy)
+    }
+
+    const removeSocial = (i:number, setFieldValue:((field:string, value:any) => void)) => {
+        const socialsCopy = [...socialInputs]
+        setFieldValue(`socials.${socialsCopy.splice(i, 1)[0]}`, '')
+        setSocialInputs(socialsCopy)
     }
 
     return (
@@ -92,7 +119,6 @@ export default function SignIn({vals, onSubmit}:Props) {
             })} initialValues={initialVals} onSubmit={(values, actions) => onSubmit(values, actions)}>
                 {({values, errors, isSubmitting, isValidating, setFieldValue}) => (
                     <Form>
-                        {JSON.stringify(values)}
                         <Box my={3}>
                             <Grid container spacing={3} justifyContent="space-around">
                                 <Grid sx={{width: 'min(100%, 400px)'}} item>
@@ -129,16 +155,19 @@ export default function SignIn({vals, onSubmit}:Props) {
                                             </Grid>
                                             <Grid item>
                                                 <OrangePrimaryIconButton
-                                                onClick={() => addSocialInput()} disabled={socialInputs == 4}>
+                                                onClick={() => addSocialInput(values)} disabled={socialInputs.length == 4}
+                                                sx={{padding: 0}}>
                                                     <AddIcon />
                                                 </OrangePrimaryIconButton>
                                             </Grid>
                                         </Grid>
                                     </Box>
                                     <Box>
-                                        {Array(socialInputs).fill(null).map((_, i) => (
-                                            <Box key={i} mb={1}>
-                                                <SocialMediaInput setFieldValue={setFieldValue} val="whatsapp" remove={() => {}} />
+                                        {socialInputs.map((social, i) => (
+                                            <Box key={social + i} mb={3}>
+                                                <SocialMediaInput setFieldValue={setFieldValue} socialSelected={social}
+                                                 remove={() => removeSocial(i, setFieldValue)} changeSocial={(val) => changeSocial(val, i)}
+                                                 username={values.socials[social]} />
                                             </Box>
                                         ))}
                                     </Box>
