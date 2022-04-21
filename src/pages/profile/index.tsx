@@ -1,18 +1,20 @@
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { ClientPopulatedAvailability, ClientUser } from "../../database/interfaces";
+import { ClientContactInfo, ClientPopulatedAvailability, ClientUser } from "../../database/interfaces";
 import { getAuthUser } from "../../utils/auth";
 import styles from '../../styles/pages/HeaderFooter.module.css'
 import Head from 'next/head'
 import MainHeader from "../../components/nav/MainHeader";
 import Main from '../../components/account/profile/index/Main'
 import { getAvailabilityAndTravelGroupsOfUser, getAvailabilityOfUser, populateAvailability } from "../../database/utils/availabilities";
+import { getUserContactInfo } from "../../database/utils/contactInfo";
 
 interface Props {
     user: ClientUser;
     availability: ClientPopulatedAvailability; 
+    contactInfo: ClientContactInfo;
 }
 
-export default function Profile({user, availability}:Props) {
+export default function Profile({user, availability, contactInfo}:Props) {
 
     return (
         <>
@@ -22,7 +24,7 @@ export default function Profile({user, availability}:Props) {
             <div className={styles.root}>
                 <MainHeader user={user} />
                 <div className={styles.main}>
-                    <Main user={user} availability={availability} />
+                    <Main user={user} availability={availability} contactInfo={contactInfo} />
                 </div>
                 <div>
                     footer
@@ -41,11 +43,17 @@ export const getServerSideProps:GetServerSideProps = async (ctx:GetServerSidePro
     }
 
     try {
-        const availability = populateAvailability(await getAvailabilityAndTravelGroupsOfUser(user.ref.id))
+        // ideally would have availablility and contactInfo gathered
+        // in one function for less db calls
+        const [availability, contactInfo] = await Promise.all([
+            populateAvailability(await getAvailabilityAndTravelGroupsOfUser(user.ref.id)),
+            getUserContactInfo(user.ref.id)
+        ]) 
 
         return {props: {
             user: JSON.parse(JSON.stringify(user)),
             availability: JSON.parse(JSON.stringify(availability)),
+            contactInfo: JSON.parse(JSON.stringify(contactInfo))
         }}
     } catch (e) {
         return {props: {}, redirect: {destination: '/'}}

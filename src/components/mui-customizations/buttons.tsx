@@ -66,6 +66,14 @@ export const OrangeSecondaryIconButton = styled(IconButton)(({theme}) => ({
     }
 }))
 
+export const RedPrimaryIconButton = styled(IconButton)(({theme}) => ({
+    color: theme.palette.error.main,
+    transition: 'color 300ms',
+    '&:hover': {
+        color: theme.palette.error.dark
+    }
+}))
+
 interface GoogleSignInProps {
     onClick: () => void;
     isSignUp?: boolean;
