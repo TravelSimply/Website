@@ -55,7 +55,7 @@ export default function MainHeader({user, drawer}:Props) {
 
     return (
         <AppBar position="sticky" sx={{backgroundColor: "orangeBg.light"}}>
-            <Box maxWidth="xl" mx={1} >
+            <Box mx={1} >
                 <Box my={1}>
                     <Grid container alignItems="center" justifyContent="space-between">
                         <Grid item>
