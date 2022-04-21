@@ -33,9 +33,9 @@ export default function Travelers({user, travelGroup}:Props) {
                 <title>Travelers | Travel Simply</title>     
             </Head> 
             <div className={styles.root}>
-                <MainHeader user={user} drawer={{breakpoint: 'md', items: drawerItems}} />
-                <MainSidebar breakpoint="md" items={drawerItems} />
-                <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
+                <MainHeader user={user} drawer={{breakpoint: 'lg', items: drawerItems}} />
+                <MainSidebar breakpoint="lg" items={drawerItems} />
+                <Box sx={{gridColumn: {xs: '1 / -1', lg: 'auto'}}} >
                     <Main user={user} travelGroup={travelGroup} />
                 </Box>
                 <div>
