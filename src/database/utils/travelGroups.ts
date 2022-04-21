@@ -1,6 +1,7 @@
 import {query as q} from 'faunadb'
 import client from '../fauna'
-import { ClientTravelGroupData, TravelGroup, TravelGroupStringDates } from '../interfaces'
+import { ClientTravelGroupData, TravelGroup, TravelGroupStringDates, TravelGroupWithPopulatedTravellersAndContactInfo, User } from '../interfaces'
+import { populateUserWithContactInfo } from './users'
 
 export async function getUserTravelGroupDates(userId:string):Promise<{data: [string, string][]}> {
 
@@ -75,6 +76,55 @@ export async function getTravelGroup(id:string):Promise<TravelGroupStringDates> 
                     ref: q.Select('ref', q.Var('travelGroup')),
                     data: dataWithStringDates()
                 }    
+            ),
+            null
+        )
+    )
+}
+
+// Return 0 if the user is not in the travel group
+export async function getTravelGroupWithPopulatedTravellersAndContactInfo(id:string, 
+    currUser:User):Promise<TravelGroupWithPopulatedTravellersAndContactInfo | 0> {
+
+    return await client.query(
+        q.If(
+            q.Exists(q.Ref(q.Collection('travelGroups'), id)),
+            q.Let(
+                {
+                    travelGroup: q.Get(q.Ref(q.Collection('travelGroups'), id))
+                },
+                q.If(
+                    q.Not(q.ContainsValue(currUser.ref.id, q.Select(['data', 'members'], q.Var('travelGroup')))),
+                    0, // The user is not in the travel group
+                    {
+                        ref: q.Select('ref', q.Var('travelGroup')),
+                        data: {
+                            ...dataWithStringDates(),
+                            members: q.Map(q.Select(['data', 'members'], q.Var('travelGroup')), q.Lambda(
+                                'member',
+                                q.If(
+                                    q.Equals(currUser.ref.id, q.Var('member')),
+                                    q.Let(
+                                        {
+                                            user: currUser
+                                        },
+                                        populateUserWithContactInfo()
+                                    ),
+                                    q.If(
+                                        q.Exists(q.Ref(q.Collection('users'), q.Var('member'))),
+                                        q.Let(
+                                            {
+                                                user: q.Get(q.Ref(q.Collection('users'), q.Var('member')))
+                                            },
+                                            populateUserWithContactInfo()
+                                        ),
+                                        null
+                                    )
+                                )
+                            ))
+                        }
+                    }
+                )
             ),
             null
         )
