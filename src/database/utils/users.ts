@@ -237,3 +237,40 @@ export function filterUsers(users:User[]) {
 
     return users.map(user => filterUser(user))
 }
+
+
+function insertData(d:string) {
+    return q.If(
+        q.ContainsField(d, q.Select('data', q.Var('user'))),
+        q.Select(['data', d], q.Var('user')),
+        null 
+    )
+}
+
+function selectAllUserData() {
+    return {
+        username: insertData('username'),
+        caseInsensitiveUsername: insertData('caseInsensitiveUsername'),
+        password: insertData('password'),
+        firstName: insertData('firstName'),
+        lastName: insertData('lastName'),
+        email: insertData('email'),
+        image: insertData('image'),
+        friends: insertData('friends'),
+        oAuthIdentifier: insertData('oAuthIdentifier')
+    } 
+}
+
+export function populateUserWithContactInfo() {
+    return {
+        ref: q.Select('ref', q.Var('user')),
+        data: {
+            ...selectAllUserData(),
+            contactInfo: q.If(
+                q.Exists(q.Match(q.Index('contactInfo_by_userId'), q.Select(['ref', 'id'], q.Var('user')))),
+                q.Get(q.Match(q.Index('contactInfo_by_userId'), q.Select(['ref', 'id'], q.Var('user')))),
+                null
+            )
+        }
+    }
+}
