@@ -69,7 +69,7 @@ export function SocialMediaInput({socialSelected, remove, setFieldValue, changeS
     )
 }
 
-export default function SignIn({vals, onSubmit}:Props) {
+export default function ContactInfo({vals, onSubmit}:Props) {
 
     const initialVals = {
         ...vals,
