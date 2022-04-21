@@ -1,7 +1,8 @@
 import { Avatar, Box, Container, Grid, Paper, Typography, IconButton, Badge, CircularProgress, Divider } from '@mui/material';
 import React, {useState, useRef, ChangeEvent, useMemo} from 'react'
-import { ClientPopulatedAvailability, ClientUser } from '../../../../database/interfaces';
+import { ClientContactInfo, ClientPopulatedAvailability, ClientUser } from '../../../../database/interfaces';
 import FullProfileForm, {Props as FullProfileFormProps} from '../../../forms/FullProfile'
+import ContactInfoForm, {Props as ContactInfoFormProps} from '../../../forms/ContactInfo'
 import {FormikHelpers} from 'formik'
 import CreateIcon from '@mui/icons-material/Create';
 import {OrangePrimaryButton, OrangePrimaryIconButton} from '../../../mui-customizations/buttons'
@@ -17,9 +18,10 @@ import Link from 'next/link'
 interface Props {
     user: ClientUser;
     availability: ClientPopulatedAvailability;
+    contactInfo: ClientContactInfo;
 }
 
-export default function Main({user, availability}:Props) {
+export default function Main({user, availability, contactInfo}:Props) {
 
     const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
 
@@ -96,6 +98,7 @@ export default function Main({user, availability}:Props) {
             if ((e as AxiosError).response?.status === 409) {
                 actions.setFieldError(e.response.data.field, e.response.data.msg)
             }
+            setSnackbarMsg({type: 'error', content: 'Error Updating Profile'})
         }
         actions.setSubmitting(false)
     }
@@ -113,6 +116,25 @@ export default function Main({user, availability}:Props) {
         }
 
         setUploadingImage(false)
+    }
+
+    const onContactInfoSubmit = async (vals:ContactInfoFormProps['vals'], actions:FormikHelpers<ContactInfoFormProps['vals']>) => {
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: '/api/users/profile/contact-info/update',
+                data: {
+                    id: contactInfo.ref['@ref'].id,
+                    info: vals
+                }
+            })
+
+            setSnackbarMsg({type: 'success', content: 'Updated Contact Info Successfully'})
+        } catch (e) {
+            setSnackbarMsg({type: 'error', content: 'Error Saving Contact Info'})
+        }
     }
 
     return (
@@ -204,6 +226,30 @@ export default function Main({user, availability}:Props) {
                                     </Box>
                                 </Grid>
                             </Grid>
+                        </Box>
+                    </Paper>
+                </Container>
+            </Box>
+            <Box mt={3}>
+                <Container maxWidth="lg">
+                    <Paper>
+                        <Box p={2}>
+                            <Box mb={2} textAlign="center">
+                                <Typography gutterBottom variant="h4">
+                                    Contact Info
+                                </Typography>
+                                <Box maxWidth={200} mx="auto">
+                                    <Divider sx={{bgcolor: 'primary.main', height: 2}} />
+                                </Box>
+                            </Box>
+                            <Box mb={2} textAlign="center">
+                                <Typography variant="body1">
+                                    This information is only visible to users in your Travel Groups.
+                                </Typography>
+                            </Box>
+                            <Box>
+                                <ContactInfoForm vals={contactInfo.data.info} onSubmit={onContactInfoSubmit} />
+                            </Box>
                         </Box>
                     </Paper>
                 </Container>

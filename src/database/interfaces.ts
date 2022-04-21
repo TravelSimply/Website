@@ -40,6 +40,31 @@ export interface ClientFilteredUser extends Omit<ClientUser, 'data'> {
 }
 
 
+export interface ContactInfo {
+    ref: Ref;
+    data: {
+        userId: string;
+        info?: {
+            phones?: {
+                home?: string;
+                mobile?: string;
+            };
+            email?: string;
+            socials?: {
+                whatsapp?: string;
+                discord?: string;
+                facebook?: string;
+                groupMe?: string;
+            }
+        }
+    }
+}
+
+export interface ClientContactInfo extends Omit<ContactInfo, 'ref'> {
+    ref: {'@ref': Ref};
+}
+
+
 // formatted 'MMDD'
 // e.g. January 2nd would be '0102'
 interface YearStatus {
