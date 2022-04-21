@@ -2,7 +2,7 @@ import { Avatar, Box, Container, Grid, Paper, Typography, IconButton, Badge, Cir
 import React, {useState, useRef, ChangeEvent, useMemo} from 'react'
 import { ClientContactInfo, ClientPopulatedAvailability, ClientUser } from '../../../../database/interfaces';
 import FullProfileForm, {Props as FullProfileFormProps} from '../../../forms/FullProfile'
-import ContactInfoForm from '../../../forms/ContactInfo'
+import ContactInfoForm, {Props as ContactInfoFormProps} from '../../../forms/ContactInfo'
 import {FormikHelpers} from 'formik'
 import CreateIcon from '@mui/icons-material/Create';
 import {OrangePrimaryButton, OrangePrimaryIconButton} from '../../../mui-customizations/buttons'
@@ -22,8 +22,6 @@ interface Props {
 }
 
 export default function Main({user, availability, contactInfo}:Props) {
-
-    console.log('contactInfo', contactInfo)
 
     const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
 
@@ -100,6 +98,7 @@ export default function Main({user, availability, contactInfo}:Props) {
             if ((e as AxiosError).response?.status === 409) {
                 actions.setFieldError(e.response.data.field, e.response.data.msg)
             }
+            setSnackbarMsg({type: 'error', content: 'Error Updating Profile'})
         }
         actions.setSubmitting(false)
     }
@@ -117,6 +116,25 @@ export default function Main({user, availability, contactInfo}:Props) {
         }
 
         setUploadingImage(false)
+    }
+
+    const onContactInfoSubmit = async (vals:ContactInfoFormProps['vals'], actions:FormikHelpers<ContactInfoFormProps['vals']>) => {
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: '/api/users/profile/contact-info/update',
+                data: {
+                    id: contactInfo.ref['@ref'].id,
+                    info: vals
+                }
+            })
+
+            setSnackbarMsg({type: 'success', content: 'Updated Contact Info Successfully'})
+        } catch (e) {
+            setSnackbarMsg({type: 'error', content: 'Error Saving Contact Info'})
+        }
     }
 
     return (
@@ -230,7 +248,7 @@ export default function Main({user, availability, contactInfo}:Props) {
                                 </Typography>
                             </Box>
                             <Box>
-                                <ContactInfoForm vals={contactInfo.data.info} onSubmit={(a, b) => {}} />
+                                <ContactInfoForm vals={contactInfo.data.info} onSubmit={onContactInfoSubmit} />
                             </Box>
                         </Box>
                     </Paper>

@@ -17,3 +17,10 @@ export async function getUserContactInfo(userId:string):Promise<ContactInfo> {
         getUserContactInfoInnerQuery(userId)
     )
 }
+
+export async function updateContactInfoInfo(id:string, info:ContactInfo['data']['info']) {
+
+    await client.query(
+        q.Update(q.Ref(q.Collection('contactInfo'), id), {data: {info}})
+    )
+}

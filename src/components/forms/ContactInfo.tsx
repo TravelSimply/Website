@@ -77,7 +77,7 @@ export default function ContactInfo({vals, onSubmit}:Props) {
         socials: vals?.socials || {}
     }
 
-    const [socialInputs, setSocialInputs] = useState(Object.keys(initialVals.socials))
+    const [socialInputs, setSocialInputs] = useState(Object.keys(initialVals.socials).filter(key => initialVals.socials[key]))
 
     const addSocialInput = (vals) => {
         setSocialInputs([...socialInputs, findNextSocial(vals)])
