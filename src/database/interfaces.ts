@@ -64,6 +64,14 @@ export interface ClientContactInfo extends Omit<ContactInfo, 'ref'> {
     ref: {'@ref': Ref};
 }
 
+export interface UserDataWithContactInfo extends UserData {
+    contactInfo: ContactInfo;
+}
+
+export interface UserWithContactInfo extends Omit<User, 'data'> {
+    data: UserDataWithContactInfo;
+}
+
 
 // formatted 'MMDD'
 // e.g. January 2nd would be '0102'
@@ -194,6 +202,14 @@ export interface ClientTravelGroupData extends Omit<TravelGroupData, 'date'> {
         start: string;
         end: string;
     }
+}
+
+export interface TravelGroupDataWithPopulatedTravellersAndContactInfo extends Omit<TravelGroupData, 'members'> {
+    members: UserWithContactInfo[];
+}
+
+export interface TravelGroupWithPopulatedTravellersAndContactInfo extends Omit<TravelGroup, 'data'> {
+    data: TravelGroupDataWithPopulatedTravellersAndContactInfo;
 }
 
 export interface TravelGroup {
