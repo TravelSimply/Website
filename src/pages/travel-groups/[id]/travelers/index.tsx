@@ -1,6 +1,6 @@
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { ClientTravelGroup, ClientUser } from "../../../../database/interfaces";
-import { getTravelGroup } from "../../../../database/utils/travelGroups";
+import { getTravelGroup, getTravelGroupWithPopulatedTravellersAndContactInfo } from "../../../../database/utils/travelGroups";
 import { getAuthUser } from "../../../../utils/auth";
 import styles from '../../../../styles/pages/HeaderSidebarFooter.module.css'
 import Head from 'next/head'
@@ -58,9 +58,9 @@ export const getServerSideProps:GetServerSideProps = async (ctx:GetServerSidePro
 
         const id = ctx.params.id as string
 
-        const travelGroup = await getTravelGroup(id)
+        const travelGroup = await getTravelGroupWithPopulatedTravellersAndContactInfo(id, user)
 
-        if (!travelGroup.data.members.includes(user.ref.id)) {
+        if (travelGroup === 0) {
             throw 'User not in travel group'
         }
 
@@ -70,6 +70,7 @@ export const getServerSideProps:GetServerSideProps = async (ctx:GetServerSidePro
         }}
 
     } catch (e) {
+        console.log(e)
         return {props: {}, redirect: {destination: '/'}}
     }
 }
