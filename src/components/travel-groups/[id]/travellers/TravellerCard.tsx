@@ -77,7 +77,7 @@ export default function TravellerCard({user, isAdmin, traveller}:Props) {
                                                         <ListItemText primary={<Typography variant={small ? 'h6' : 'h4'}>
                                                             {traveller.data.firstName} {traveller.data.lastName}
                                                         </Typography>} secondary={<Typography variant={small ? 'body2' : 'h6'} 
-                                                        color="rgba(0,0,0,.7)">
+                                                        color="text.secondary">
                                                             @{traveller.data.username}
                                                         </Typography>} />
                                                     </Box>
