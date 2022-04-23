@@ -36,12 +36,16 @@ function formatPhoneNumber(phone:string) {
 export default function TravellerCard({user, isAdmin, traveller}:Props) {
 
     const contactInfo = useMemo(() => {
-        return traveller.data.contactInfo.data.info
+        return traveller.data.contactInfo?.data.info
     }, [traveller])
 
     const copyToClipboard = (val:string) => {
         navigator.clipboard.writeText(val)
     }
+
+    const travellerIsUser = useMemo(() => {
+        return user.ref['@ref'].id === traveller.ref['@ref'].id
+    }, [traveller])
 
     const theme = useTheme()
 
@@ -85,7 +89,7 @@ export default function TravellerCard({user, isAdmin, traveller}:Props) {
                                             </Box>
                                         </Box>
                                         <Box>
-                                            {contactInfo.socials && !small && <Socials contactInfo={contactInfo}
+                                            {contactInfo?.socials && !small && <Socials contactInfo={contactInfo}
                                             copy={copyToClipboard} />}
                                         </Box>
                                     </Grid>
@@ -102,8 +106,8 @@ export default function TravellerCard({user, isAdmin, traveller}:Props) {
                         </Box>
                     </Grid>
                     <Grid item>
-                        <Box height="100%" px={2} py={2} bgcolor="orangeBg.light">
-                            {user.ref['@ref'].id !== traveller.ref['@ref'].id &&
+                        <Box height="100%" minHeight={72} px={2} py={2} bgcolor="orangeBg.light">
+                            {!travellerIsUser &&
                             <Grid container height="100%" spacing={3} justifyContent="space-between" alignItems="center">
                                 <Grid item>
                                     {!user.data.friends?.includes(traveller.ref['@ref'].id) &&
@@ -113,8 +117,8 @@ export default function TravellerCard({user, isAdmin, traveller}:Props) {
                                     }
                                 </Grid>
                                 {isAdmin && <Grid item>
-                                    <OrangePrimaryIconButton>
-                                        <MoreVertIcon />                                        
+                                    <OrangePrimaryIconButton >
+                                        <MoreVertIcon/>                                        
                                     </OrangePrimaryIconButton> 
                                 </Grid>}
                             </Grid>
@@ -132,7 +136,11 @@ interface InfoProps {
     copy: (val:string) => void;
 }
 
-export function Socials({contactInfo}:InfoProps) {
+export function Socials({contactInfo, copy}:InfoProps) {
+
+    if (!contactInfo) {
+        return null
+    }
 
     const socials = ['whatsapp', 'facebook', 'groupMe', 'discord']
 
@@ -143,7 +151,7 @@ export function Socials({contactInfo}:InfoProps) {
                     <Grid container spacing={1} alignItems="center">
                         <Grid item>
                             <Tooltip arrow title="copy">
-                                <IconButton>
+                                <IconButton onClick={() => copy(contactInfo.socials[social])}>
                                     <img loading="lazy" src={`/${social.toLowerCase()}.svg`}
                                     style={{width: 24, height: 24}} />
                                 </IconButton>
@@ -161,6 +169,10 @@ export function Socials({contactInfo}:InfoProps) {
 }
 
 export function Basic({contactInfo, copy}:InfoProps) {
+
+    if (!contactInfo) {
+        return null
+    }
 
     return (
         <Grid container spacing={1} direction="column">
