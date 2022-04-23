@@ -1,5 +1,5 @@
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { ClientTravelGroup, ClientUser } from "../../../database/interfaces";
+import { ClientTravelGroup, ClientTravelGroupWithPopulatedTravellersAndContactInfo, ClientUser } from "../../../database/interfaces";
 import { getTravelGroup } from "../../../database/utils/travelGroups";
 import { getAuthUser } from "../../../utils/auth";
 import styles from '../../../styles/pages/HeaderSidebarFooter.module.css'
@@ -14,7 +14,8 @@ interface Props {
     travelGroup: ClientTravelGroup;
 }
 
-export function getDrawerItems(travelGroup:ClientTravelGroup, selected:number) {
+export function getDrawerItems(travelGroup:ClientTravelGroup | ClientTravelGroupWithPopulatedTravellersAndContactInfo,
+     selected:number) {
     const id = travelGroup.ref['@ref'].id
 
     return [

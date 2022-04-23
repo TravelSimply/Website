@@ -68,8 +68,16 @@ export interface UserDataWithContactInfo extends UserData {
     contactInfo: ContactInfo;
 }
 
+export interface ClientUserDataWithContactInfo extends UserData {
+    contactInfo: ClientContactInfo;
+}
+
 export interface UserWithContactInfo extends Omit<User, 'data'> {
     data: UserDataWithContactInfo;
+}
+
+export interface ClientUserWithContactInfo extends Omit<User, 'data'> {
+    data: ClientUserDataWithContactInfo;
 }
 
 
@@ -225,4 +233,12 @@ export interface TravelGroupStringDates {
 export interface ClientTravelGroup {
     ref: {'@ref': Ref};
     data: ClientTravelGroupData;
+}
+
+export interface ClientTravelGroupDataWithPopulatedTravellersAndContactInfo extends Omit<ClientTravelGroupData, 'members'> {
+    members: ClientUserWithContactInfo[];
+}
+
+export interface ClientTravelGroupWithPopulatedTravellersAndContactInfo extends Omit<ClientTravelGroup, 'data'> {
+    data: ClientTravelGroupDataWithPopulatedTravellersAndContactInfo;
 }

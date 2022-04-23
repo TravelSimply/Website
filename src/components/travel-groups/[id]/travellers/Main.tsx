@@ -1,12 +1,15 @@
 import { Box, Container, Divider, Grid, Paper, Typography } from "@mui/material";
-import { ClientTravelGroup, ClientUser } from "../../../../database/interfaces";
+import { ClientTravelGroup, ClientTravelGroupWithPopulatedTravellersAndContactInfo, ClientUser } from "../../../../database/interfaces";
+import TravellerCard from "./TravellerCard";
 
 interface Props {
     user: ClientUser;
-    travelGroup: ClientTravelGroup;
+    travelGroup: ClientTravelGroupWithPopulatedTravellersAndContactInfo;
 }
 
 export default function Main({user, travelGroup}:Props) {
+
+    console.log(travelGroup)
 
     return (
         <Box>
@@ -33,6 +36,10 @@ export default function Main({user, travelGroup}:Props) {
                                         <Box mx="auto" maxWidth={300}>
                                             <Divider />
                                         </Box>
+                                    </Box>
+                                    <Box>
+                                        <TravellerCard user={user} isAdmin={travelGroup.data.owner === user.ref['@ref'].id}
+                                         traveller={travelGroup.data.members.find(m => m.ref['@ref'].id === travelGroup.data.owner)}/>
                                     </Box>
                                 </Box>
                                 <Box mb={3}>

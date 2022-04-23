@@ -1,9 +1,213 @@
-import { ClientFilteredUser } from "../../../../database/interfaces";
+import { Avatar, Box, Grid, IconButton, ListItemText, Paper, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { useMemo } from "react";
+import { ClientFilteredUser, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
+import PhoneIcon from '@mui/icons-material/Phone';
+import EmailIcon from '@mui/icons-material/Email';
+import { OrangeDensePrimaryButton, OrangePrimaryButton, OrangePrimaryIconButton } from "../../../mui-customizations/buttons";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 interface Props {
-    user: ClientFilteredUser;
+    user: ClientUser;
+    isAdmin: boolean;
+    traveller: ClientUserWithContactInfo;
 }
 
-export default function TravellerCard({}) {
+function formatPhoneNumber(phone:string) {
+    if (isNaN(parseInt(phone))) {
+        return phone
+    }
+    if (phone.length !== 10) {
+        return phone
+    }
+    return phone.split('').map((val, i) => {
+        if (i === 0) {
+            return `(${val}`
+        }
+        if (i === 2) {
+            return `${val}) `
+        }
+        if (i === 5) {
+            return `${val}-`
+        }
+        return val
+    }).join('')
+}
 
+export default function TravellerCard({user, isAdmin, traveller}:Props) {
+
+    const contactInfo = useMemo(() => {
+        return traveller.data.contactInfo.data.info
+    }, [traveller])
+
+    const copyToClipboard = (val:string) => {
+        navigator.clipboard.writeText(val)
+    }
+
+    const theme = useTheme()
+
+    const small = useMediaQuery(theme.breakpoints.down('sm'))
+
+    return (
+        <Box maxWidth={600} height="100%">
+            <Paper sx={{height: '100%'}}>
+                <Grid container direction="column" height="100%" justifyContent="space-between">
+                    <Grid item>
+                        <Box p={2}>
+                            <Box>
+                                <Grid container wrap="nowrap" spacing={5}>
+                                    <Grid item>
+                                        <Box mb={3}>
+                                            <Box display="flex" justifyContent="center">
+                                                <Avatar sx={{width: {xs: 100, sm: 100}, height: {xs: 100, sm: 100}}}
+                                                src={traveller.data.image?.src || '/default_profile.png'} imgProps={{
+                                                    referrerPolicy: 'no-referrer',
+                                                    loading: 'lazy'
+                                                }} />
+                                            </Box>
+                                        </Box>
+                                        <Box>
+                                            {!small && <Basic contactInfo={contactInfo} copy={copyToClipboard} />}
+                                        </Box>
+                                    </Grid>
+                                    <Grid item flex={1}>
+                                        <Box mb={3}>
+                                            <Box sx={{height: {xs: 100, sm: 100}}}>
+                                                <Box display="grid" height="100%" alignItems="center">
+                                                    <Box>
+                                                        <ListItemText primary={<Typography variant={small ? 'h6' : 'h4'}>
+                                                            {traveller.data.firstName} {traveller.data.lastName}
+                                                        </Typography>} secondary={<Typography variant={small ? 'body2' : 'h6'} 
+                                                        color="rgba(0,0,0,.7)">
+                                                            @{traveller.data.username}
+                                                        </Typography>} />
+                                                    </Box>
+                                                </Box>
+                                            </Box>
+                                        </Box>
+                                        <Box>
+                                            {contactInfo.socials && !small && <Socials contactInfo={contactInfo}
+                                            copy={copyToClipboard} />}
+                                        </Box>
+                                    </Grid>
+                                </Grid>
+                            </Box>
+                            {small && <Box>
+                                <Box>
+                                    <Basic contactInfo={contactInfo} copy={copyToClipboard} />
+                                </Box>     
+                                <Box mt={2}>
+                                    <Socials contactInfo={contactInfo} copy={copyToClipboard} />
+                                </Box>
+                            </Box>}
+                        </Box>
+                    </Grid>
+                    <Grid item>
+                        <Box height="100%" px={2} py={2} bgcolor="orangeBg.light">
+                            {user.ref['@ref'].id !== traveller.ref['@ref'].id &&
+                            <Grid container height="100%" spacing={3} justifyContent="space-between" alignItems="center">
+                                <Grid item>
+                                    {!user.data.friends?.includes(traveller.ref['@ref'].id) &&
+                                    <OrangeDensePrimaryButton>
+                                        Add Friend
+                                    </OrangeDensePrimaryButton>
+                                    }
+                                </Grid>
+                                {isAdmin && <Grid item>
+                                    <OrangePrimaryIconButton>
+                                        <MoreVertIcon />                                        
+                                    </OrangePrimaryIconButton> 
+                                </Grid>}
+                            </Grid>
+                            }
+                        </Box>
+                    </Grid>
+                </Grid>
+            </Paper>
+        </Box>
+    )
+}
+
+interface InfoProps {
+    contactInfo:ClientUserWithContactInfo['data']['contactInfo']['data']['info']
+    copy: (val:string) => void;
+}
+
+export function Socials({contactInfo}:InfoProps) {
+
+    const socials = ['whatsapp', 'facebook', 'groupMe', 'discord']
+
+    return (
+        <Grid container direction="column" spacing={1}>
+            {socials.map(social => contactInfo.socials[social] && 
+            <Grid item xs={6} key={social}>
+                    <Grid container spacing={1} alignItems="center">
+                        <Grid item>
+                            <Tooltip arrow title="copy">
+                                <IconButton>
+                                    <img loading="lazy" src={`/${social.toLowerCase()}.svg`}
+                                    style={{width: 24, height: 24}} />
+                                </IconButton>
+                            </Tooltip>
+                        </Grid>
+                        <Grid item>
+                            <Typography variant="body1">
+                                {contactInfo.socials[social]}
+                            </Typography>
+                        </Grid>
+                    </Grid>
+            </Grid>)}
+        </Grid>
+    )
+}
+
+export function Basic({contactInfo, copy}:InfoProps) {
+
+    return (
+        <Grid container spacing={1} direction="column">
+            {(contactInfo.phones?.home || contactInfo.phones?.mobile) &&
+            <Grid item>
+                <Grid container spacing={1} wrap="nowrap" alignItems="center">
+                    <Grid item>
+                        <Tooltip arrow title="Copy">
+                            <OrangePrimaryIconButton 
+                            onClick={() => copy(formatPhoneNumber(
+                                contactInfo.phones?.mobile || contactInfo.phones?.home || ''
+                            ))}>
+                                <PhoneIcon /> 
+                            </OrangePrimaryIconButton>
+                        </Tooltip>
+                    </Grid>
+                    <Grid item>
+                        {contactInfo.phones?.home && <Box my={1}>
+                            <Typography variant="body1">
+                                {formatPhoneNumber(contactInfo.phones.home)}
+                            </Typography>
+                        </Box>}
+                        {contactInfo.phones?.mobile && <Box my={1}>
+                            <Typography variant="body1">
+                                {formatPhoneNumber(contactInfo.phones.mobile)}
+                            </Typography>
+                        </Box>}
+                    </Grid>
+                </Grid>
+            </Grid>}
+            {contactInfo.email && <Grid item>
+                <Grid container spacing={1} wrap="nowrap" alignItems="center">
+                    <Grid item>
+                        <Tooltip arrow title="Copy">
+                            <OrangePrimaryIconButton 
+                            onClick={() => copy(contactInfo.email)}>
+                                <EmailIcon/>
+                            </OrangePrimaryIconButton>
+                        </Tooltip>
+                    </Grid>
+                    <Grid item>
+                        <Typography variant="body1">
+                            {contactInfo.email}
+                        </Typography>
+                    </Grid>
+                </Grid>
+            </Grid>}
+        </Grid>
+    )
 }
