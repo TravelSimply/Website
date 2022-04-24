@@ -12,7 +12,7 @@ import {Box} from '@mui/material'
 
 interface Props {
     user: ClientUser;
-    travelGroup: ClientTravelGroupWithPopulatedTravellersAndContactInfo;
+    travelGroup: ClientTravelGroup;
 }
 
 export default function Travelers({user, travelGroup}:Props) {
@@ -58,9 +58,9 @@ export const getServerSideProps:GetServerSideProps = async (ctx:GetServerSidePro
 
         const id = ctx.params.id as string
 
-        const travelGroup = await getTravelGroupWithPopulatedTravellersAndContactInfo(id, user)
+        const travelGroup = await getTravelGroup(id)
 
-        if (travelGroup === 0) {
+        if (!travelGroup.data.members.includes(user.ref.id)) {
             throw 'User not in travel group'
         }
 

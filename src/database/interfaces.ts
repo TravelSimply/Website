@@ -242,3 +242,14 @@ export interface ClientTravelGroupDataWithPopulatedTravellersAndContactInfo exte
 export interface ClientTravelGroupWithPopulatedTravellersAndContactInfo extends Omit<ClientTravelGroup, 'data'> {
     data: ClientTravelGroupDataWithPopulatedTravellersAndContactInfo;
 }
+
+
+export interface TravelGroupInvitation {
+    ref: Ref;
+    data: {
+        timeSent: Expr; // Time
+        travelGroup: string;
+        from: string;
+        to: string;
+    }
+}

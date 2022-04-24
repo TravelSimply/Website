@@ -1,6 +1,6 @@
 import client from '../fauna'
 import {query as q} from 'faunadb'
-import { Ref, User, VerificationToken } from '../interfaces'
+import { Ref, User, UserWithContactInfo, VerificationToken } from '../interfaces'
 import {Profile} from 'next-auth'
 
 function filterName(name:string) {
@@ -225,6 +225,25 @@ export async function getUsernamesAndRefs():Promise<{ref:Ref;username:string}[]>
 
     return await client.query(
         q.Paginate(q.Match(q.Index('all_users_w_username')), {size: 1000000})
+    )
+}
+
+export async function getTravellersWithContactInfo(travellers:string[]):Promise<UserWithContactInfo[]> {
+
+    return await client.query(
+        q.Map(travellers, q.Lambda(
+            'member',
+            q.If(
+                q.Exists(q.Ref(q.Collection('users'), q.Var('member'))),
+                q.Let(
+                    {
+                        user: q.Get(q.Ref(q.Collection('users'), q.Var('member')))
+                    },
+                    populateUserWithContactInfo()
+                ),
+                null
+            )
+        ))
     )
 }
 

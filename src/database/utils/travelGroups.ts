@@ -130,3 +130,31 @@ export async function getTravelGroupWithPopulatedTravellersAndContactInfo(id:str
         )
     )
 }
+
+export async function getTravelGroupMembersWithContactInfo(id:string) {
+    
+    return await client.query(
+        q.If(
+            q.Exists(q.Ref(q.Collection('travelGroups'), id)),
+            q.Let(
+                {
+                    travelGroup: q.Get(q.Ref(q.Collection('travelGroups'), id))
+                },
+                q.Map(q.Select(['data', 'members'], q.Var('travelGroup')), q.Lambda(
+                    'member',
+                    q.If(
+                        q.Exists(q.Ref(q.Collection('users'), q.Var('member'))),
+                        q.Let(
+                            {
+                                user: q.Get(q.Ref(q.Collection('users'), q.Var('member')))
+                            },
+                            populateUserWithContactInfo()
+                        ),
+                        null
+                    )
+                ))
+            ),
+            null
+        )
+    )
+}

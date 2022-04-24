@@ -1,5 +1,6 @@
-import { Box, ButtonGroup, Container, Divider, Grid, Paper, Typography } from "@mui/material";
-import { useMemo, useState } from "react";
+import { Box, ButtonGroup, CircularProgress, Container, Divider, Grid, Paper, Typography } from "@mui/material";
+import { useCallback, useMemo, useState } from "react";
+import useSWR, { mutate } from "swr";
 import { ClientTravelGroup, ClientTravelGroupWithPopulatedTravellersAndContactInfo, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
 import { searchForUsers } from "../../../../utils/search";
 import { darkPrimaryOnHover } from "../../../misc/animations";
@@ -9,7 +10,7 @@ import TravellerCard from "./TravellerCard";
 
 interface Props {
     user: ClientUser;
-    travelGroup: ClientTravelGroupWithPopulatedTravellersAndContactInfo;
+    travelGroup: ClientTravelGroup;
 }
 
 export default function Main({user, travelGroup}:Props) {
@@ -17,12 +18,49 @@ export default function Main({user, travelGroup}:Props) {
     const [mode, setMode] = useState('travellers')
     const modes = ['travellers', 'invites', 'requests']
 
-    const [travellers, setTravellers] = useState(travelGroup.data.members)
-    const [searchedTravellers, setSearchedTravellers] = useState(travellers)
+    const {data:travellers, isValidating:isValidatingTravellers} = useSWR<ClientUserWithContactInfo[]>(
+        `/api/travel-groups/${travelGroup.ref['@ref'].id}/travellers`,
+        {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000})
+
+    const [searchedTravellers, setSearchedTravellers] = useState(travellers || [])
 
     const [search, setSearch] = useState('')
 
+    const needToRevalidateTravellers = useCallback(() => {
+        const matches = {}
+        for (const traveller of travellers) {
+            if (!travelGroup.data.members.includes(traveller?.ref['@ref'].id)) {
+                return true
+            }
+            matches[traveller?.ref['@ref'].id] = true
+        }
+        for (const traveller of travelGroup.data.members) {
+            if (matches[traveller]) {
+                continue
+            }
+            if (!travellers?.find(t => t.ref['@ref'].id === traveller)) {
+                return true
+            }
+        }
+        return false
+    }, [travelGroup, travellers])
+
     useMemo(() => {
+        if (!travellers) {
+            return
+        }
+        if (needToRevalidateTravellers()) {
+            mutate(`/api/travel-groups/${travelGroup.ref['@ref'].id}/travellers`)
+            return
+        }
+        setSearchedTravellers(travellers)
+    }, [travellers])
+
+    useMemo(() => {
+
+        if (!travellers) {
+            return
+        }
 
         if (!search.trim()) {
             setSearchedTravellers(travellers)
@@ -46,7 +84,7 @@ export default function Main({user, travelGroup}:Props) {
                     <Grid item display={{xs: 'none', md: 'initial'}} flexBasis={{xs: 0, md: "max(300px, 25%)"}} />
                 </Grid>
             </Box>
-            <Box>
+            {(travellers && !isValidatingTravellers) ? <Box>
                 <Grid container wrap="nowrap">
                     <Grid item flex={1}>
                         <Box mb={4}>
@@ -64,7 +102,7 @@ export default function Main({user, travelGroup}:Props) {
                                 <Grid container justifyContent="center">
                                     <Grid item flexBasis={600}>
                                         <TravellerCard user={user} isAdmin={travelGroup.data.owner === user.ref['@ref'].id}
-                                        traveller={travelGroup.data.members.find(m => m.ref['@ref'].id === travelGroup.data.owner)}/>
+                                        traveller={travellers.find(m => m.ref['@ref'].id === travelGroup.data.owner)}/>
                                     </Grid>
                                 </Grid>
                             </Box>
@@ -122,7 +160,10 @@ export default function Main({user, travelGroup}:Props) {
                         </Box>
                     </Grid>
                 </Grid>
-            </Box>
+            </Box> :
+            <Box textAlign="center">
+                <CircularProgress />
+            </Box>}
         </Box>
     )
 }
