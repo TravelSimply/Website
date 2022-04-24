@@ -8,6 +8,7 @@ import { PrimarySearchBar } from "../../../../misc/searchBars";
 import { OrangeDensePrimaryButton, OrangeDenseSecondaryButton, OrangePrimaryButton, OrangeSecondaryButton } from "../../../../mui-customizations/buttons";
 import InviteCard from "../InviteCard";
 import Snackbar from '../../../../misc/snackbars'
+import { searchForFromInvites } from "../../../../../utils/search";
 
 interface Props {
     user: ClientUser;
@@ -30,23 +31,11 @@ export default function Main({user}:Props) {
     }, [invites])
 
     useMemo(() => {
-        const lcSearch = search.toLowerCase().trim()
         if (!invites) return
-        if (!lcSearch) {
+        if (!search.trim()) {
             return setSearchedInvites(invites)
         }
-        setSearchedInvites(invites.filter(invite => {
-            if (invite.data.from.data.caseInsensitiveUsername.includes(lcSearch)) {
-                return true
-            }
-            if (invite.data.from.data.firstName.toLowerCase().includes(lcSearch)) {
-                return true
-            }
-            if (invite.data.from.data.lastName.toLowerCase().includes(lcSearch)) {
-                return true
-            }
-            return false
-        }))
+        setSearchedInvites(searchForFromInvites(search, invites))
     }, [search])
 
     useMemo(() => {
