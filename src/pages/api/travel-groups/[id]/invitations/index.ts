@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getTravelGroupInvitations } from "../../../../database/utils/travelGroupInvitations";
+import { getTravelGroupInvitations } from "../../../../../database/utils/travelGroupInvitations";
 
 export default async function TravelGroupInvitations(req:NextApiRequest, res:NextApiResponse) {
 
