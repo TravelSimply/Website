@@ -1,4 +1,4 @@
-import { ClientFilteredUser, ClientPopulatedFromFriendRequest, ClientPopulatedToFriendRequest, ClientUser } from "../database/interfaces";
+import { ClientFilteredUser, ClientPopulatedFromFriendRequest, ClientPopulatedToFriendRequest, ClientUser, ClientUserWithContactInfo } from "../database/interfaces";
 
 export function matchesAtLeastOneTerm(search:string, terms:string[]) {
 
@@ -33,7 +33,7 @@ export function searchForFromInvites(search:string, invites:ClientPopulatedFromF
     })
 }
 
-export function searchForUsers(search:string, users:ClientFilteredUser[]) {
+export function searchForUsers(search:string, users:(ClientFilteredUser | ClientUserWithContactInfo)[]) {
 
     const lcSearch = search.toLowerCase().trim()
 
