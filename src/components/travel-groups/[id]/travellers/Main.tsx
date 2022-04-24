@@ -7,6 +7,7 @@ import { darkPrimaryOnHover } from "../../../misc/animations";
 import { PrimarySearchBar } from "../../../misc/searchBars";
 import { OrangeButtonGroup } from "../../../mui-customizations/buttonGroup";
 import TravellerCard from "./TravellerCard";
+import Travellers from "./Travellers";
 
 interface Props {
     user: ClientUser;
@@ -22,52 +23,7 @@ export default function Main({user, travelGroup}:Props) {
         `/api/travel-groups/${travelGroup.ref['@ref'].id}/travellers`,
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000})
 
-    const [searchedTravellers, setSearchedTravellers] = useState(travellers || [])
-
     const [search, setSearch] = useState('')
-
-    const needToRevalidateTravellers = useCallback(() => {
-        const matches = {}
-        for (const traveller of travellers) {
-            if (!travelGroup.data.members.includes(traveller?.ref['@ref'].id)) {
-                return true
-            }
-            matches[traveller?.ref['@ref'].id] = true
-        }
-        for (const traveller of travelGroup.data.members) {
-            if (matches[traveller]) {
-                continue
-            }
-            if (!travellers?.find(t => t.ref['@ref'].id === traveller)) {
-                return true
-            }
-        }
-        return false
-    }, [travelGroup, travellers])
-
-    useMemo(() => {
-        if (!travellers) {
-            return
-        }
-        if (needToRevalidateTravellers()) {
-            mutate(`/api/travel-groups/${travelGroup.ref['@ref'].id}/travellers`)
-            return
-        }
-        setSearchedTravellers(travellers)
-    }, [travellers])
-
-    useMemo(() => {
-
-        if (!travellers) {
-            return
-        }
-
-        if (!search.trim()) {
-            setSearchedTravellers(travellers)
-        }
-
-        setSearchedTravellers(searchForUsers(search, travellers) as ClientUserWithContactInfo[])
-    }, [search])
 
     return (
         <Box>
@@ -133,16 +89,8 @@ export default function Main({user, travelGroup}:Props) {
                             </Box>
                             <Box>
                                 {mode === 'travellers' ? 
-                                <Box>
-                                    <Grid container alignItems="stretch" justifyContent="space-around">
-                                        {searchedTravellers.map((member, i) => (
-                                            <Grid item key={i} flexBasis={600} sx={{mb: 3, mx: 1}}>
-                                                <TravellerCard user={user} isAdmin={travelGroup.data.owner === user.ref['@ref'].id}
-                                                traveller={member} />
-                                            </Grid>
-                                        ))}
-                                    </Grid>
-                                </Box> :
+                                <Travellers user={user} travelGroup={travelGroup}
+                                travellers={travellers} search={search} /> :
                                 mode === 'invites' ?
                                 <Box>
                                     Invites
