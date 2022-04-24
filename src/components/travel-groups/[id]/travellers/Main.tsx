@@ -6,6 +6,7 @@ import { searchForUsers } from "../../../../utils/search";
 import { darkPrimaryOnHover } from "../../../misc/animations";
 import { PrimarySearchBar } from "../../../misc/searchBars";
 import { OrangeButtonGroup } from "../../../mui-customizations/buttonGroup";
+import SendInvite from "./SendInvite";
 import TravellerCard from "./TravellerCard";
 import Travellers from "./Travellers";
 
@@ -104,7 +105,7 @@ export default function Main({user, travelGroup}:Props) {
                     </Grid>
                     <Grid item display={{xs: 'none', md: 'initial'}} flexBasis={{xs: 0, md: "max(300px, 25%)"}}>
                         <Box>
-                            sidebar
+                            <SendInvite user={user} travelGroup={travelGroup} />
                         </Box>
                     </Grid>
                 </Grid>
