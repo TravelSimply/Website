@@ -270,7 +270,7 @@ function selectAllUserData() {
     return {
         username: insertData('username'),
         caseInsensitiveUsername: insertData('caseInsensitiveUsername'),
-        password: insertData('password'),
+        password: null,
         firstName: insertData('firstName'),
         lastName: insertData('lastName'),
         email: insertData('email'),
