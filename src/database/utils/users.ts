@@ -1,5 +1,5 @@
 import client from '../fauna'
-import {query as q} from 'faunadb'
+import {Expr, query as q} from 'faunadb'
 import { Ref, User, UserWithContactInfo, VerificationToken } from '../interfaces'
 import {Profile} from 'next-auth'
 
@@ -276,7 +276,8 @@ function selectAllUserData() {
         email: insertData('email'),
         image: insertData('image'),
         friends: insertData('friends'),
-        oAuthIdentifier: insertData('oAuthIdentifier')
+        oAuthIdentifier: insertData('oAuthIdentifier'),
+        notifications: insertData('notifications')
     } 
 }
 
@@ -292,4 +293,35 @@ export function populateUserWithContactInfo() {
             )
         }
     }
+}
+
+export function addBasicNotification(collection:string, id:Expr, user:Expr) {
+
+    return q.If(
+        q.Exists(q.Select(['data', 'notifications'], user)),
+        q.Update(q.Select('ref', user), {
+            data: {
+                notifications: {
+                    basic: q.Append(q.Reduce(
+                    q.Lambda((filtered, curr) => q.If(
+                        q.Or(q.LT(q.Count(filtered), 9), q.Not(q.Select('seen', curr))),
+                        q.Append(curr, filtered),
+                        null
+                    )),
+                    [],
+                    q.Select(['data', 'notifications', 'basic'], user)
+                ), [{seen: false, collection, id}])
+                },
+                travelGroups: q.Select(['data', 'notifications', 'travelGroups'], user)
+            }
+        }),
+        q.Update(q.Select('ref', user), {
+            data: {
+                notifications: {
+                    basic: [{seen: false, collection, id}],
+                    travelGroups: []
+                }
+            }
+        })
+    )
 }

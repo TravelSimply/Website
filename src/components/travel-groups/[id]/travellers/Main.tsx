@@ -28,7 +28,8 @@ export default function Main({user, travelGroup}:Props) {
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
     )
 
-    console.log('invites', invites)
+    // console.log('invites', invites)
+    console.log('travellers', travellers)
 
     const [search, setSearch] = useState('')
 
