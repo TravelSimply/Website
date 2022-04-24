@@ -1,7 +1,7 @@
 import { Alert, AlertTitle, Box, CircularProgress, Collapse, Container, IconButton } from '@mui/material'
 import React, {useMemo, useState} from 'react'
 import { ClientUser } from '../../../../../database/interfaces'
-import FriendAdder from '../../FriendAdder'
+import FriendAdder from '../../UserAdder'
 import CloseIcon from '@mui/icons-material/Close'
 import { OrangeDensePrimaryButton, OrangePrimaryButton } from '../../../../mui-customizations/buttons'
 import useSWR from 'swr'
@@ -79,7 +79,7 @@ export default function Main({user}:Props) {
                 {!requestIds ? <Box textAlign="center">
                     <CircularProgress />
                 </Box> :
-                <FriendAdder setAddedFriends={setAddedFriends} 
+                <FriendAdder setAddedUsers={setAddedFriends} 
                 startingAddList={startingAddList}>
                     {alert && <Box mt={1}>
                         <Collapse in={Boolean(alert)}>

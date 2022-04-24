@@ -8,26 +8,26 @@ import { ClientUser } from '../../../database/interfaces';
 import ClearIcon from '@mui/icons-material/Clear';
 
 interface Props {
-    setAddedFriends: Dispatch<SetStateAction<ClientUser[]>>;
+    setAddedUsers: Dispatch<SetStateAction<ClientUser[]>>;
     startingAddList: ClientUser[];
     children?: React.ReactNode;
 }
 
-export default function FriendAdder({setAddedFriends, startingAddList, children}:Props) {
+export default function UserAdder({setAddedUsers, startingAddList, children}:Props) {
 
-    const [friends, setFriends] = useState(startingAddList)
+    const [users, setUsers] = useState(startingAddList)
 
     const [options, setOptions] = useState([])
     const [search, setSearch] = useState('')
     const [loading, setLoading] = useState(false)
 
     useMemo(() => {
-        setFriends(startingAddList)
+        setUsers(startingAddList)
     }, [startingAddList])
 
     useEffect(() => {
-        setAddedFriends(friends)
-    }, [friends])
+        setAddedUsers(users)
+    }, [users])
 
     const updateOptions = async (search:string) => {
         if(!search) return setLoading(false)
@@ -53,8 +53,8 @@ export default function FriendAdder({setAddedFriends, startingAddList, children}
     const handleChange = (event, value) => {
         if (!value) return
         setSearch('')
-        if (friends.find(friend => friend.data.username === value.data.username)) return
-        setFriends([...friends, value])
+        if (users.find(friend => friend.data.username === value.data.username)) return
+        setUsers([...users, value])
     }
 
     const handleInputChange = (event, value) => {
@@ -67,10 +67,10 @@ export default function FriendAdder({setAddedFriends, startingAddList, children}
         return () => clearTimeout(timeOutId)
     }, [search])
 
-    const removeFriend = (i:number) => {
-        const friendsCopy = [...friends]
-        friendsCopy.splice(i, 1)
-        setFriends(friendsCopy)
+    const removeUser = (i:number) => {
+        const usersCopy = [...users]
+        usersCopy.splice(i, 1)
+        setUsers(usersCopy)
     }
 
     return (
@@ -93,17 +93,17 @@ export default function FriendAdder({setAddedFriends, startingAddList, children}
             {children}
             <Box mt={3}>
                 <List>
-                    {friends.map((friend, i) => (
-                        <React.Fragment key={friend.data.username}>
+                    {users.map((user, i) => (
+                        <React.Fragment key={user.data.username}>
                             <ListItem secondaryAction={
-                                <IconButton onClick={() => removeFriend(i)}>
+                                <IconButton onClick={() => removeUser(i)}>
                                     <ClearIcon />
                                 </IconButton>
                             } >
                                 <ListItemAvatar>
-                                    <Avatar src={friend.data.image?.src || '/default_profile.png'} imgProps={{referrerPolicy: 'no-referrer'}} />
+                                    <Avatar src={user.data.image?.src || '/default_profile.png'} imgProps={{referrerPolicy: 'no-referrer'}} />
                                 </ListItemAvatar>
-                                <ListItemText primary={friend.data.username} secondary={friend.data.firstName + ' ' + friend.data.lastName} />
+                                <ListItemText primary={user.data.username} secondary={user.data.firstName + ' ' + user.data.lastName} />
                             </ListItem>
                             <Divider variant="inset" component="li" />
                         </React.Fragment>
