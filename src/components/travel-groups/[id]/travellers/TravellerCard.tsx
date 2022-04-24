@@ -110,10 +110,15 @@ export default function TravellerCard({user, isAdmin, traveller}:Props) {
                             {!travellerIsUser &&
                             <Grid container height="100%" spacing={3} justifyContent="space-between" alignItems="center">
                                 <Grid item>
-                                    {!user.data.friends?.includes(traveller.ref['@ref'].id) &&
+                                    {!user.data.friends?.includes(traveller.ref['@ref'].id) ?
                                     <OrangeDensePrimaryButton>
                                         Add Friend
-                                    </OrangeDensePrimaryButton>
+                                    </OrangeDensePrimaryButton> : 
+                                    <Box>
+                                        <Typography color="primary.main" variant="h6">
+                                            Friends
+                                        </Typography>
+                                    </Box>
                                     }
                                 </Grid>
                                 {isAdmin && <Grid item>
