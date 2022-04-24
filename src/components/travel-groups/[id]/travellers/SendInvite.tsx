@@ -1,15 +1,20 @@
 import {useMemo, useState} from 'react'
 import { Container, Paper } from "@mui/material";
 import { Box } from "@mui/system";
-import { ClientTravelGroup, ClientUser } from "../../../../database/interfaces";
+import { ClientTravelGroup, ClientTravelGroupInvitationWithToPopulated, ClientUser } from "../../../../database/interfaces";
 import UserAdder from '../../../account/profile/UserAdder';
 
 interface Props {
     user: ClientUser;
     travelGroup: ClientTravelGroup;
+    invites: ClientTravelGroupInvitationWithToPopulated[];
 }
 
-export default function SendInvite({user, travelGroup}:Props) {
+export default function SendInvite({user, travelGroup, invites}:Props) {
+
+    if (!invites) {
+        return null
+    }
 
     if (travelGroup.data.settings.invitePriveleges === 'ownerOnly' && 
         user.ref['@ref'].id !== travelGroup.data.owner) {

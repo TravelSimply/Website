@@ -253,3 +253,31 @@ export interface TravelGroupInvitation {
         to: string;
     }
 }
+
+export interface ClientTravelGroupInvitation {
+    ref: {'@ref': Ref};
+    data: {
+        timeSent: string;
+        travelGroup: string;
+        from: string;
+        to: string;
+    }
+}
+
+export interface ClientTravelGroupInvitationWithToPopulated extends Omit<ClientTravelGroupInvitation, 'data'> {
+    data: {
+        timeSent: string;
+        travelGroup: string;
+        from: string;
+        to: ClientFilteredUser;
+    }
+}
+
+export interface TravelGroupJoinRequest {
+    ref: Ref;
+    data: {
+        timeSent: Expr; // Time
+        travelGroup: string;
+        from: string;
+    }
+}

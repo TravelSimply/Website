@@ -1,7 +1,7 @@
 import { Box, ButtonGroup, CircularProgress, Container, Divider, Grid, Paper, Typography } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import useSWR, { mutate } from "swr";
-import { ClientTravelGroup, ClientTravelGroupWithPopulatedTravellersAndContactInfo, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
+import { ClientTravelGroup, ClientTravelGroupInvitationWithToPopulated, ClientTravelGroupWithPopulatedTravellersAndContactInfo, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
 import { searchForUsers } from "../../../../utils/search";
 import { darkPrimaryOnHover } from "../../../misc/animations";
 import { PrimarySearchBar } from "../../../misc/searchBars";
@@ -18,11 +18,17 @@ interface Props {
 export default function Main({user, travelGroup}:Props) {
 
     const [mode, setMode] = useState('travellers')
-    const modes = ['travellers', 'invites', 'requests']
 
     const {data:travellers, isValidating:isValidatingTravellers} = useSWR<ClientUserWithContactInfo[]>(
         `/api/travel-groups/${travelGroup.ref['@ref'].id}/travellers`,
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000})
+
+    const {data:invites, isValidating:isValidatingInvites} = useSWR<ClientTravelGroupInvitationWithToPopulated[]>(
+        `/api/travel-groups/${travelGroup.ref['@ref'].id}/invitations`,
+        {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
+    )
+
+    console.log('invites', invites)
 
     const [search, setSearch] = useState('')
 
@@ -43,7 +49,7 @@ export default function Main({user, travelGroup}:Props) {
             </Box>
             {(travellers && !isValidatingTravellers) ? <Box>
                 <Grid container wrap="nowrap">
-                    <Grid item flex={1}>
+                    <Grid item flex={1} minWidth={{xs: 0, sm: 500}}>
                         <Box mb={4}>
                             <Box mb={1}>
                                 <Box textAlign="center" color="text.secondary">
@@ -103,9 +109,9 @@ export default function Main({user, travelGroup}:Props) {
                             </Box>
                         </Box>
                     </Grid>
-                    <Grid item display={{xs: 'none', md: 'initial'}} flexBasis={{xs: 0, md: "max(300px, 25%)"}}>
+                    <Grid item display={{xs: 'none', md: 'initial'}} flexBasis={{xs: 0, md: "clamp(400px, 600px, 40%)"}}>
                         <Box>
-                            <SendInvite user={user} travelGroup={travelGroup} />
+                            <SendInvite invites={invites} user={user} travelGroup={travelGroup} />
                         </Box>
                     </Grid>
                 </Grid>
