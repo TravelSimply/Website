@@ -6,6 +6,7 @@ import { searchForUsers } from "../../../../utils/search";
 import { darkPrimaryOnHover } from "../../../misc/animations";
 import { PrimarySearchBar } from "../../../misc/searchBars";
 import { OrangeButtonGroup } from "../../../mui-customizations/buttonGroup";
+import Invites from "./Invites";
 import SendInvite from "./SendInvite";
 import TravellerCard from "./TravellerCard";
 import Travellers from "./Travellers";
@@ -23,7 +24,7 @@ export default function Main({user, travelGroup}:Props) {
         `/api/travel-groups/${travelGroup.ref['@ref'].id}/travellers`,
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000})
 
-    const {data:invites, isValidating:isValidatingInvites} = useSWR<ClientTravelGroupInvitationWithToPopulated[]>(
+    const {data:invites} = useSWR<ClientTravelGroupInvitationWithToPopulated[]>(
         `/api/travel-groups/${travelGroup.ref['@ref'].id}/invitations`,
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
     )
@@ -48,7 +49,7 @@ export default function Main({user, travelGroup}:Props) {
                     <Grid item display={{xs: 'none', md: 'initial'}} flexBasis={{xs: 0, md: "max(300px, 25%)"}} />
                 </Grid>
             </Box>
-            {(travellers && !isValidatingTravellers) ? <Box>
+            {(travellers && !isValidatingTravellers && invites) ? <Box>
                 <Grid container wrap="nowrap">
                     <Grid item flex={1} minWidth={{xs: 0, sm: 500}}>
                         <Box mb={4}>
@@ -86,7 +87,7 @@ export default function Main({user, travelGroup}:Props) {
                                 <OrangeButtonGroup selected={mode} setSelected={setMode} 
                                 options={[
                                     {value: 'travellers', text: `${travellers.length} Travellers`},
-                                    {value: 'invites', text: '0 Invites'},
+                                    {value: 'invites', text: `${invites.length} Invites`},
                                     {value: 'requests', text: '0 Join Requests'}
                                 ]} />
                             </Box>
@@ -100,9 +101,8 @@ export default function Main({user, travelGroup}:Props) {
                                 <Travellers user={user} travelGroup={travelGroup}
                                 travellers={travellers} search={search} /> :
                                 mode === 'invites' ?
-                                <Box>
-                                    Invites
-                                </Box> :
+                                <Invites user={user} users={travellers} search={search} invites={invites}
+                                isAdmin={user.ref['@ref'].id === travelGroup.data.owner} /> :
                                 <Box>
                                     Requests
                                 </Box>

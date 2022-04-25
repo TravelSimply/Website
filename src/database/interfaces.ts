@@ -303,6 +303,15 @@ export interface ClientTravelGroupInvitationWithToPopulated extends Omit<ClientT
     }
 }
 
+export interface ClientTravelGroupInvitationUsersPopulated extends Omit<ClientTravelGroupInvitation, 'data'> {
+    data: {
+        timeSent: {'@ts': string};
+        travelGroup: string;
+        from: ClientFilteredUser | ClientUser | ClientUserWithContactInfo;
+        to: ClientFilteredUser | ClientUser | ClientUserWithContactInfo;
+    }
+}
+
 export interface TravelGroupJoinRequest {
     ref: Ref;
     data: {
