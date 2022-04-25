@@ -20,34 +20,9 @@ interface UserData {
     oAuthIdentifier?: {
         google?: string;
     },
-    notifications?: {
-        basic: {
-            seen: boolean;
-            collection: string;
-            id: string;
-        }[];
-        travelGroups: {
-            id: string;
-            lastUpdated: Expr;
-            isUpdated: boolean;
-        }[];
-    }
 }
 
-interface ClientUserData extends Omit<UserData, 'notifications'> {
-    notifications?: {
-        basic: {
-            seen: boolean;
-            collection: string;
-            id: string;
-        }[];
-        travelGroups: {
-            id: string;
-            lastUpdated: string;
-            isUpdated: boolean;
-        }[];
-    }
-}
+interface ClientUserData extends UserData { }
 
 export interface User {
     ref: Ref;
@@ -65,6 +40,24 @@ interface FilteredUserData extends Omit<UserData, 'password'> {
 
 export interface ClientFilteredUser extends Omit<ClientUser, 'data'> {
     data: FilteredUserData;
+}
+
+export interface UserNotifications {
+    ref: Ref;
+    data: {
+        userId: string;
+        basic: {
+            seen: boolean;
+            collection: string;
+            id: string;
+            time: Expr;
+        }[];
+        travelGroups: {
+            id: string;
+            lastUpdated: Expr;
+            isUpdated: boolean;
+        }[];
+    }
 }
 
 

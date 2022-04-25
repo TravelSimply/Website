@@ -298,30 +298,30 @@ export function populateUserWithContactInfo() {
 export function addBasicNotification(collection:string, id:Expr, user:Expr) {
 
     return q.If(
-        q.ContainsPath(['data', 'notifications'], user),
-        q.Update(q.Select('ref', user), {
-            data: {
-                notifications: {
+        q.Exists(q.Match(q.Index('userNotifications_by_userId'), user)),
+        q.Let(
+            {
+                notifications: q.Get(q.Match(q.Index('userNotifications_by_userId'), user))
+            },
+            q.Update(
+                q.Select('ref', q.Var('notifications')),
+                {data: {
                     basic: q.Append(q.Reduce(
-                    q.Lambda((filtered, curr) => q.If(
-                        q.Or(q.LT(q.Count(filtered), 9), q.Not(q.Select('seen', curr))),
-                        q.Append(curr, filtered),
-                        null
-                    )),
-                    [],
-                    q.Select(['data', 'notifications', 'basic'], user)
-                ), [{seen: false, collection, id}])
-                },
-                travelGroups: q.Select(['data', 'notifications', 'travelGroups'], user)
-            }
-        }),
-        q.Update(q.Select('ref', user), {
-            data: {
-                notifications: {
-                    basic: [{seen: false, collection, id}],
-                    travelGroups: []
-                }
-            }
-        })
+                        q.Lambda((filtered, curr) => q.If(
+                            q.Or(q.LT(q.Count(filtered), 9), q.Not(q.Select('seen', curr))),
+                            q.Append(curr, filtered),
+                            null
+                        )),
+                        [],
+                        q.Select(['data', 'basic'], q.Var('notifications'))
+                    ), [{seen: false, collection, id, time: q.Now()}])
+                }}
+            )
+        ),
+        q.Create(q.Collection('userNotifications'), {data: {
+            userId: user,
+            travelGroups: [],
+            basic: [{seen: false, collection, id, time: q.Now()}]
+        }})
     )
 }
