@@ -298,7 +298,7 @@ export function populateUserWithContactInfo() {
 export function addBasicNotification(collection:string, id:Expr, user:Expr) {
 
     return q.If(
-        q.Exists(q.Select(['data', 'notifications'], user)),
+        q.ContainsPath(['data', 'notifications'], user),
         q.Update(q.Select('ref', user), {
             data: {
                 notifications: {

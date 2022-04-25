@@ -1,10 +1,13 @@
 import {useMemo, useState} from 'react'
 import { Alert, AlertTitle, Collapse, Container, Grid, IconButton, Paper, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { ClientTravelGroup, ClientTravelGroupInvitationWithToPopulated, ClientUser } from "../../../../database/interfaces";
+import { ClientTravelGroup, ClientTravelGroupInvitation, ClientTravelGroupInvitationWithToPopulated, ClientUser, TravelGroupInvitation } from "../../../../database/interfaces";
 import UserAdder from '../../../account/profile/UserAdder';
 import CloseIcon from '@mui/icons-material/Close'
 import { OrangePrimaryButton } from '../../../mui-customizations/buttons';
+import axios from 'axios';
+import Snackbar from '../../../misc/snackbars'
+import { mutate } from 'swr';
 
 interface Props {
     user: ClientUser;
@@ -27,6 +30,7 @@ export default function SendInvite({user, travelGroup, invites}:Props) {
     const [startingAddList, setStartingAddList] = useState<ClientUser[]>([])
 
     const [alert, setAlert] = useState('')
+    const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
 
     const [loading, setLoading] = useState(false)
 
@@ -56,10 +60,32 @@ export default function SendInvite({user, travelGroup, invites}:Props) {
         const ids = addedTravellers.map(t => t.ref['@ref'].id)
 
         try {
-            // send request
-        } catch (e) {
+            const {data: createdInvites} = await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/invitations/send`,
+                data: {
+                    travelGroupId: travelGroup.ref['@ref'].id,
+                    to: ids
+                }
+            }) as {data: ClientTravelGroupInvitation[]}
 
+            setSnackbarMsg({type: 'success', content: 'Invites Sent Successfully'})
+            setStartingAddList([]) 
+            mutate(`/api/travel-groups/${travelGroup.ref['@ref'].id}/invitations`, 
+            [...invites, ...createdInvites.map((inv, i) => {
+                return {
+                    ...inv,
+                    data: {
+                        ...inv.data,
+                        to: addedTravellers[i]
+                    }
+                } 
+            })], false)
+        } catch (e) {
+            setSnackbarMsg({type: 'error', content: 'Error inviting travelers'})
         }
+
+        setLoading(false)
     }
 
     return (
@@ -88,7 +114,8 @@ export default function SendInvite({user, travelGroup, invites}:Props) {
                         <Grid item>
                             {addedTravellers.length > 0 && <Box mt={2}>
                                 <Box maxWidth={200} mx="auto">
-                                    <OrangePrimaryButton disabled={loading} fullWidth>
+                                    <OrangePrimaryButton disabled={loading} fullWidth
+                                    onClick={() => sendInvites()}>
                                         Invite
                                     </OrangePrimaryButton>
                                 </Box>
@@ -97,6 +124,7 @@ export default function SendInvite({user, travelGroup, invites}:Props) {
                     </Box>
                 </Paper>
             </Box>
+            <Snackbar msg={snackbarMsg} setMsg={setSnackbarMsg} />
         </Box>
     )
 }

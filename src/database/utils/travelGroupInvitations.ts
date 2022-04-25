@@ -13,19 +13,26 @@ export async function getTravelGroupInvitations(travelGroupId:string):Promise<{d
     )
 }
 
-export async function sendInvitationWithNotificationUpdate(from:string, to:string, travelGroupId:string) {
+export async function sendInvitationsWithNotificationUpdate(from:string, to:string[], 
+    travelGroupId:string):Promise<TravelGroupInvitation[]> {
 
-    await client.query(
-        q.Let(
-            {
-                invite: q.Create(q.Collection('travelGroupInvitations'), {data: {
-                    to, from,
-                    travelGroup: travelGroupId,
-                    timeSent: q.Now()
-                }}),
-                to: q.Get(q.Ref(q.Collection('users'), to))
-            },
-            addBasicNotification('travelGroupInvitations', q.Select(['ref', 'id'], q.Var('invite')), q.Var('to'))
-        )
+    return await client.query(
+        q.Map(to, q.Lambda('id', 
+            q.Let(
+                {
+                    invite: q.Create(q.Collection('travelGroupInvitations'), {data: {
+                        to: q.Var('id'),
+                        from,
+                        travelGroup: travelGroupId,
+                        timeSent: q.Now()
+                    }}),
+                    to: q.Get(q.Ref(q.Collection('users'), q.Var('id')))
+                },
+                q.Do(
+                    addBasicNotification('travelGroupInvitations', q.Select(['ref', 'id'], q.Var('invite')), q.Var('to')),
+                    q.Var('invite')
+                )
+            )
+        ))
     )
 }

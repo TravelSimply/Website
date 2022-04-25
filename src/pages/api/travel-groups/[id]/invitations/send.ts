@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { sendInvitationWithNotificationUpdate } from "../../../../../database/utils/travelGroupInvitations";
+import { sendInvitationsWithNotificationUpdate } from "../../../../../database/utils/travelGroupInvitations";
 import { verifyUser } from "../../../../../utils/auth";
 
 export default verifyUser(async function SendInvite(req:NextApiRequest, res:NextApiResponse) {
@@ -12,9 +12,9 @@ export default verifyUser(async function SendInvite(req:NextApiRequest, res:Next
 
         const {travelGroupId, to, jwtUser} = req.body
 
-        await sendInvitationWithNotificationUpdate(jwtUser.userId, to, travelGroupId)
+        const invites = await sendInvitationsWithNotificationUpdate(jwtUser.userId, to, travelGroupId)
 
-        return res.status(200).json({msg: 'Success'})
+        return res.status(200).json(invites)
     } catch (e) {
         console.log(e)
         return res.status(500).json({msg: 'Internal Server Error'})
