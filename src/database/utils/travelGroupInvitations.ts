@@ -1,6 +1,6 @@
 import {query as q} from 'faunadb'
 import client from '../fauna'
-import { TravelGroupInvitation } from '../interfaces'
+import { TravelGroupInvitation, TravelGroupInvitationWithToPopulated } from '../interfaces'
 import { addBasicNotification } from './users'
 
 export async function getTravelGroupInvitations(travelGroupId:string):Promise<{data: TravelGroupInvitation[]}> {
@@ -9,6 +9,29 @@ export async function getTravelGroupInvitations(travelGroupId:string):Promise<{d
         q.Map(q.Paginate(q.Match(q.Index('travelGroupInvitations_by_travelGroup'), travelGroupId)), q.Lambda(
             'ref',
             q.Get(q.Var('ref'))
+        ))
+    )
+}
+
+export async function getTravelGroupInvitationsWithToPopulated(travelGroupId:string):Promise<{data: TravelGroupInvitationWithToPopulated[]}> {
+
+    return await client.query(
+        q.Map(q.Paginate(q.Match(q.Index('travelGroupInvitations_by_travelGroup'), travelGroupId)), q.Lambda(
+            'ref',
+            q.Let(
+                {
+                    invite: q.Get(q.Var('ref'))
+                },
+                {
+                    ref: q.Select('ref', q.Var('invite')),
+                    data: {
+                        from: q.Select(['data', 'from'], q.Var('invite')),
+                        travelGroup: q.Select(['data', 'travelGroup'], q.Var('invite')),
+                        timeSent: q.Select(['data', 'timeSent'], q.Var('invite')),
+                        to: q.Get(q.Ref(q.Collection('users'), q.Select(['data', 'to'], q.Var('invite'))))
+                    }
+                }
+            )
         ))
     )
 }
