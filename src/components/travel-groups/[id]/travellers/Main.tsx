@@ -46,7 +46,7 @@ export default function Main({user, travelGroup}:Props) {
                             </Typography>
                         </Box>
                     </Grid>
-                    <Grid item display={{xs: 'none', md: 'initial'}} flexBasis={{xs: 0, md: "max(300px, 25%)"}} />
+                    <Grid item display={{xs: 'none', md: 'initial'}} flexBasis={{xs: 0, md: "clamp(400px, 600px, 40%)"}} />
                 </Grid>
             </Box>
             {(travellers && !isValidatingTravellers && invites) ? <Box>
