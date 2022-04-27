@@ -1,9 +1,10 @@
 import { Box, ButtonGroup, CircularProgress, Container, Divider, Grid, Paper, Typography } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import useSWR, { mutate } from "swr";
-import { ClientTravelGroup, ClientTravelGroupInvitationWithToPopulated, ClientTravelGroupWithPopulatedTravellersAndContactInfo, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
+import { ClientTravelGroup, ClientTravelGroupInvitationWithToPopulated, ClientTravelGroupJoinRequestWithFromPopulated, ClientTravelGroupWithPopulatedTravellersAndContactInfo, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
 import { searchForUsers } from "../../../../utils/search";
 import { darkPrimaryOnHover } from "../../../misc/animations";
+import { PrimaryLink } from "../../../misc/links";
 import { PrimarySearchBar } from "../../../misc/searchBars";
 import { OrangeButtonGroup } from "../../../mui-customizations/buttonGroup";
 import Invites from "./Invites";
@@ -29,8 +30,14 @@ export default function Main({user, travelGroup}:Props) {
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
     )
 
-    console.log('invites', invites)
-    console.log('travellers', travellers)
+    const {data: requests} = useSWR<ClientTravelGroupJoinRequestWithFromPopulated[]>(
+        `/api/travel-groups/${travelGroup.ref['@ref'].id}/join-requests`,
+        {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
+    )
+
+    // console.log('invites', invites)
+    // console.log('travellers', travellers)
+    console.log('requests', requests)
 
     const [search, setSearch] = useState('')
 
@@ -41,15 +48,16 @@ export default function Main({user, travelGroup}:Props) {
                 <Grid container wrap="nowrap">
                     <Grid item flex={1}>
                         <Box textAlign="center">
-                            <Typography color="primary.main" variant="h4">
+                            <PrimaryLink href="/travel-groups/[id]" as={`/travel-groups/${travelGroup.ref['@ref'].id}`}
+                             variant="h4">
                                 {travelGroup.data.name}
-                            </Typography>
+                            </PrimaryLink>
                         </Box>
                     </Grid>
                     <Grid item display={{xs: 'none', md: 'initial'}} flexBasis={{xs: 0, md: "clamp(400px, 600px, 40%)"}} />
                 </Grid>
             </Box>
-            {(travellers && !isValidatingTravellers && invites) ? <Box>
+            {(travellers && !isValidatingTravellers && invites && requests) ? <Box>
                 <Grid container wrap="nowrap">
                     <Grid item flex={1} minWidth={{xs: 0, sm: 500}}>
                         <Box mb={4}>

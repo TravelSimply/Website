@@ -320,3 +320,28 @@ export interface TravelGroupJoinRequest {
         from: string;
     }
 }
+
+export interface ClientTravelGroupJoinRequest {
+    ref: {'@ref': Ref};
+    data: {
+        timeSent: {'@ts': string};
+        travelGroup: string;
+        from: string;
+    }
+}
+
+export interface TravelGroupJoinRequestWithFromPopulated extends Omit<TravelGroupJoinRequest, 'data'> {
+    data: {
+        timeSent: Expr;
+        travelGroup: string;
+        from: User;
+    }
+}
+
+export interface ClientTravelGroupJoinRequestWithFromPopulated extends Omit<ClientTravelGroupJoinRequest, 'data'> {
+    data: {
+        timeSent: {'@ts': string};
+        travelGroup: string;
+        from: ClientUser | ClientFilteredUser;
+    }
+}
