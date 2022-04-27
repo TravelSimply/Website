@@ -8,6 +8,7 @@ import { PrimaryLink } from "../../../misc/links";
 import { PrimarySearchBar } from "../../../misc/searchBars";
 import { OrangeButtonGroup } from "../../../mui-customizations/buttonGroup";
 import Invites from "./Invites";
+import JoinRequests from "./JoinRequests";
 import SendInvite from "./SendInvite";
 import TravellerCard from "./TravellerCard";
 import Travellers from "./Travellers";
@@ -37,7 +38,7 @@ export default function Main({user, travelGroup}:Props) {
 
     // console.log('invites', invites)
     // console.log('travellers', travellers)
-    console.log('requests', requests)
+    // console.log('requests', requests)
 
     const [search, setSearch] = useState('')
 
@@ -96,7 +97,7 @@ export default function Main({user, travelGroup}:Props) {
                                 options={[
                                     {value: 'travellers', text: `${travellers.length} Travellers`},
                                     {value: 'invites', text: `${invites.length} Invites`},
-                                    {value: 'requests', text: '0 Join Requests'}
+                                    {value: 'requests', text: `${requests.length} Join Requests`}
                                 ]} />
                             </Box>
                             <Box mb={2}>
@@ -111,9 +112,9 @@ export default function Main({user, travelGroup}:Props) {
                                 mode === 'invites' ?
                                 <Invites user={user} users={travellers} search={search} invites={invites}
                                 isAdmin={user.ref['@ref'].id === travelGroup.data.owner} /> :
-                                <Box>
-                                    Requests
-                                </Box>
+                                <JoinRequests search={search} joinRequests={requests}
+                                isAdmin={travelGroup.data.settings.joinRequestPriveleges === 'anyMember' ||
+                                    user.ref['@ref'].id === travelGroup.data.owner} />
                                 }
                             </Box>
                         </Box>

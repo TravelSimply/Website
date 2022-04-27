@@ -1,4 +1,4 @@
-import { ClientFilteredUser, ClientPopulatedFromFriendRequest, ClientPopulatedToFriendRequest, ClientTravelGroupInvitationUsersPopulated, ClientUser, ClientUserWithContactInfo } from "../database/interfaces";
+import { ClientFilteredUser, ClientPopulatedFromFriendRequest, ClientPopulatedToFriendRequest, ClientTravelGroupInvitationUsersPopulated, ClientTravelGroupJoinRequestWithFromPopulated, ClientUser, ClientUserWithContactInfo } from "../database/interfaces";
 
 export function matchesAtLeastOneTerm(search:string, terms:string[]) {
 
@@ -54,6 +54,19 @@ export function searchForTravelGroupInvites(search:string, invites:ClientTravelG
             inv.data.to.data.caseInsensitiveUsername,
             inv.data.to.data.firstName,
             inv.data.to.data.lastName
+        ])
+    })
+}
+
+export function searchForTravelGroupJoinRequests(search: string, requests:ClientTravelGroupJoinRequestWithFromPopulated[]) {
+
+    const lcSearch = search.toLowerCase().trim()
+
+    return requests.filter(req => {
+        return matchesAtLeastOneTerm(lcSearch, [
+            req.data.from.data.caseInsensitiveUsername,
+            req.data.from.data.firstName,
+            req.data.from.data.lastName
         ])
     })
 }

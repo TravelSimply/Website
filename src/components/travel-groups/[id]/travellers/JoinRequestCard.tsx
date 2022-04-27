@@ -1,20 +1,20 @@
-import { ClientTravelGroupInvitationUsersPopulated } from "../../../../database/interfaces";
-import {Box, Paper, Grid, Typography, Avatar, ListItemText} from '@mui/material'
-import { useMemo } from "react";
-import dayjs from "dayjs";
-import { OrangeDensePrimaryButton } from "../../../mui-customizations/buttons";
-import { findSentDiff } from "../../../../utils/dates";
+import {useMemo} from 'react'
+import { ClientTravelGroupJoinRequestWithFromPopulated } from "../../../../database/interfaces";
+import dayjs from 'dayjs'
+import { findSentDiff } from '../../../../utils/dates';
+import {Box, Paper, Grid, Avatar, Typography, ListItemText} from '@mui/material'
+import { OrangeDensePrimaryButton, OrangeDenseSecondaryButton } from '../../../mui-customizations/buttons';
 
 interface Props {
-    invite: ClientTravelGroupInvitationUsersPopulated;
+    request: ClientTravelGroupJoinRequestWithFromPopulated;
     isAdmin: boolean;
 }
 
-export default function InviteCard({invite, isAdmin}:Props) {
+export default function JoinRequestCard({request, isAdmin}:Props) {
 
     const sentDiff = useMemo(() => {
-        return findSentDiff(dayjs(invite.data.timeSent['@ts']))
-    }, [invite])
+        return findSentDiff(dayjs(request.data.timeSent['@ts']))
+    }, [request])
 
     return (
         <Box maxWidth={400} height="100%">
@@ -27,16 +27,16 @@ export default function InviteCard({invite, isAdmin}:Props) {
                                     <Grid item>
                                         <Box m={1}>
                                             <Avatar sx={{width: {xs: 50, sm: 100}, height: {xs: 50, sm: 100}}}
-                                            src={invite.data.to.data.image?.src || '/default_profile.png'} 
+                                            src={request.data.from.data.image?.src || '/default_profile.png'} 
                                             imgProps={{referrerPolicy: 'no-referrer'}} />
                                         </Box>
                                     </Grid>
                                     <Grid item>
                                         <Box mx={1}>
                                             <ListItemText primary={<Typography variant="h6">
-                                                {invite.data.to.data.firstName} {invite.data.to.data.lastName}
+                                                {request.data.from.data.firstName} {request.data.from.data.lastName}
                                             </Typography>} secondary={<Typography color="text.secondary" variant="body1">
-                                                @{invite.data.to.data.username}
+                                                @{request.data.from.data.username}
                                             </Typography>} />
                                         </Box>
                                     </Grid>
@@ -44,16 +44,25 @@ export default function InviteCard({invite, isAdmin}:Props) {
                             </Box>
                             <Box ml={1} mt={1}>
                                 <Typography variant="body1">
-                                    Invited by @{invite.data.from.data.username} {sentDiff} ago.
+                                    Requested {sentDiff} ago.
                                 </Typography>
                             </Box>
                         </Box>
                     </Grid>
                     {isAdmin && <Grid item>
                         <Box p={2} height="100%" bgcolor="orangeBg.light">
-                            <OrangeDensePrimaryButton>
-                                Rescind
-                            </OrangeDensePrimaryButton>
+                            <Grid container spacing={3}>
+                                <Grid item>
+                                    <OrangeDensePrimaryButton>
+                                        Accept
+                                    </OrangeDensePrimaryButton>
+                                </Grid>
+                                <Grid item>
+                                    <OrangeDenseSecondaryButton>
+                                        Reject
+                                    </OrangeDenseSecondaryButton>
+                                </Grid>
+                            </Grid>
                         </Box>
                     </Grid>}
                 </Grid>
