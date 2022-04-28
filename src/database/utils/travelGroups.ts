@@ -1,6 +1,6 @@
 import {query as q} from 'faunadb'
 import client from '../fauna'
-import { ClientTravelGroupData, TravelGroup, TravelGroupStringDates, TravelGroupWithPopulatedTravellersAndContactInfo, User } from '../interfaces'
+import { ClientTravelGroupData, TravelGroup, TravelGroupStringDates, TravelGroupWithPopulatedTravellersAndContactInfo, User, UserWithContactInfo } from '../interfaces'
 import { populateUserWithContactInfo } from './users'
 
 export async function getUserTravelGroupDates(userId:string):Promise<{data: [string, string][]}> {
@@ -131,7 +131,7 @@ export async function getTravelGroupWithPopulatedTravellersAndContactInfo(id:str
     )
 }
 
-export async function getTravelGroupMembersWithContactInfo(id:string) {
+export async function getTravelGroupMembersWithContactInfo(id:string):Promise<UserWithContactInfo[]> {
     
     return await client.query(
         q.If(
