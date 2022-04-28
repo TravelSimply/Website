@@ -8,9 +8,7 @@ export default async function getTravellers(req:NextApiRequest, res:NextApiRespo
 
         const popTravellers = await getTravelGroupMembersWithContactInfo(req.query.id as string)
 
-        console.log('POPULATING TRAVELLERS')
-
-        return res.status(200).json(popTravellers)
+        return res.status(200).json(popTravellers.sort((a, b) => a.data.lastName.localeCompare(b.data.lastName)))
     } catch (e) {
         console.log(e)
         return res.status(500).json({msg: 'Internal Server Error'})
