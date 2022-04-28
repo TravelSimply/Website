@@ -36,10 +36,6 @@ export default function Main({user, travelGroup}:Props) {
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
     )
 
-    // console.log('invites', invites)
-    // console.log('travellers', travellers)
-    // console.log('requests', requests)
-
     const [search, setSearch] = useState('')
 
     return (
@@ -110,7 +106,7 @@ export default function Main({user, travelGroup}:Props) {
                                 <Travellers user={user} travelGroup={travelGroup}
                                 travellers={travellers} search={search} /> :
                                 mode === 'invites' ?
-                                <Invites user={user} users={travellers} search={search} invites={invites}
+                                <Invites travelGroup={travelGroup} users={travellers} search={search} invites={invites}
                                 isAdmin={user.ref['@ref'].id === travelGroup.data.owner} /> :
                                 <JoinRequests search={search} joinRequests={requests}
                                 isAdmin={travelGroup.data.settings.joinRequestPriveleges === 'anyMember' ||

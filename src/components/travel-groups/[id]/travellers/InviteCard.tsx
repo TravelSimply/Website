@@ -1,20 +1,42 @@
-import { ClientTravelGroupInvitationUsersPopulated } from "../../../../database/interfaces";
+import { ClientTravelGroup, ClientTravelGroupInvitationUsersPopulated } from "../../../../database/interfaces";
 import {Box, Paper, Grid, Typography, Avatar, ListItemText} from '@mui/material'
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import dayjs from "dayjs";
 import { OrangeDensePrimaryButton } from "../../../mui-customizations/buttons";
 import { findSentDiff } from "../../../../utils/dates";
+import axios from "axios";
 
 interface Props {
     invite: ClientTravelGroupInvitationUsersPopulated;
     isAdmin: boolean;
+    travelGroup: ClientTravelGroup;
+    remove: () => void;
 }
 
-export default function InviteCard({invite, isAdmin}:Props) {
+export default function InviteCard({invite, isAdmin, travelGroup, remove}:Props) {
+
+    const [loading, setLoading] = useState(false)
 
     const sentDiff = useMemo(() => {
         return findSentDiff(dayjs(invite.data.timeSent['@ts']))
     }, [invite])
+
+    const rescindInvite = async () => {
+        setLoading(true)
+
+        try {
+            await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/invitations/rescind`,
+                data: {
+                    inviteId: invite.ref['@ref'].id
+                }
+            })
+            remove()
+        } catch (e) {
+            setLoading(false)
+        }
+    }
 
     return (
         <Box maxWidth={400} height="100%">
@@ -51,7 +73,7 @@ export default function InviteCard({invite, isAdmin}:Props) {
                     </Grid>
                     {isAdmin && <Grid item>
                         <Box p={2} height="100%" bgcolor="orangeBg.light">
-                            <OrangeDensePrimaryButton>
+                            <OrangeDensePrimaryButton onClick={() => rescindInvite()} disabled={loading}>
                                 Rescind
                             </OrangeDensePrimaryButton>
                         </Box>

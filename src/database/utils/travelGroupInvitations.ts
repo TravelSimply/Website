@@ -59,3 +59,10 @@ export async function sendInvitationsWithNotificationUpdate(from:string, to:stri
         ))
     )
 }
+
+export async function rescindInvitation(inviteId:string):Promise<TravelGroupInvitation> {
+
+    return await client.query(
+        q.Delete(q.Ref(q.Collection('travelGroupInvitations'), inviteId))
+    )
+}
