@@ -16,31 +16,8 @@ export default function Travellers({user, travelGroup, travellers, search}:Props
 
     const [searchedTravellers, setSearchedTravellers] = useState(travellers || [])
 
-    const needToRevalidateTravellers = useCallback(() => {
-        const matches = {}
-        for (const traveller of travellers) {
-            if (!travelGroup.data.members.includes(traveller?.ref['@ref'].id)) {
-                return true
-            }
-            matches[traveller?.ref['@ref'].id] = true
-        }
-        for (const traveller of travelGroup.data.members) {
-            if (matches[traveller]) {
-                continue
-            }
-            if (!travellers?.find(t => t.ref['@ref'].id === traveller)) {
-                return true
-            }
-        }
-        return false
-    }, [travelGroup, travellers])
-
     useMemo(() => {
         if (!travellers) {
-            return
-        }
-        if (needToRevalidateTravellers()) {
-            mutate(`/api/travel-groups/${travelGroup.ref['@ref'].id}/travellers`)
             return
         }
         setSearchedTravellers(travellers)

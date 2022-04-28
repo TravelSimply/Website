@@ -36,7 +36,7 @@ export default function Main({user, travelGroup}:Props) {
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
     )
 
-    console.log(travellers)
+    // console.log(travellers)
 
     const [search, setSearch] = useState('')
 
@@ -112,7 +112,8 @@ export default function Main({user, travelGroup}:Props) {
                                 isAdmin={user.ref['@ref'].id === travelGroup.data.owner} /> :
                                 <JoinRequests search={search} joinRequests={requests}
                                 isAdmin={travelGroup.data.settings.joinRequestPriveleges === 'anyMember' ||
-                                    user.ref['@ref'].id === travelGroup.data.owner} />
+                                    user.ref['@ref'].id === travelGroup.data.owner} travellers={travellers}
+                                    travelGroup={travelGroup} />
                                 }
                             </Box>
                         </Box>

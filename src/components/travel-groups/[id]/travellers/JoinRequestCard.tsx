@@ -1,20 +1,48 @@
-import {useMemo} from 'react'
-import { ClientTravelGroupJoinRequestWithFromPopulated } from "../../../../database/interfaces";
+import {useCallback, useMemo, useState} from 'react'
+import { ClientContactInfo, ClientTravelGroup, ClientTravelGroupJoinRequestWithFromPopulated, ClientUserWithContactInfo } from "../../../../database/interfaces";
 import dayjs from 'dayjs'
 import { findSentDiff } from '../../../../utils/dates';
 import {Box, Paper, Grid, Avatar, Typography, ListItemText} from '@mui/material'
 import { OrangeDensePrimaryButton, OrangeDenseSecondaryButton } from '../../../mui-customizations/buttons';
+import axios from 'axios';
+import { mutate } from 'swr';
 
 interface Props {
     request: ClientTravelGroupJoinRequestWithFromPopulated;
     isAdmin: boolean;
+    travellers: ClientUserWithContactInfo[];
+    travelGroup: ClientTravelGroup;
+    accept: (contactInfo:ClientContactInfo) => void;
 }
 
-export default function JoinRequestCard({request, isAdmin}:Props) {
+export default function JoinRequestCard({request, isAdmin, travellers, travelGroup, accept}:Props) {
+
+    const [loading, setLoading] = useState(false)
 
     const sentDiff = useMemo(() => {
         return findSentDiff(dayjs(request.data.timeSent['@ts']))
     }, [request])
+
+    const acceptRequest = async () => {
+        setLoading(true)
+
+        try {
+
+            const {data: contactInfo} = await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/join-requests/accept`,
+                data: {
+                    requestId: request.ref['@ref'].id,
+                    travellerId: request.data.from.ref['@ref'].id,
+                    userContactInfo: true
+                }
+            })
+
+            accept(contactInfo)
+        } catch (e) {
+            setLoading(false)
+        }
+    }
 
     return (
         <Box maxWidth={400} height="100%">
@@ -53,12 +81,12 @@ export default function JoinRequestCard({request, isAdmin}:Props) {
                         <Box p={2} height="100%" bgcolor="orangeBg.light">
                             <Grid container spacing={3}>
                                 <Grid item>
-                                    <OrangeDensePrimaryButton>
+                                    <OrangeDensePrimaryButton disabled={loading} onClick={() => acceptRequest()}>
                                         Accept
                                     </OrangeDensePrimaryButton>
                                 </Grid>
                                 <Grid item>
-                                    <OrangeDenseSecondaryButton>
+                                    <OrangeDenseSecondaryButton disabled={loading}>
                                         Reject
                                     </OrangeDenseSecondaryButton>
                                 </Grid>
