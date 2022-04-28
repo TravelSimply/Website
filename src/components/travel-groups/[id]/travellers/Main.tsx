@@ -36,6 +36,8 @@ export default function Main({user, travelGroup}:Props) {
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
     )
 
+    console.log(travellers)
+
     const [search, setSearch] = useState('')
 
     return (
