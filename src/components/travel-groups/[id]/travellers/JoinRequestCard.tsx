@@ -13,9 +13,10 @@ interface Props {
     travellers: ClientUserWithContactInfo[];
     travelGroup: ClientTravelGroup;
     accept: (contactInfo:ClientContactInfo) => void;
+    reject: (requestId:string) => void;
 }
 
-export default function JoinRequestCard({request, isAdmin, travellers, travelGroup, accept}:Props) {
+export default function JoinRequestCard({request, isAdmin, travellers, travelGroup, accept, reject}:Props) {
 
     const [loading, setLoading] = useState(false)
 
@@ -39,6 +40,25 @@ export default function JoinRequestCard({request, isAdmin, travellers, travelGro
             })
 
             accept(contactInfo)
+        } catch (e) {
+            setLoading(false)
+        }
+    }
+
+    const rejectRequest = async () => {
+        setLoading(true)
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/join-requests/reject`,
+                data: {
+                    requestId: request.ref['@ref'].id
+                }
+            })
+
+            reject(request.ref['@ref'].id)
         } catch (e) {
             setLoading(false)
         }
@@ -86,7 +106,7 @@ export default function JoinRequestCard({request, isAdmin, travellers, travelGro
                                     </OrangeDensePrimaryButton>
                                 </Grid>
                                 <Grid item>
-                                    <OrangeDenseSecondaryButton disabled={loading}>
+                                    <OrangeDenseSecondaryButton disabled={loading} onClick={() => rejectRequest()}>
                                         Reject
                                     </OrangeDenseSecondaryButton>
                                 </Grid>

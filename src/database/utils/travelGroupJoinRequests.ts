@@ -61,3 +61,10 @@ export async function acceptJoinRequestAndGetTravellerContactInfo(requestId:stri
         )
     )
 }
+
+export async function rejectJoinRequest(requestId:string) {
+
+    await client.query(
+        q.Delete(q.Ref(q.Collection('travelGroupJoinRequests'), requestId))
+    )
+}

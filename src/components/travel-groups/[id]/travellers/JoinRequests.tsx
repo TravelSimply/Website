@@ -58,6 +58,13 @@ export default function JoinRequests({joinRequests, search, isAdmin, travellers,
 
     }, [travellers, joinRequests])
 
+    const rejectRequest = useCallback((requestId:string) => {
+
+        mutate(`/api/travel-groups/${travelGroup.ref['@ref'].id}/join-requests`,
+        joinRequests.filter(req => req.ref['@ref'].id !== requestId), false)
+        
+    }, [travellers, joinRequests])
+
     useMemo(() => {
         const match = travellers.find(t => joinRequests.find(req => req.data.from.ref['@ref'].id === t.ref['@ref'].id))
         if (!match) return
@@ -72,7 +79,8 @@ export default function JoinRequests({joinRequests, search, isAdmin, travellers,
                 {searchedRequests.map((req, i) => (
                     <Grid item key={i} flexBasis={400} sx={{mb: 3, mx: 1}}>
                         <JoinRequestCard request={req} isAdmin={isAdmin}
-                        travellers={travellers} travelGroup={travelGroup} accept={acceptRequest} />
+                        travellers={travellers} travelGroup={travelGroup} accept={acceptRequest}
+                        reject={rejectRequest} />
                     </Grid>
                 ))}
             </Grid>
