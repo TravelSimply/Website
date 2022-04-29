@@ -4,9 +4,11 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { getDestination as getGeneralDestination } from "../../index/TravelGroupCard";
 import dayjs from "dayjs";
 import Calendar from "../../../calendar/Calendar";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { OrangePrimaryButton, OrangePrimaryIconButton, OrangeSecondaryButton } from "../../../mui-customizations/buttons";
 import EditIcon from '@mui/icons-material/Edit';
+import CancelIcon from '@mui/icons-material/Cancel';
+import EditOverview from './EditOverview'
 
 interface Props {
     user: ClientUser;
@@ -14,6 +16,8 @@ interface Props {
 }
 
 export default function Main({user, travelGroup}:Props) {
+
+    const [editing, setEditing] = useState(false)
 
     const [start, end] = useMemo(() => {
         return [
@@ -33,7 +37,10 @@ export default function Main({user, travelGroup}:Props) {
                 <Box mb={3}>
                     <Paper>
                         <Box position="relative" p={3}>
-                            <Box>
+                            {editing ? <EditOverview travelGroup={travelGroup}
+                            isAdmin={travelGroup.data.owner === user.ref['@ref'].id}
+                            junkIds={user.data.junkImagePublicIds} /> 
+                            : <Box>
                                 <Grid container spacing={3}>
                                     <Grid item>
                                         <Avatar sx={{width: {md: 200, sm: 150, xs: 150}, height: {md: 200, sm: 150, xs: 150},
@@ -73,10 +80,11 @@ export default function Main({user, travelGroup}:Props) {
                                         </Box> 
                                     </Grid>
                                 </Grid>
-                            </Box>
+                            </Box>}
                             <Box position="absolute" top="0px" right="0px">
-                                <OrangePrimaryIconButton>
-                                    <EditIcon sx={{fontSize: 30}} />
+                                <OrangePrimaryIconButton onClick={() => setEditing(!editing)}>
+                                    {editing ? <CancelIcon sx={{fontSize: 30}} /> :
+                                    <EditIcon sx={{fontSize: 30}} /> }
                                 </OrangePrimaryIconButton>
                             </Box>
                         </Box>

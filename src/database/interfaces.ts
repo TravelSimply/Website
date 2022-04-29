@@ -20,6 +20,7 @@ interface UserData {
     oAuthIdentifier?: {
         google?: string;
     },
+    junkImagePublicIds?: string[];
 }
 
 interface ClientUserData extends UserData { }
