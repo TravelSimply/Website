@@ -2,6 +2,8 @@ import { Avatar, Badge, Box, Grid, IconButton, CircularProgress } from "@mui/mat
 import { ClientTravelGroup } from "../../../../database/interfaces";
 import CreateIcon from '@mui/icons-material/Create'
 import { ChangeEvent, useRef, useState } from "react";
+import { FormikContextType, FormikHelpers } from "formik";
+import OverviewForm, {Props as OverviewFormProps} from '../../../forms/travel-groups/modify/Overview'
 
 interface Props {
     travelGroup: ClientTravelGroup;
@@ -18,8 +20,20 @@ export default function EditOverview({travelGroup, isAdmin, junkIds}:Props) {
     const [imgSrc, setImgSrc] = useState(travelGroup.data.image?.src)
     const [uploadingImage, setUploadingImage] =  useState(false)
 
+    const [formVals, setFormVals] = useState({
+        name: travelGroup.data.name,
+        desc: travelGroup.data.desc,
+        destination: travelGroup.data.destination
+    })
+
+    const [formContext, setFormContext] = useState<FormikContextType<OverviewFormProps['vals']>>(null)
+
     const handleFileUpload = async (e:ChangeEvent<HTMLInputElement>) => {
 
+    }
+
+    const onFormSubmit = async (values:OverviewFormProps['vals'], actions:FormikHelpers<OverviewFormProps['vals']>) => {
+        console.log('submitting')
     }
 
     console.log(imgSrc)
@@ -49,8 +63,10 @@ export default function EditOverview({travelGroup, isAdmin, junkIds}:Props) {
                         </Badge>
                     </Box>
                 </Grid>
-                <Grid item>
-                    other stuff
+                <Grid item flex={{sm: 1}} width={{xs: '100%', sm: 'auto'}}>
+                    <Box>
+                        <OverviewForm vals={formVals} onSubmit={onFormSubmit} setFormContext={setFormContext}  />
+                    </Box>
                 </Grid>
             </Grid>
         </Box>
