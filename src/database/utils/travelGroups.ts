@@ -1,6 +1,6 @@
 import {query as q} from 'faunadb'
 import client from '../fauna'
-import { ClientTravelGroupData, TravelGroup, TravelGroupStringDates, TravelGroupWithPopulatedTravellersAndContactInfo, User, UserWithContactInfo } from '../interfaces'
+import { ClientTravelGroupData, TravelGroup, TravelGroupProposal, TravelGroupStringDates, TravelGroupWithPopulatedTravellersAndContactInfo, User, UserWithContactInfo } from '../interfaces'
 import { populateUserWithContactInfo } from './users'
 
 export async function getUserTravelGroupDates(userId:string):Promise<{data: [string, string][]}> {
@@ -42,7 +42,17 @@ function dataWithStringDates() {
             estLength: q.Select(['data', 'date', 'estLength'], q.Var('travelGroup')),
             start: q.ToString(q.Select(['data', 'date', 'start'], q.Var('travelGroup'))),
             end: q.ToString(q.Select(['data', 'date', 'end'], q.Var('travelGroup')))
-        }
+        },
+        image: q.If(
+            q.ContainsField('image', q.Select('data', q.Var('travelGroup'))),
+            insertData('image'),
+            null
+        ),
+        lastUpdated: q.If(
+            q.ContainsField('lastUpdated', q.Select('data', q.Var('travelGroup'))),
+            insertData('lastUpdated'),
+            null
+        )
     }
 }
 
@@ -153,6 +163,39 @@ export async function getTravelGroupMembersWithContactInfo(id:string):Promise<Us
                         null
                     )
                 ))
+            ),
+            null
+        )
+    )
+}
+
+export async function getTravelGroupOwner(id:string):Promise<{data: string[]}> {
+
+    return await client.query(
+        q.Paginate(q.Match(q.Index('travelGroups_by_id_w_owner'), id))
+    )
+}
+
+export async function updateTravelGroupWithOwnerCheck(id:string, userId:string, 
+    data:TravelGroupProposal['data']['data'], userJunkIds?:string[]) {
+
+    await client.query(
+        q.If(
+            q.Equals(userId, q.Select(['data', 0], q.Paginate(q.Match(q.Index('travelGroups_by_id_w_owner'), id)))),
+            q.Do(
+                q.If(
+                    q.IsArray(userJunkIds || null),
+                    q.Update(
+                        q.Ref(q.Collection('users'), userId),
+                        {data: {junkImagePublicIds: userJunkIds}}
+                    ),
+                    null
+                ),
+                q.Update(
+                    q.Ref(q.Collection('travelGroups'), id),
+                    {data: {...data}}
+                )
+                // send a notification if we want to
             ),
             null
         )
