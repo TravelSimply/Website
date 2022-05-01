@@ -16,10 +16,12 @@ interface Props {
     travelGroup: ClientTravelGroup;
 }
 
-export default function Main({user, travelGroup}:Props) {
+export default function Main({user, travelGroup:dbTravelGroup}:Props) {
 
     const [editing, setEditing] = useState(false)
     const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
+
+    const [travelGroup, setTravelGroup] = useState(dbTravelGroup)
 
     const [start, end] = useMemo(() => {
         return [
@@ -33,12 +35,18 @@ export default function Main({user, travelGroup}:Props) {
         ${travelGroup.data.date.estLength[1].substring(0, travelGroup.data.date.estLength[1].length - 1)}`
     }, [])
 
-    const onEditComplete = (type:string) => {
+    const onEditComplete = (type:string, changes?) => {
         if (type === 'proposal') {
             setSnackbarMsg({type: 'success', content: 'Created Proposal'})
-        } else {
+        } else if (changes) {
             setSnackbarMsg({type: 'success', content: 'Updated Information'})
-            // change the information thru another parameter
+            setTravelGroup({
+                ...travelGroup,
+                data: {
+                    ...travelGroup.data,
+                    ...changes
+                } 
+            })
         } 
         setEditing(false)
     }

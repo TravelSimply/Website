@@ -13,7 +13,7 @@ interface Props {
     travelGroup: ClientTravelGroup;
     isAdmin: boolean;
     junkIds?: string[];
-    onEditComplete: (type:string) => void;
+    onEditComplete: (type:string, changes?) => void;
 }
 
 export default function EditOverview({travelGroup, isAdmin, junkIds, onEditComplete}:Props) {
@@ -79,20 +79,32 @@ export default function EditOverview({travelGroup, isAdmin, junkIds, onEditCompl
             return
         }
 
-
         try {
 
-            await axios({
-                method: 'POST',
-                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/proposals/propose`,
-                data: {
-                    type: 'overview',
-                    data: filteredVals,
-                    userJunkIds: junkIds?.length > 0 ? junkIds.splice(junkIds.indexOf(img.publicId), 1) : []
-                }
-            })
+            if (submitType === 'proposal') {
+                await axios({
+                    method: 'POST',
+                    url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/proposals/propose`,
+                    data: {
+                        type: 'overview',
+                        data: filteredVals,
+                        userJunkIds: junkIds?.length > 0 ? junkIds.splice(junkIds.indexOf(img.publicId), 1) : []
+                    }
+                })
+                onEditComplete(submitType)
+            } else {
+                await axios({
+                    method: 'POST',
+                    url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/update`,
+                    data: {
+                        data: filteredVals,
+                        userJunkIds: junkIds?.length > 0 ? junkIds.splice(junkIds.indexOf(img.publicId), 1) : [],
+                        originalPublicId: travelGroup.data.image?.publicId
+                    }
+                })
+                onEditComplete(submitType, filteredVals)
+            }
 
-            onEditComplete(submitType)
         } catch (e) {
             setSnackbarMsg({type: 'error', content: submitType === 'proposal' ? 'Error Creating Proposal' : 'Error Updating'})
             setLoading(false)
@@ -101,6 +113,12 @@ export default function EditOverview({travelGroup, isAdmin, junkIds, onEditCompl
 
     const handleProposeClick = () => {
         setSubmitType('proposal')
+        formContext.setSubmitting(true)
+        formContext.submitForm()
+    }
+
+    const handleOverrideClick = () => {
+        setSubmitType('override')
         formContext.setSubmitting(true)
         formContext.submitForm()
     }
@@ -146,7 +164,8 @@ export default function EditOverview({travelGroup, isAdmin, junkIds, onEditCompl
                             </Grid>
                             {isAdmin && <Grid item>
                                 <Box width={200}>
-                                    <OrangeSecondaryButton fullWidth disabled={loading}>
+                                    <OrangeSecondaryButton fullWidth disabled={loading}
+                                    onClick={() => handleOverrideClick()}>
                                         Override
                                     </OrangeSecondaryButton>
                                 </Box>
