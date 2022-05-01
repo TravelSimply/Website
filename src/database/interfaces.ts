@@ -55,8 +55,7 @@ export interface UserNotifications {
         }[];
         travelGroups: {
             id: string;
-            lastUpdated: Expr;
-            isUpdated: boolean;
+            lastUpdated: Expr; // Time
         }[];
     }
 }
@@ -222,16 +221,25 @@ export interface TravelGroupData {
         src: string;
         publicId: string;
     };
+    lastUpdated?: Expr; // Time
 }
 
-export interface ClientTravelGroupData extends Omit<TravelGroupData, 'date'> {
+export interface ClientTravelGroupData {
+    owner: TravelGroupData['owner'];
+    members: TravelGroupData['members'];
+    name: TravelGroupData['name'];
+    desc: TravelGroupData['desc'];
+    destination: TravelGroupData['destination'];
     date: {
         unknown: boolean;
         roughly: boolean;
         estLength: [number, string];
         start: string;
         end: string;
-    }
+    };
+    settings: TravelGroupData['settings'];
+    image?: TravelGroupData['image'];
+    lastUpdated?: {'@ts': string};
 }
 
 export interface TravelGroupDataWithPopulatedTravellersAndContactInfo extends Omit<TravelGroupData, 'members'> {
