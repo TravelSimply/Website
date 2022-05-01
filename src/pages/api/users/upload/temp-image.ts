@@ -34,7 +34,6 @@ export default async function UploadTempImage(req:NextApiRequest, res:NextApiRes
         const {fields: {allPublicIds, publicIdToModify}, files} = await new Promise((resolve, reject) => {
             form.parse(req, (err, fields, files) => {
                 if (err || !files?.file?.path) reject('error uploading file')
-                console.log(files.file)
                 if (files.file.type.substring(0, 5) !== 'image') reject('this is not an image')
                 resolve({fields, files})
             })
