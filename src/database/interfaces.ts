@@ -354,3 +354,25 @@ export interface ClientTravelGroupJoinRequestWithFromPopulated extends Omit<Clie
         from: ClientUser | ClientFilteredUser;
     }
 }
+
+
+export interface TravelGroupProposal {
+    ref: Ref;
+    data: {
+        travelGroup: string;
+        by: string; // User
+        type: string;
+        for: string[];
+        against: string[];
+        data: {
+            name?: string;
+            desc?: string;
+            destination?: TravelGroupData['destination'];
+            image?: TravelGroupData['image'];
+            date?: {
+                start: Expr; // Date
+                end: Expr; // Date
+            }
+        }
+    }
+}

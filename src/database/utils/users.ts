@@ -177,6 +177,16 @@ export async function updateUserImage(id:string, image:{src:string; publicId:str
     )
 }
 
+export async function updateUserJunkImagePublicIds(id:string, publicIds:string[]) {
+
+    await client.query(
+        q.Update(
+            q.Ref(q.Collection('users'), id),
+            {data: {junkImagePublicIds: publicIds}}
+        )
+    )
+}
+
 export async function updateUserFromEmail(email:string, 
     properties:{username?:string;firstName?:string;lastName?:string;caseInsensitiveUsername?:any}) {
 
