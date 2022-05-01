@@ -7,20 +7,25 @@ import OverviewForm, {Props as OverviewFormProps} from '../../../forms/travel-gr
 import { OrangePrimaryButton, OrangeSecondaryButton } from "../../../mui-customizations/buttons";
 import { uploadTempImage } from "../../../../utils/images";
 import Snackbar from '../../../misc/snackbars'
+import axios from "axios";
 
 interface Props {
     travelGroup: ClientTravelGroup;
     isAdmin: boolean;
     junkIds?: string[];
+    onEditComplete: (type:string) => void;
 }
 
-export default function EditOverview({travelGroup, isAdmin, junkIds}:Props) {
+export default function EditOverview({travelGroup, isAdmin, junkIds, onEditComplete}:Props) {
 
     const imageInputRef = useRef<HTMLInputElement>()
 
     const [img, setImg] = useState({src: travelGroup.data.image?.src, publicId: junkIds?.at(0) || undefined})
     const [uploadingImage, setUploadingImage] =  useState(false)
     const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
+
+    const [loading, setLoading] = useState(false)
+    const [submitType, setSubmitType] = useState('')
 
     const [formVals, setFormVals] = useState({
         name: travelGroup.data.name,
@@ -45,6 +50,8 @@ export default function EditOverview({travelGroup, isAdmin, junkIds}:Props) {
     }
 
     const onFormSubmit = async (values:OverviewFormProps['vals'], actions:FormikHelpers<OverviewFormProps['vals']>) => {
+        setLoading(true)
+
         const filledVals = {
             ...values,
             destination: {
@@ -63,16 +70,40 @@ export default function EditOverview({travelGroup, isAdmin, junkIds}:Props) {
         if (filledVals.destination.combo !== formVals.destination.combo) {
             filteredVals.destination = filledVals.destination
         }
-        console.log('submitting')
-        console.log('filteredVAls', filteredVals)
+        if (img.src && img.src !== travelGroup.data.image?.src) {
+            filteredVals.image = img
+        }
+
+        if (Object.keys(filteredVals).length === 0) {
+            setLoading(false)
+            return
+        }
+
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/proposals/propose`,
+                data: {
+                    type: 'overview',
+                    data: filteredVals,
+                    userJunkIds: junkIds?.length > 0 ? junkIds.splice(junkIds.indexOf(img.publicId), 1) : []
+                }
+            })
+
+            onEditComplete(submitType)
+        } catch (e) {
+            setSnackbarMsg({type: 'error', content: submitType === 'proposal' ? 'Error Creating Proposal' : 'Error Updating'})
+            setLoading(false)
+        }
     }
 
     const handleProposeClick = () => {
+        setSubmitType('proposal')
         formContext.setSubmitting(true)
         formContext.submitForm()
     }
-
-    console.log(img?.src)
 
     return (
         <Box>
@@ -107,7 +138,7 @@ export default function EditOverview({travelGroup, isAdmin, junkIds}:Props) {
                         <Grid container spacing={3} justifyContent="center">
                             <Grid item>
                                 <Box width={200}>
-                                    <OrangePrimaryButton fullWidth 
+                                    <OrangePrimaryButton fullWidth disabled={loading}
                                     onClick={() => handleProposeClick()}>
                                         Propose
                                     </OrangePrimaryButton>
@@ -115,7 +146,7 @@ export default function EditOverview({travelGroup, isAdmin, junkIds}:Props) {
                             </Grid>
                             {isAdmin && <Grid item>
                                 <Box width={200}>
-                                    <OrangeSecondaryButton fullWidth>
+                                    <OrangeSecondaryButton fullWidth disabled={loading}>
                                         Override
                                     </OrangeSecondaryButton>
                                 </Box>

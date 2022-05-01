@@ -9,6 +9,7 @@ import { OrangePrimaryButton, OrangePrimaryIconButton, OrangeSecondaryButton } f
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
 import EditOverview from './EditOverview'
+import Snackbar from '../../../misc/snackbars'
 
 interface Props {
     user: ClientUser;
@@ -18,6 +19,7 @@ interface Props {
 export default function Main({user, travelGroup}:Props) {
 
     const [editing, setEditing] = useState(false)
+    const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
 
     const [start, end] = useMemo(() => {
         return [
@@ -31,6 +33,16 @@ export default function Main({user, travelGroup}:Props) {
         ${travelGroup.data.date.estLength[1].substring(0, travelGroup.data.date.estLength[1].length - 1)}`
     }, [])
 
+    const onEditComplete = (type:string) => {
+        if (type === 'proposal') {
+            setSnackbarMsg({type: 'success', content: 'Created Proposal'})
+        } else {
+            setSnackbarMsg({type: 'success', content: 'Updated Information'})
+            // change the information thru another parameter
+        } 
+        setEditing(false)
+    }
+
     return (
         <Box mt={3} mx={3}>
             <Container maxWidth="md">
@@ -39,7 +51,8 @@ export default function Main({user, travelGroup}:Props) {
                         <Box position="relative" p={3}>
                             {editing ? <EditOverview travelGroup={travelGroup}
                             isAdmin={travelGroup.data.owner === user.ref['@ref'].id}
-                            junkIds={user.data.junkImagePublicIds} /> 
+                            junkIds={user.data.junkImagePublicIds}
+                            onEditComplete={onEditComplete} /> 
                             : <Box>
                                 <Grid container spacing={3}>
                                     <Grid item>
@@ -126,6 +139,7 @@ export default function Main({user, travelGroup}:Props) {
                     </Paper>
                 </Box>
             </Container>
+            <Snackbar msg={snackbarMsg} setMsg={setSnackbarMsg} />
         </Box>
     )
 }
