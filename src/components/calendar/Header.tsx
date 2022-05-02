@@ -23,7 +23,7 @@ export default function Header({currentDate, setCurrentDate}:Props) {
     return (
         <div className={`${styles.header} ${styles.row} ${styles.flexMiddle}`}>
             <div className={`${styles.column} ${styles.colStart}`}>
-                <IconButton disabled={currentDate.subtract(1, 'month').isBefore(dayjs().startOf('month'))} onClick={() => prev()}>
+                <IconButton disabled={currentDate.add(1, 'month').isBefore(dayjs().startOf('month'))} onClick={() => prev()}>
                     <NavigateBeforeIcon /> 
                 </IconButton>
             </div>
