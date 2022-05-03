@@ -3,20 +3,33 @@ import {Expr, query as q} from 'faunadb'
 import client from '../fauna'
 import { Availability} from '../interfaces'
 
+function getAvailabilityOfUserInnerQuery(userId:string|Expr) {
+    return q.If(
+        q.Exists(q.Match(q.Index('availabilities_by_userId'), userId)),
+        q.Get(q.Match(q.Index('availabilities_by_userId'), userId)),
+        q.Create(q.Collection('availabilities'), {data: {userId, dates: {}}})
+    )
+}
+
 export async function getAvailabilityOfUser(userId:string):Promise<Availability> {
 
     return await client.query(
-        q.If(
-            q.Exists(q.Match(q.Index('availabilities_by_userId'), userId)),
-            q.Get(q.Match(q.Index('availabilities_by_userId'), userId)),
-            null
-        )
+        getAvailabilityOfUserInnerQuery(userId)
     )
+}
+
+interface PopulateAvailabilitiesProps {
+    data: PopulateAvailabilityProps[];
 }
 
 interface PopulateAvailabilityProps {
     availability: Availability;
     travelGroups: {data: [string, string, boolean, boolean][]};
+}
+
+export function populateAvailabilities(info:PopulateAvailabilitiesProps) {
+
+    return info.data.map(d => populateAvailability(d))
 }
 
 export function populateAvailability(info:PopulateAvailabilityProps) {
@@ -60,11 +73,7 @@ export async function getAvailabilityAndTravelGroupsOfUser(userId:string):Promis
     return await client.query(
         q.Let(
             {
-                availability: q.If(
-                    q.Exists(q.Match(q.Index('availabilities_by_userId'), userId)),
-                    q.Get(q.Match(q.Index('availabilities_by_userId'), userId)),
-                    q.Create(q.Collection('availabilities'), {data: {userId, dates: {}}})
-                ),
+                availability: getAvailabilityOfUserInnerQuery(userId),
                 travelGroups: q.Paginate(q.Match(q.Index('travelGroups_by_members_w_date_and_type'), userId))
             },
             {
@@ -81,6 +90,43 @@ export async function getAvailabilityAndTravelGroupsOfUser(userId:string):Promis
             }
         )
     )
+}
+
+export async function getAvailabilitiesOfTravelGroupMembers(travelGroupId:string):Promise<PopulateAvailabilitiesProps> {
+
+    return await client.query(
+        q.Let(
+            {
+                members: q.Paginate(q.Match(q.Index('travelGroups_by_id_w_members'), travelGroupId)),
+            },
+            q.Let(
+                {
+                    userInfo: q.Map(q.Var('members'), q.Lambda('member', 
+                        q.Let(
+                            {
+                                availability: getAvailabilityOfUserInnerQuery(q.Var('member')),
+                                travelGroups: q.Paginate(q.Match(q.Index('travelGroups_by_members_w_date_and_type'), q.Var('member')))
+                            },
+                            {
+                                availability: q.Var('availability'),
+                                travelGroups: q.Map(q.Var('travelGroups'), q.Lambda(
+                                    'travelDates',
+                                    [
+                                        q.ToString(q.Select(0, q.Var('travelDates'))),
+                                        q.ToString(q.Select(1, q.Var('travelDates'))),
+                                        q.Select(2, q.Var('travelDates')),
+                                        q.Select(3, q.Var('travelDates'))
+                                    ]
+                                ))
+                            }
+                        ) 
+                    )),
+                },
+                q.Var('userInfo')
+            )
+        )
+    )
+
 }
 
 export async function createAvailability(userId:string):Promise<Availability> {

@@ -1,6 +1,7 @@
 import { Backdrop, Box, Grid, RadioGroup, TextField, Typography, CircularProgress } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { useMemo, useState, ChangeEvent, useCallback } from "react";
+import useSWR from "swr";
 import { ClientTravelGroup } from "../../../../database/interfaces";
 import Calendar from "../../../calendar/Calendar";
 import { RadioWithDesc } from "../../../forms/FormikFields";
@@ -22,6 +23,17 @@ export default function ProposeDate({travelGroup}:Props) {
             userId: 'dummyUserId'
         }
     })
+
+    const {data:memberAvailabilities} = useSWR(
+        availabilityDisplaying ? `/api/travel-groups/${travelGroup.ref['@ref'].id}/availabilities` : null, 
+        {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000})
+
+    useMemo(() => {
+        if (!memberAvailabilities) {
+            return
+        }
+
+    }, [memberAvailabilities])
 
     const filterRangeInBounds = useCallback<(range:[Dayjs, Dayjs]) => [Dayjs, Dayjs]>((range:[Dayjs, Dayjs]) => {
         if (travelGroup.data.date.unknown) {
@@ -70,7 +82,7 @@ export default function ProposeDate({travelGroup}:Props) {
         <Box>
             <Box mb={3} position="relative">
                 <Backdrop sx={{position: 'absolute', zIndex: 1, bgcolor: 'rgba(0, 0, 0, 0.2)', borderRadius: 10}}
-                open={availabilityDisplaying && availability.ref['@ref'].id === 'dummyId'}>
+                open={Boolean(availabilityDisplaying) && availability.ref['@ref'].id === 'dummyId'}>
                     <CircularProgress size={100} />
                 </Backdrop>
                 <Calendar dateRange={dateRange} onDateRangeChange={onDateRangeChange}
