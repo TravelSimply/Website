@@ -221,6 +221,10 @@ export default function ProposeDate({travelGroup, onDateChangeComplete}:Props) {
         }
     }
 
+    const cancel = () => {
+        onDateChangeComplete('')
+    }
+
     return (
         <Box>
             <Box mb={3} position="relative">
@@ -275,7 +279,7 @@ export default function ProposeDate({travelGroup, onDateChangeComplete}:Props) {
                     </Grid>
                     <Grid item>
                         <OrangeSecondaryButton sx={{minWidth: 200}}
-                        disabled={loading}>
+                        disabled={loading} onClick={() => cancel()}>
                             Cancel
                         </OrangeSecondaryButton>
                     </Grid>
