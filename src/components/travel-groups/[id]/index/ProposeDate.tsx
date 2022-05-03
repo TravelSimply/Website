@@ -2,7 +2,7 @@ import { Backdrop, Box, Grid, RadioGroup, TextField, Typography, CircularProgres
 import dayjs, { Dayjs } from "dayjs";
 import { useMemo, useState, ChangeEvent, useCallback } from "react";
 import useSWR from "swr";
-import { ClientTravelGroup } from "../../../../database/interfaces";
+import { ClientTravelGroup, ClientAvailability } from "../../../../database/interfaces";
 import Calendar from "../../../calendar/Calendar";
 import { RadioWithDesc } from "../../../forms/FormikFields";
 import { OrangePrimaryButton, OrangeSecondaryButton } from "../../../mui-customizations/buttons";
@@ -24,13 +24,63 @@ export default function ProposeDate({travelGroup}:Props) {
         }
     })
 
-    const {data:memberAvailabilities} = useSWR(
+    const {data:memberAvailabilities} = useSWR<ClientAvailability[]>(
         availabilityDisplaying ? `/api/travel-groups/${travelGroup.ref['@ref'].id}/availabilities` : null, 
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000})
+
+    const getAllAvailable = useCallback(() => {
+        if (!memberAvailabilities) {
+            return availability
+        }
+
+        const dates = {}
+        let year = dayjs().get('year')
+
+        let maxYear = dayjs().get('year')
+        for (const data of memberAvailabilities) {
+            for (const key of Object.keys(data.data.dates)) {
+                if (dayjs(key).get('year') > maxYear) {
+                    maxYear = dayjs(key).get('year')
+                }
+            }
+        }
+
+        while (year <= maxYear) {
+            
+            const data = []
+            for (const availability of memberAvailabilities) {
+                if (Object.keys(availability.data.dates).includes(year.toString())) {
+                    data.push(availability.data.dates[year.toString()].available)
+                } else {
+                    data.push([])
+                }
+            }
+            dates[year.toString()] = {
+                unavailable: [],
+                available: data.reduce((a, b) => a.filter(date => b.includes(date)), data[0] || []),
+                travelling: []
+            }
+
+            year++;
+        }
+
+        return dates
+    }, [memberAvailabilities])
 
     useMemo(() => {
         if (!memberAvailabilities) {
             return
+        }
+
+        if (availabilityDisplaying === 'available') {
+            console.log('setting availability')
+            setAvailablility({
+                ref: {'@ref': {id: 'available', ref: null}},
+                data: {
+                    dates: getAllAvailable(),
+                    userId: 'available'
+                }
+            })
         }
 
     }, [memberAvailabilities])
@@ -77,6 +127,9 @@ export default function ProposeDate({travelGroup}:Props) {
             setDateRange(filterRangeInBounds([dateRange[0], dayjs(e.target.value)]))
         }
     }
+
+    console.log('memberAvailabilities', memberAvailabilities)
+    console.log(availability)
 
     return (
         <Box>
