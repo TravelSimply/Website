@@ -6,15 +6,20 @@ import { ClientTravelGroup, ClientAvailability } from "../../../../database/inte
 import Calendar from "../../../calendar/Calendar";
 import { RadioWithDesc } from "../../../forms/FormikFields";
 import { OrangePrimaryButton, OrangeSecondaryButton } from "../../../mui-customizations/buttons";
+import Snackbar from '../../../misc/snackbars'
+import axios from "axios";
 
 interface Props {
     travelGroup: ClientTravelGroup;
+    onDateChangeComplete: (type:string) => void;
 }
 
-export default function ProposeDate({travelGroup}:Props) {
+export default function ProposeDate({travelGroup, onDateChangeComplete}:Props) {
 
     const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([null, null])
     const [availabilityDisplaying, setAvailabilityDisplaying] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
 
     const [availability, setAvailability] = useState({
         ref: {'@ref': {id: 'dummyId', ref: null}},
@@ -190,7 +195,31 @@ export default function ProposeDate({travelGroup}:Props) {
         }
     }
 
-    console.log(availability)
+    const propose = async () => {
+        setLoading(true)
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/proposals/propose`,
+                data: {
+                    type: 'date',
+                    data: {
+                        date: {
+                            start: dateRange[0].format('YYYY-MM-DD'),
+                            end: dateRange[1].format('YYYY-MM-DD')
+                        }
+                    }
+                }
+            })
+
+            onDateChangeComplete('proposal')
+        } catch (e) {
+            setSnackbarMsg({type: 'error', content: 'Error Creating Proposal'})
+            setLoading(false)
+        }
+    }
 
     return (
         <Box>
@@ -239,17 +268,20 @@ export default function ProposeDate({travelGroup}:Props) {
             <Box mt={4}>
                 <Grid container spacing={3} justifyContent="center">
                     <Grid item>
-                        <OrangePrimaryButton sx={{minWidth: 200}}>
+                        <OrangePrimaryButton sx={{minWidth: 200}} 
+                        disabled={loading} onClick={() => propose()}>
                             Propose
                         </OrangePrimaryButton>
                     </Grid>
                     <Grid item>
-                        <OrangeSecondaryButton sx={{minWidth: 200}}>
+                        <OrangeSecondaryButton sx={{minWidth: 200}}
+                        disabled={loading}>
                             Cancel
                         </OrangeSecondaryButton>
                     </Grid>
                 </Grid>
             </Box>
+            <Snackbar msg={snackbarMsg} setMsg={setSnackbarMsg} />
         </Box>
     )
 }

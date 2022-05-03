@@ -54,6 +54,13 @@ export default function Main({user, travelGroup:dbTravelGroup}:Props) {
         setEditing(false)
     }
 
+    const onDateChangeComplete = (type:string) => {
+        if (type === 'proposal') {
+            setSnackbarMsg({type: 'success', content: 'Created Proposal'})
+        }
+        setChangeDate('')
+    }
+
     return (
         <Box mt={3} mx={3}>
             <Container maxWidth="md">
@@ -150,7 +157,8 @@ export default function Main({user, travelGroup:dbTravelGroup}:Props) {
                                 </Box>
                             </> : changeDate === 'propose' ? 
                             <Box>
-                                <ProposeDate travelGroup={travelGroup} />
+                                <ProposeDate travelGroup={travelGroup}
+                                onDateChangeComplete={onDateChangeComplete} />
                             </Box> : ''}
                         </Box>
                     </Paper>

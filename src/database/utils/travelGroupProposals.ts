@@ -4,6 +4,11 @@ import { TravelGroupProposal } from '../interfaces'
 
 export async function createProposal(data:TravelGroupProposal['data'], userJunkIds?:string[]) {
 
+    if (data.data.date) {
+        data.data.date.start = q.Date(data.data.date.start)
+        data.data.date.end = q.Date(data.data.date.end)
+    }
+
     return await client.query(
         q.Do(
             q.If(
