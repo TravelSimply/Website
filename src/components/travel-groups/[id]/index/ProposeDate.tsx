@@ -196,6 +196,10 @@ export default function ProposeDate({travelGroup, onDateChangeComplete}:Props) {
     }
 
     const propose = async () => {
+        if (!dateRange[0] || !dateRange[1]) {
+            return
+        }
+
         setLoading(true)
 
         try {
