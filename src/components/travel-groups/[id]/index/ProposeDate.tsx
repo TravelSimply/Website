@@ -16,7 +16,7 @@ export default function ProposeDate({travelGroup}:Props) {
     const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([null, null])
     const [availabilityDisplaying, setAvailabilityDisplaying] = useState('')
 
-    const [availability, setAvailablility] = useState({
+    const [availability, setAvailability] = useState({
         ref: {'@ref': {id: 'dummyId', ref: null}},
         data: {
             dates: {},
@@ -28,14 +28,27 @@ export default function ProposeDate({travelGroup}:Props) {
         availabilityDisplaying ? `/api/travel-groups/${travelGroup.ref['@ref'].id}/availabilities` : null, 
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000})
 
-    const getAllAvailable = useCallback(() => {
-        if (!memberAvailabilities) {
-            return availability
+    const changeAvailability = () => {
+        if (availabilityDisplaying === 'available') {
+            setAvailability({
+                ref: {'@ref': {id: 'available', ref: null}},
+                data: {
+                    dates: getAllAvailable(),
+                    userId: 'available'
+                }
+            })
+        } else {
+            setAvailability({
+                ref: {'@ref': {id: 'not-unavailable', ref: null}},
+                data: {
+                    dates: getAllNotUnavailable(),
+                    userId: 'not-unavailable'
+                }
+            })
         }
+    }
 
-        const dates = {}
-        let year = dayjs().get('year')
-
+    const getMaxYear = useCallback(() => {
         let maxYear = dayjs().get('year')
         for (const data of memberAvailabilities) {
             for (const key of Object.keys(data.data.dates)) {
@@ -44,12 +57,60 @@ export default function ProposeDate({travelGroup}:Props) {
                 }
             }
         }
+        
+        return maxYear
+    }, [memberAvailabilities])
+
+    const getAllNotUnavailable = useCallback(() => {
+        if (!memberAvailabilities) {
+            return availability
+        }
+
+        const dates = {}
+        let year = dayjs().get('year')
+        const maxYear = getMaxYear()
+
+        while (year <= maxYear) {
+            
+            const data = []
+            for(const availability of memberAvailabilities) {
+                const y = availability.data.dates[year.toString()]
+                if (y?.unavailable) {
+                    data.push(...y.unavailable)
+                }
+                if (y?.travelling) {
+                    data.push(...y?.travelling)
+                }
+            }
+
+            const viewedDates = {}
+
+            dates[year.toString()] = {
+                available: [],
+                travelling: [],
+                unavailable: data.filter(d => viewedDates[d] ? false : (viewedDates[d] = true))
+            }
+
+            year++;
+        }
+
+        return dates
+    }, [memberAvailabilities])
+
+    const getAllAvailable = useCallback(() => {
+        if (!memberAvailabilities) {
+            return availability
+        }
+
+        const dates = {}
+        let year = dayjs().get('year')
+        const maxYear = getMaxYear()
 
         while (year <= maxYear) {
             
             const data = []
             for (const availability of memberAvailabilities) {
-                if (Object.keys(availability.data.dates).includes(year.toString())) {
+                if(availability.data.dates[year.toString()]) {
                     data.push(availability.data.dates[year.toString()].available)
                 } else {
                     data.push([])
@@ -72,16 +133,7 @@ export default function ProposeDate({travelGroup}:Props) {
             return
         }
 
-        if (availabilityDisplaying === 'available') {
-            console.log('setting availability')
-            setAvailablility({
-                ref: {'@ref': {id: 'available', ref: null}},
-                data: {
-                    dates: getAllAvailable(),
-                    userId: 'available'
-                }
-            })
-        }
+        changeAvailability()
 
     }, [memberAvailabilities])
 
@@ -115,6 +167,16 @@ export default function ProposeDate({travelGroup}:Props) {
         }
     }, [dateRange])
 
+    useMemo(() => {
+
+        if (!memberAvailabilities) {
+            return
+        }
+
+        changeAvailability()
+
+    }, [availabilityDisplaying])
+
     const onDateRangeChange = (range:[Dayjs, Dayjs]) => {
         const boundedRange = filterRangeInBounds(range)
         setDateRange(boundedRange)
@@ -128,7 +190,6 @@ export default function ProposeDate({travelGroup}:Props) {
         }
     }
 
-    console.log('memberAvailabilities', memberAvailabilities)
     console.log(availability)
 
     return (
