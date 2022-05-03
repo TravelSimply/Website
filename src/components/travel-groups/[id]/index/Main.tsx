@@ -9,6 +9,7 @@ import { OrangePrimaryButton, OrangePrimaryIconButton, OrangeSecondaryButton } f
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
 import EditOverview from './EditOverview'
+import ProposeDate from "./ProposeDate";
 import Snackbar from '../../../misc/snackbars'
 
 interface Props {
@@ -22,6 +23,8 @@ export default function Main({user, travelGroup:dbTravelGroup}:Props) {
     const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
 
     const [travelGroup, setTravelGroup] = useState(dbTravelGroup)
+
+    const [changeDate, setChangeDate] = useState<'' | 'propose' | 'modify'>('')
 
     const [start, end] = useMemo(() => {
         return [
@@ -124,25 +127,31 @@ export default function Main({user, travelGroup:dbTravelGroup}:Props) {
                                     }
                                 </Typography>
                             </Box>
-                            {!travelGroup.data.date.unknown && <Box mb={2}>
-                                <Calendar dateRange={[dayjs(travelGroup.data.date.start), dayjs(travelGroup.data.date.end)]}
-                                onDateRangeChange={(a) => {}} availability={{ref: {'@ref': {id: '1', ref: null}}, data: {userId: '1', dates: {}}}}
-                                displayOnly startDate={dayjs(travelGroup.data.date.start)} />
-                            </Box>}
-                            <Box mb={2}>
-                                <Grid container spacing={3} justifyContent="center">
-                                    <Grid item>
-                                        {(travelGroup.data.date.unknown || travelGroup.data.date.roughly) && <OrangePrimaryButton>
-                                            Propose a Travel Date     
-                                        </OrangePrimaryButton>}
+                            {changeDate === '' ? <>
+                                {!travelGroup.data.date.unknown && <Box mb={2}>
+                                    <Calendar dateRange={[dayjs(travelGroup.data.date.start), dayjs(travelGroup.data.date.end)]}
+                                    onDateRangeChange={(a) => {}} availability={{ref: {'@ref': {id: '1', ref: null}}, data: {userId: '1', dates: {}}}}
+                                    displayOnly startDate={dayjs(travelGroup.data.date.start)} />
+                                </Box>}
+                                <Box mb={2}>
+                                    <Grid container spacing={3} justifyContent="center">
+                                        <Grid item>
+                                            {(travelGroup.data.date.unknown || travelGroup.data.date.roughly) && <OrangePrimaryButton
+                                            onClick={() => setChangeDate('propose')}>
+                                                Propose a Travel Date     
+                                            </OrangePrimaryButton>}
+                                        </Grid>
+                                        <Grid item>
+                                            {travelGroup.data.owner === user.ref['@ref'].id && <OrangeSecondaryButton>
+                                                Modify Travel Date Settings     
+                                            </OrangeSecondaryButton>}
+                                        </Grid>
                                     </Grid>
-                                    <Grid item>
-                                        {travelGroup.data.owner === user.ref['@ref'].id && <OrangeSecondaryButton>
-                                            Modify Travel Date Settings     
-                                        </OrangeSecondaryButton>}
-                                    </Grid>
-                                </Grid>
-                            </Box>
+                                </Box>
+                            </> : changeDate === 'propose' ? 
+                            <Box>
+                                <ProposeDate travelGroup={travelGroup} />
+                            </Box> : ''}
                         </Box>
                     </Paper>
                 </Box>
