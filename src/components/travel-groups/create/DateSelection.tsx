@@ -1,6 +1,6 @@
-import { Box, RadioGroup, Radio, FormControl, FormControlLabel, Container, Grid, FormLabel, Typography, Collapse, TextField, Select, MenuItem, SelectChangeEvent } from "@mui/material";
+import { Box, RadioGroup, Radio, FormControl, FormControlLabel, Container, Grid, FormLabel, Typography, Collapse, TextField, Select, MenuItem, SelectChangeEvent, Checkbox } from "@mui/material";
 import Calendar from "../../calendar/Calendar";
-import {ChangeEvent, useMemo} from 'react'
+import {ChangeEvent, useMemo, useState} from 'react'
 import dayjs, { Dayjs } from "dayjs";
 import { ClientPopulatedAvailability } from "../../../database/interfaces";
 
@@ -16,7 +16,9 @@ export interface Props {
     availability: ClientPopulatedAvailability;
 }
 
-export default function DateSelection({date, setDate, availability}:Props) {
+export default function DateSelection({date, setDate, availability:dbAvailability}:Props) {
+
+    const [availability, setAvailability] = useState(dbAvailability)
 
     const handleCertaintyChange = (e:ChangeEvent<HTMLInputElement>) => {
         setDate({...date, unknown: e.target.value === 'unknown', roughly: e.target.value === 'roughly'})
@@ -49,6 +51,20 @@ export default function DateSelection({date, setDate, availability}:Props) {
 
     const handleTripLenMagChange = (e:SelectChangeEvent) => {
         setDate({...date, estLength: [date.estLength[0], e.target.value]})
+    }
+
+    const toggleDisplayAvailability = () => {
+        if (availability.ref['@ref'].id) {
+            setAvailability({
+                ref: {'@ref': {id: '', ref: null}},
+                data: {
+                    dates: {},
+                    userId: availability.data.userId
+                }
+            })
+        } else {
+            setAvailability(dbAvailability)
+        }
     }
 
     return (
@@ -170,6 +186,22 @@ export default function DateSelection({date, setDate, availability}:Props) {
                     <Calendar dateRange={dateRange} onDateRangeChange={onDateRangeChange}
                     availability={availability} />
                 </Box>
+                {availability.data.userId && <Box mt={1}>
+                    <Grid container wrap="nowrap" alignItems="center" justifyContent="center">
+                        <Grid item>
+                            <Checkbox checked={Boolean(availability.ref['@ref'].id)}
+                            onClick={() => toggleDisplayAvailability()}
+                            id="toggleAvailability" />
+                        </Grid>
+                        <Grid item>
+                            <label htmlFor="toggleAvailability">
+                                <Typography variant="body1">
+                                    Display Availability
+                                </Typography>
+                            </label>
+                        </Grid>
+                    </Grid>
+                </Box>}
             </Collapse>
             {!date.unknown && <Box mt={3} mb={8}>
                 <Grid container spacing={3} alignItems="center" justifyContent="center"
