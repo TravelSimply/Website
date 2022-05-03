@@ -10,6 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
 import EditOverview from './EditOverview'
 import ProposeDate from "./ProposeDate";
+import ModifyDate from "./ModifyDate";
 import Snackbar from '../../../misc/snackbars'
 
 interface Props {
@@ -54,9 +55,18 @@ export default function Main({user, travelGroup:dbTravelGroup}:Props) {
         setEditing(false)
     }
 
-    const onDateChangeComplete = (type:string) => {
+    const onDateChangeComplete = (type:string, changes?) => {
         if (type === 'proposal') {
             setSnackbarMsg({type: 'success', content: 'Created Proposal'})
+        } else if (changes) {
+            setSnackbarMsg({type: 'success', content: 'Updated Information'})
+            setTravelGroup({
+                ...travelGroup,
+                data: {
+                    ...travelGroup.data,
+                    ...changes
+                }
+            })
         }
         setChangeDate('')
     }
@@ -124,7 +134,7 @@ export default function Main({user, travelGroup:dbTravelGroup}:Props) {
                 <Box>
                     <Paper>
                         <Box p={3}>
-                            <Box textAlign="center" mb={2}>
+                            {changeDate !== 'modify' && <Box textAlign="center" mb={2}>
                                 <Typography variant="h6">
                                     {travelGroup.data.date.unknown ? 
                                     `${estLength} trip.` : 
@@ -133,7 +143,7 @@ export default function Main({user, travelGroup:dbTravelGroup}:Props) {
                                     `Traveling from ${start} to ${end}.`
                                     }
                                 </Typography>
-                            </Box>
+                            </Box>}
                             {changeDate === '' ? <>
                                 {!travelGroup.data.date.unknown && <Box mb={2}>
                                     <Calendar dateRange={[dayjs(travelGroup.data.date.start), dayjs(travelGroup.data.date.end)]}
@@ -149,7 +159,8 @@ export default function Main({user, travelGroup:dbTravelGroup}:Props) {
                                             </OrangePrimaryButton>}
                                         </Grid>
                                         <Grid item>
-                                            {travelGroup.data.owner === user.ref['@ref'].id && <OrangeSecondaryButton>
+                                            {travelGroup.data.owner === user.ref['@ref'].id && <OrangeSecondaryButton
+                                            onClick={() => setChangeDate('modify')}>
                                                 Modify Travel Date Settings     
                                             </OrangeSecondaryButton>}
                                         </Grid>
@@ -159,7 +170,10 @@ export default function Main({user, travelGroup:dbTravelGroup}:Props) {
                             <Box>
                                 <ProposeDate travelGroup={travelGroup}
                                 onDateChangeComplete={onDateChangeComplete} />
-                            </Box> : ''}
+                            </Box> : 
+                            <Box>
+                                <ModifyDate travelGroup={travelGroup} onDateChangeComplete={onDateChangeComplete} /> 
+                            </Box>}
                         </Box>
                     </Paper>
                 </Box>
