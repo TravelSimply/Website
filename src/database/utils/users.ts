@@ -320,7 +320,7 @@ export function addBasicNotification(collection:string, id:Expr, user:Expr) {
                         q.Lambda((filtered, curr) => q.If(
                             q.Or(q.LT(q.Count(filtered), 9), q.Not(q.Select('seen', curr))),
                             q.Append(curr, filtered),
-                            null
+                            filtered
                         )),
                         [],
                         q.Select(['data', 'basic'], q.Var('notifications'))
