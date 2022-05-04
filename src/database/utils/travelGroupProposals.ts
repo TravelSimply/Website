@@ -31,3 +31,10 @@ export async function createProposal(data:TravelGroupProposal['data'], userJunkI
         )
     )
 }
+
+export async function getTravelGroupProposals(travelGroupId:string):Promise<{data: TravelGroupProposal[]}> {
+
+    return await client.query(
+        q.Map(q.Paginate(q.Match(q.Index('travelGroupProposals_by_travelGroup'), travelGroupId)) , (ref) => q.Get(ref))
+    )
+}
