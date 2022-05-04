@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getTravelGroupMembersWithContactInfo } from "../../../../database/utils/travelGroups";
-import { getTravellersWithContactInfo } from "../../../../database/utils/users";
+import { getTravelGroupMembersWithContactInfo } from "../../../../../database/utils/travelGroups";
+import { getTravellersWithContactInfo } from "../../../../../database/utils/users";
 
 export default async function getTravellers(req:NextApiRequest, res:NextApiResponse) {
 
