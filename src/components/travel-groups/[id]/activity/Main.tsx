@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import { ClientTravelGroup, ClientTravelGroupInvitationWithToPopulated, ClientTravelGroupJoinRequestWithFromPopulated, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
+import { ClientTravelGroup, ClientTravelGroupInvitationWithToPopulated, ClientTravelGroupJoinRequestWithFromPopulated, ClientTravelGroupNotifications, ClientTravelGroupProposal, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
 import { PrimaryLink } from "../../../misc/links";
 import useSWR from 'swr'
 
@@ -24,12 +24,12 @@ export default function Main({user, travelGroup}:Props) {
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
     )
 
-    const {data: proposals} = useSWR(
+    const {data: proposals} = useSWR<ClientTravelGroupProposal[]>(
         `/api/travel-groups/${travelGroup.ref['@ref'].id}/proposals`,
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
     )
 
-    const {data: notifications} = useSWR(
+    const {data: notifications} = useSWR<ClientTravelGroupNotifications>(
         `/api/travel-groups/${travelGroup.ref['@ref'].id}/notifications`,
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
     )

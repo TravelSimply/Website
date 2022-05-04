@@ -1,4 +1,4 @@
-import {query as q} from 'faunadb'
+import {query as q, Expr} from 'faunadb'
 import client from '../fauna'
 import { TravelGroupProposal } from '../interfaces'
 
@@ -32,9 +32,52 @@ export async function createProposal(data:TravelGroupProposal['data'], userJunkI
     )
 }
 
+function insertData(prop:string, proposal:Expr) {
+    return q.If(
+        q.ContainsField(prop, q.Select(['data', 'data'], proposal)),
+        q.Select(['data', 'data', prop], proposal),
+        null
+    )
+}
+
+function proposalDataWithStringDates(proposal:Expr) {
+    return {
+        travelGroup: q.Select(['data', 'travelGroup'], proposal),
+        by: q.Select(['data', 'by'], proposal),
+        type: q.Select(['data', 'type'], proposal),
+        for: q.Select(['data', 'for'], proposal),
+        against: q.Select(['data', 'against'], proposal),
+        data: {
+            name: insertData('name', proposal),
+            desc: insertData('desc', proposal),
+            destination: insertData('destination', proposal),
+            image: insertData('image', proposal),
+            date: q.If(
+                q.ContainsField('date', q.Select(['data', 'data'], proposal)),
+                {
+                    start: q.ToString(q.Select(['data', 'data', 'date', 'start'], proposal)),
+                    end: q.ToString(q.Select(['data', 'data', 'date', 'end'], proposal))
+                },
+                null
+            )
+        }
+    }
+}
+
 export async function getTravelGroupProposals(travelGroupId:string):Promise<{data: TravelGroupProposal[]}> {
 
     return await client.query(
-        q.Map(q.Paginate(q.Match(q.Index('travelGroupProposals_by_travelGroup'), travelGroupId)) , (ref) => q.Get(ref))
+        q.Map(q.Paginate(q.Match(q.Index('travelGroupProposals_by_travelGroup'), travelGroupId)) , q.Lambda(
+            'ref',
+            q.Let(
+                {
+                    proposal: q.Get(q.Var('ref'))
+                },
+                {
+                    ref: q.Select('ref', q.Var('proposal')),
+                    data: proposalDataWithStringDates(q.Var('proposal'))
+                }
+            )
+        ))
     )
 }

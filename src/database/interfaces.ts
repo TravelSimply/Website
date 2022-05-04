@@ -355,38 +355,72 @@ export interface ClientTravelGroupJoinRequestWithFromPopulated extends Omit<Clie
     }
 }
 
-
-export interface TravelGroupProposal {
-    ref: Ref;
+interface TravelGroupProposalData {
+    travelGroup: string;
+    by: string; // User
+    type: string;
+    for: string[];
+    against: string[];
     data: {
-        travelGroup: string;
-        by: string; // User
-        type: string;
-        for: string[];
-        against: string[];
-        data: {
-            name?: string;
-            desc?: string;
-            destination?: TravelGroupData['destination'];
-            image?: TravelGroupData['image'];
-            date?: {
-                start: Expr; // Date
-                end: Expr; // Date
-            }
+        name?: string;
+        desc?: string;
+        destination?: TravelGroupData['destination'];
+        image?: TravelGroupData['image'];
+        date?: {
+            start: Expr; // Date
+            end: Expr; // Date
         }
     }
 }
 
+interface ClientTravelGroupProposalData extends Omit<TravelGroupProposalData, 'data'> {
+    data: {
+        name?: string;
+        desc?: string;
+        destination?: TravelGroupData['destination'];
+        image?: TravelGroupData['image'];
+        date?: {
+            start: string;
+            end: string;
+        }
+    }
+}
+
+export interface TravelGroupProposal {
+    ref: Ref;
+    data: TravelGroupProposalData;
+}
+
+export interface ClientTravelGroupProposal {
+    ref: {'@ref': Ref};
+    data: ClientTravelGroupProposalData;
+}
+
+interface TravelGroupNotificationsData {
+    travelGroup: string;
+    notifications: {
+        time: Expr; // Time
+        type: string;
+        users?: string[]; // usernames,
+        msg: string;
+    }[];
+}
+
+interface ClientTravelGroupNotificationsData extends Omit<TravelGroupNotificationsData, 'notifications'> {
+    notifications: {
+        time: {'@ts': string};
+        type: string;
+        user?: string[];
+        msg: string;
+    }
+}
 
 export interface TravelGroupNotifications {
     ref: Ref;
-    data: {
-        travelGroup: string;
-        notifications: {
-            time: Expr; // Time
-            type: string;
-            users?: string[]; // usernames,
-            msg: string;
-        }[];
-    }
+    data: TravelGroupNotificationsData;
+}
+
+export interface ClientTravelGroupNotifications {
+    ref: {'@ref': Ref};
+    data: ClientTravelGroupNotificationsData;
 }
