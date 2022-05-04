@@ -376,3 +376,17 @@ export interface TravelGroupProposal {
         }
     }
 }
+
+
+export interface TravelGroupNotifications {
+    ref: Ref;
+    data: {
+        travelGroup: string;
+        notifications: {
+            time: Expr; // Time
+            type: string;
+            users?: string[]; // usernames,
+            msg: string;
+        }[];
+    }
+}

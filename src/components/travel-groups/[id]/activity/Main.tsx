@@ -29,10 +29,16 @@ export default function Main({user, travelGroup}:Props) {
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
     )
 
+    const {data: notifications} = useSWR(
+        `/api/travel-groups/${travelGroup.ref['@ref'].id}/notifications`,
+        {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
+    )
+
     console.log('travellers', travellers)
     console.log('invites', invites)
     console.log('requests', requests)
     console.log('proposals', proposals)
+    console.log('notifications', notifications)
 
     return (
         <Box>
