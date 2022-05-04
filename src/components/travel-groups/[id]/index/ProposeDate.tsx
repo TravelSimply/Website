@@ -231,7 +231,7 @@ export default function ProposeDate({travelGroup, onDateChangeComplete}:Props) {
 
     return (
         <Box>
-            <Box mb={3} position="relative">
+            <Box mb={3} position="relative" display={{xs: 'none', sm: 'block'}}>
                 <Backdrop sx={{position: 'absolute', zIndex: 1, bgcolor: 'rgba(0, 0, 0, 0.2)', borderRadius: 10}}
                 open={Boolean(availabilityDisplaying) && availability.ref['@ref'].id === 'dummyId'}>
                     <CircularProgress size={100} />
@@ -239,7 +239,7 @@ export default function ProposeDate({travelGroup, onDateChangeComplete}:Props) {
                 <Calendar dateRange={dateRange} onDateRangeChange={onDateRangeChange}
                 availability={availability} startDate={dayjs(travelGroup.data.date.start)} />
             </Box>
-            <Box my={3}>
+            <Box my={3} display={{xs: 'none', sm: 'block'}}>
                 <Box maxWidth={600} mx="auto">
                     <RadioGroup value={availabilityDisplaying} onChange={(e) => setAvailabilityDisplaying(e.target.value)}>
                         <Box my={1}>
@@ -255,7 +255,8 @@ export default function ProposeDate({travelGroup, onDateChangeComplete}:Props) {
                 </Box>
             </Box>
             <Box>
-                <Grid container spacing={3} alignItems="center" justifyContent="center" wrap="nowrap">
+                <Grid container spacing={3} alignItems="center" justifyContent="center" wrap="nowrap"
+                flexDirection={{xs: 'column', sm: 'row'}}>
                     <Grid item>
                         <TextField type="date" InputLabelProps={{shrink: true}}
                          label="Start" value={date.start}

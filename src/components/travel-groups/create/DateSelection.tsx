@@ -186,7 +186,7 @@ export default function DateSelection({date, setDate, availability:dbAvailabilit
                     <Calendar dateRange={dateRange} onDateRangeChange={onDateRangeChange}
                     availability={availability} />
                 </Box>
-                {availability.data.userId && <Box mt={1}>
+                {availability.data.userId && <Box mt={1} display={{xs: 'none', sm: 'block'}}>
                     <Grid container wrap="nowrap" alignItems="center" justifyContent="center">
                         <Grid item>
                             <Checkbox checked={Boolean(availability.ref['@ref'].id)}
