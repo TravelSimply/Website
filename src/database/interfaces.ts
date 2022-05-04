@@ -97,7 +97,7 @@ export interface UserWithContactInfo extends Omit<User, 'data'> {
     data: UserDataWithContactInfo;
 }
 
-export interface ClientUserWithContactInfo extends Omit<User, 'data'> {
+export interface ClientUserWithContactInfo extends Omit<ClientUser, 'data'> {
     data: ClientUserDataWithContactInfo;
 }
 
