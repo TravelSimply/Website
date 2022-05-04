@@ -1,5 +1,5 @@
-import { Avatar, Box, Grid, IconButton, ListItemText, Paper, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { useMemo } from "react";
+import { Avatar, Box, Grid, IconButton, ListItemText, Menu, MenuItem, Paper, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
+import { useMemo, useState, MouseEvent } from "react";
 import { ClientFilteredUser, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
@@ -10,6 +10,7 @@ interface Props {
     user: ClientUser;
     isAdmin: boolean;
     traveller: ClientUserWithContactInfo;
+    travellers: ClientUserWithContactInfo[];
 }
 
 function formatPhoneNumber(phone:string) {
@@ -33,7 +34,10 @@ function formatPhoneNumber(phone:string) {
     }).join('')
 }
 
-export default function TravellerCard({user, isAdmin, traveller}:Props) {
+export default function TravellerCard({user, isAdmin, traveller, travellers}:Props) {
+
+    const [anchorEl, setAnchorEl] = useState<HTMLElement>(null)
+    const [loading, setLoading] = useState(false)
 
     const contactInfo = useMemo(() => {
         return traveller.data.contactInfo?.data.info
@@ -50,6 +54,21 @@ export default function TravellerCard({user, isAdmin, traveller}:Props) {
     const theme = useTheme()
 
     const small = useMediaQuery(theme.breakpoints.down('sm'))
+
+    const onMoreClick = (e:MouseEvent<HTMLElement>) => {
+        setAnchorEl(e.currentTarget)
+    }
+
+    const onMoreClose = () => {
+        setAnchorEl(null)
+    }
+
+    const remove = async () => {
+        setAnchorEl(null)
+        setLoading(true)
+
+        
+    }
 
     return (
         <Box maxWidth={600} height="100%">
@@ -110,10 +129,7 @@ export default function TravellerCard({user, isAdmin, traveller}:Props) {
                             {!travellerIsUser &&
                             <Grid container height="100%" spacing={3} justifyContent="space-between" alignItems="center">
                                 <Grid item>
-                                    {!user.data.friends?.includes(traveller.ref['@ref'].id) ?
-                                    <OrangeDensePrimaryButton>
-                                        Add Friend
-                                    </OrangeDensePrimaryButton> : 
+                                    {user.data.friends?.includes(traveller.ref['@ref'].id) &&
                                     <Box>
                                         <Typography color="primary.main" variant="h6">
                                             Friends
@@ -122,9 +138,16 @@ export default function TravellerCard({user, isAdmin, traveller}:Props) {
                                     }
                                 </Grid>
                                 {isAdmin && <Grid item>
-                                    <OrangePrimaryIconButton >
+                                    <OrangePrimaryIconButton disabled={loading} onClick={onMoreClick}  >
                                         <MoreVertIcon/>                                        
                                     </OrangePrimaryIconButton> 
+                                    <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={onMoreClose}
+                                    anchorOrigin={{vertical: 'bottom', horizontal: 'left'}} 
+                                    transformOrigin={{horizontal: 'center', vertical: 'top'}}>
+                                        <MenuItem onClick={() => remove()}>
+                                            Remove 
+                                        </MenuItem>
+                                    </Menu>
                                 </Grid>}
                             </Grid>
                             }

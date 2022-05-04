@@ -74,7 +74,8 @@ export default function Main({user, travelGroup}:Props) {
                                 <Grid container justifyContent="center">
                                     <Grid item flexBasis={600}>
                                         <TravellerCard user={user} isAdmin={travelGroup.data.owner === user.ref['@ref'].id}
-                                        traveller={travellers.find(m => m.ref['@ref'].id === travelGroup.data.owner)}/>
+                                        traveller={travellers.find(m => m.ref['@ref'].id === travelGroup.data.owner)}
+                                        travellers={travellers} />
                                     </Grid>
                                 </Grid>
                             </Box>
