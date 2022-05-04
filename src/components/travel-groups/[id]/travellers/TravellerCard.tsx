@@ -1,16 +1,20 @@
 import { Avatar, Box, Grid, IconButton, ListItemText, Menu, MenuItem, Paper, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useMemo, useState, MouseEvent } from "react";
-import { ClientFilteredUser, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
+import { ClientFilteredUser, ClientTravelGroup, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import { OrangeDensePrimaryButton, OrangePrimaryButton, OrangePrimaryIconButton } from "../../../mui-customizations/buttons";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Snackbar from '../../../misc/snackbars'
+import axios from "axios";
 
 interface Props {
     user: ClientUser;
     isAdmin: boolean;
     traveller: ClientUserWithContactInfo;
     travellers: ClientUserWithContactInfo[];
+    travelGroup: ClientTravelGroup;
+    onTravellerRemoved?: (remaining:ClientUserWithContactInfo[]) => void;
 }
 
 function formatPhoneNumber(phone:string) {
@@ -34,10 +38,11 @@ function formatPhoneNumber(phone:string) {
     }).join('')
 }
 
-export default function TravellerCard({user, isAdmin, traveller, travellers}:Props) {
+export default function TravellerCard({user, isAdmin, traveller, travellers, travelGroup, onTravellerRemoved}:Props) {
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement>(null)
     const [loading, setLoading] = useState(false)
+    const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
 
     const contactInfo = useMemo(() => {
         return traveller.data.contactInfo?.data.info
@@ -64,10 +69,30 @@ export default function TravellerCard({user, isAdmin, traveller, travellers}:Pro
     }
 
     const remove = async () => {
+        if (!onTravellerRemoved) {
+            return
+        }
+
         setAnchorEl(null)
         setLoading(true)
 
-        
+        try {
+
+            const remainingTravellers = travellers.filter(t => t.ref['@ref'].id !== traveller.ref['@ref'].id)
+
+            await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/travellers/update`,
+                data: {
+                    travellers: remainingTravellers.map(t => t.ref['@ref'].id)
+                }
+            })
+
+            onTravellerRemoved(remainingTravellers)            
+        } catch (e) {
+            setLoading(false)
+            setSnackbarMsg({type: 'error', content: 'Error Removing Traveller'})
+        }
     }
 
     return (
@@ -155,6 +180,7 @@ export default function TravellerCard({user, isAdmin, traveller, travellers}:Pro
                     </Grid>
                 </Grid>
             </Paper>
+            <Snackbar msg={snackbarMsg} setMsg={setSnackbarMsg} />
         </Box>
     )
 }

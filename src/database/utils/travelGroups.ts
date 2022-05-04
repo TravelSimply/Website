@@ -206,3 +206,20 @@ export async function updateTravelGroupWithOwnerCheck(id:string, userId:string,
         )
     )
 }
+
+export async function updateMembersWithOwnerCheck(id:string, userId:string, members:string[]) {
+
+    await client.query(
+        q.If(
+            q.Equals(userId, q.Select(['data', 0], q.Paginate(q.Match(q.Index('travelGroups_by_id_w_owner'), id)))),
+            q.Do(
+                q.Update(
+                    q.Ref(q.Collection('travelGroups'), id),
+                    {data: {members}}
+                )
+                // send a notification
+            ),
+            null
+        )
+    )
+}

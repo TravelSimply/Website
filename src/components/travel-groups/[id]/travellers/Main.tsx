@@ -36,8 +36,6 @@ export default function Main({user, travelGroup}:Props) {
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
     )
 
-    // console.log(travellers)
-
     const [search, setSearch] = useState('')
 
     return (
@@ -75,7 +73,7 @@ export default function Main({user, travelGroup}:Props) {
                                     <Grid item flexBasis={600}>
                                         <TravellerCard user={user} isAdmin={travelGroup.data.owner === user.ref['@ref'].id}
                                         traveller={travellers.find(m => m.ref['@ref'].id === travelGroup.data.owner)}
-                                        travellers={travellers} />
+                                        travellers={travellers} travelGroup={travelGroup} />
                                     </Grid>
                                 </Grid>
                             </Box>
