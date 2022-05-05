@@ -10,8 +10,9 @@ export default verifyUser(async function RescindInvitation(req:NextApiRequest, r
 
     try {
 
-        console.log('inviteId', req.body.inviteId)
-        await rescindInvitation(req.body.inviteId as string)
+        const not = await rescindInvitation(req.body.inviteId, req.body.to, req.query.id as string)
+
+        console.log('newNot', not)
 
         return res.status(200).json({msg: 'Success'})
     } catch (e) {

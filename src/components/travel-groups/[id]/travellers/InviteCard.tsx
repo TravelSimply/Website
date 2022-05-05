@@ -29,7 +29,8 @@ export default function InviteCard({invite, isAdmin, travelGroup, remove}:Props)
                 method: 'POST',
                 url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/invitations/rescind`,
                 data: {
-                    inviteId: invite.ref['@ref'].id
+                    inviteId: invite.ref['@ref'].id,
+                    to: invite.data.to.data.username || ''
                 }
             })
             remove()
