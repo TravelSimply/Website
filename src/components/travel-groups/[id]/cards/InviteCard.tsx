@@ -67,7 +67,7 @@ export default function InviteCard({invite, isAdmin, travelGroup, remove}:Props)
                             </Box>
                         </Box>
                     </Grid>
-                    {isAdmin && <Grid item>
+                    <Grid item>
                         <Grid container height="100%" direction="column" justifyContent="space-between">
                             <Grid item>
                                 <Box ml={1} mb={2}>
@@ -88,7 +88,7 @@ export default function InviteCard({invite, isAdmin, travelGroup, remove}:Props)
                                 </Box>
                             </Grid>}
                         </Grid>
-                    </Grid>}
+                    </Grid>
                 </Grid>
             </Paper>
         </Box>
