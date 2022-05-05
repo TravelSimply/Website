@@ -393,6 +393,10 @@ interface ClientTravelGroupProposalData {
     }
 }
 
+interface ClientTravelGroupProposalDataWithByPopulated extends Omit<ClientTravelGroupProposalData, 'by'> {
+    by: ClientUser;
+}
+
 export interface TravelGroupProposal {
     ref: Ref;
     data: TravelGroupProposalData;
@@ -401,6 +405,10 @@ export interface TravelGroupProposal {
 export interface ClientTravelGroupProposal {
     ref: {'@ref': Ref};
     data: ClientTravelGroupProposalData;
+}
+
+export interface ClientTravelGroupProposalWithByPopulated extends Omit<ClientTravelGroupProposal, 'data'> {
+    data: ClientTravelGroupProposalDataWithByPopulated;
 }
 
 interface TravelGroupNotificationsData {
