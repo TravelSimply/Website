@@ -11,9 +11,9 @@ export default verifyUser(async function RejectJoinRequest(req:NextApiRequest, r
 
     try {
 
-        const {requestId} = req.body
+        const {requestId, travellerUsername} = req.body
 
-        await rejectJoinRequest(requestId)
+        await rejectJoinRequest(requestId, travellerUsername, req.query.id as string)
 
         return res.status(200).json({msg: 'Success'})
     } catch (e) {

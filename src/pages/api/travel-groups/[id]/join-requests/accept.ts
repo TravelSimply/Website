@@ -10,11 +10,12 @@ export default verifyUser(async function AcceptJoinRequest(req:NextApiRequest, r
 
     try {
 
-        const {requestId, travellerId, userContactInfo} = req.body
+        const {requestId, travellerId, userContactInfo, travellerUsername} = req.body
         const travelGroupId = req.query.id as string
 
         if (userContactInfo) {
-            const contactInfo = await acceptJoinRequestAndGetTravellerContactInfo(requestId, travellerId, travelGroupId)
+            const contactInfo = await acceptJoinRequestAndGetTravellerContactInfo(requestId, travellerId, travelGroupId, 
+                travellerUsername)
             return res.status(200).json(contactInfo)
         }
         

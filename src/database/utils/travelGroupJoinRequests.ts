@@ -2,6 +2,7 @@ import {query as q} from 'faunadb'
 import client from '../fauna'
 import { ContactInfo, TravelGroupJoinRequest, TravelGroupJoinRequestWithFromPopulated } from '../interfaces'
 import { getUserContactInfoInnerQuery } from './contactInfo'
+import { addTravelGroupNotificationQuery } from './travelGroupNotifications'
 
 export async function getTravelGroupJoinRequests(travelGroupId:string):Promise<{data: TravelGroupJoinRequest[]}> {
 
@@ -35,7 +36,13 @@ export async function getTravelGroupJoinRequestsWithFromPopulated(travelGroupId:
 }
 
 export async function acceptJoinRequestAndGetTravellerContactInfo(requestId:string, travellerId:string, 
-    travelGroupId:string):Promise<ContactInfo> {
+    travelGroupId:string, travellerUsername:string):Promise<ContactInfo> {
+
+    const update = {
+        time: q.Now(),
+        type: 'acceptJoinRequest',
+        users: [travellerUsername]
+    }
 
     return await client.query(
         q.Do(
@@ -55,6 +62,7 @@ export async function acceptJoinRequestAndGetTravellerContactInfo(requestId:stri
                             }
                         })
                     ),
+                    addTravelGroupNotificationQuery(q.Select(['ref', 'id'], q.Var('travelGroup')), update),
                     q.Var('contactInfo')
                 )
             ),
@@ -62,9 +70,18 @@ export async function acceptJoinRequestAndGetTravellerContactInfo(requestId:stri
     )
 }
 
-export async function rejectJoinRequest(requestId:string) {
+export async function rejectJoinRequest(requestId:string, travellerUsername:string, travelGroupId:string) {
+
+    const update = {
+        time: q.Now(),
+        type: 'rejectJoinRequest',
+        users: [travellerUsername]
+    }
 
     await client.query(
-        q.Delete(q.Ref(q.Collection('travelGroupJoinRequests'), requestId))
+        q.Do(
+            q.Delete(q.Ref(q.Collection('travelGroupJoinRequests'), requestId)),
+            addTravelGroupNotificationQuery(travelGroupId, update)
+        )
     )
 }

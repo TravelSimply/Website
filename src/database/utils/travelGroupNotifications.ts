@@ -1,8 +1,8 @@
-import {query as q} from 'faunadb'
+import {query as q, Expr} from 'faunadb'
 import client from '../fauna'
 import { TravelGroupNotifications } from '../interfaces'
 
-export function getTravelGroupNotificationsInnerQuery(travelGroupId:string) {
+export function getTravelGroupNotificationsInnerQuery(travelGroupId:string|Expr) {
     return q.If(
         q.Exists(q.Match(q.Index('travelGroupNotifications_by_travelGroup'), travelGroupId)),
         q.Get(q.Match(q.Index('travelGroupNotifications_by_travelGroup'), travelGroupId)),
@@ -20,7 +20,7 @@ export async function getTravelGroupNotifications(travelGroupId:string):Promise<
     )
 }
 
-export function addTravelGroupNotificationQuery(travelGroupId:string, update:TravelGroupNotifications['data']['notifications'][0]) {
+export function addTravelGroupNotificationQuery(travelGroupId:string|Expr, update:TravelGroupNotifications['data']['notifications'][0]) {
 
     return q.Let(
         {

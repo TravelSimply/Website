@@ -35,6 +35,7 @@ export default function JoinRequestCard({request, isAdmin, travellers, travelGro
                 data: {
                     requestId: request.ref['@ref'].id,
                     travellerId: request.data.from.ref['@ref'].id,
+                    travellerUsername: request.data.from.data.username || '',
                     userContactInfo: true
                 }
             })
@@ -54,7 +55,8 @@ export default function JoinRequestCard({request, isAdmin, travellers, travelGro
                 method: 'POST',
                 url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/join-requests/reject`,
                 data: {
-                    requestId: request.ref['@ref'].id
+                    requestId: request.ref['@ref'].id,
+                    travellerUsername: request.data.from.data.username || ''
                 }
             })
 
