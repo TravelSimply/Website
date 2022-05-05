@@ -60,7 +60,8 @@ function proposalDataWithStringDates(proposal:Expr) {
                 },
                 null
             )
-        }
+        },
+        timeSent: q.Select(['data', 'timeSent'], proposal)
     }
 }
 
