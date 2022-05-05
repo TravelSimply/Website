@@ -54,6 +54,10 @@ export async function sendInvitationsWithNotificationUpdate(from:string, to:stri
                 },
                 q.Do(
                     addBasicNotification('travelGroupInvitations', q.Select(['ref', 'id'], q.Var('invite')), q.Var('to')),
+                    q.Update(
+                        q.Ref(q.Collection('travelGroups'), travelGroupId),
+                        {data: {lastUpdated: q.Now()}}
+                    ),
                     q.Var('invite')
                 )
             )

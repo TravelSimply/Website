@@ -22,27 +22,33 @@ export async function getTravelGroupNotifications(travelGroupId:string):Promise<
 
 export function addTravelGroupNotificationQuery(travelGroupId:string|Expr, update:TravelGroupNotifications['data']['notifications'][0]) {
 
-    return q.Let(
-        {
-            notifications: getTravelGroupNotificationsInnerQuery(travelGroupId),
-        },
-        q.Update(
-            q.Select('ref', q.Var('notifications')),
-            {data: {
-                notifications: q.If(
-                    q.GT(q.Count(q.Select(['data', 'notifications'], q.Var('notifications'))), 50),
-                    q.Drop(1,
+    return q.Do(
+        q.Let(
+            {
+                notifications: getTravelGroupNotificationsInnerQuery(travelGroupId),
+            },
+            q.Update(
+                q.Select('ref', q.Var('notifications')),
+                {data: {
+                    notifications: q.If(
+                        q.GT(q.Count(q.Select(['data', 'notifications'], q.Var('notifications'))), 50),
+                        q.Drop(1,
+                            q.Append(
+                                [update],
+                                q.Select(['data', 'notifications'], q.Var('notifications')),
+                            )
+                        ),
                         q.Append(
                             [update],
                             q.Select(['data', 'notifications'], q.Var('notifications')),
                         )
-                    ),
-                    q.Append(
-                        [update],
-                        q.Select(['data', 'notifications'], q.Var('notifications')),
                     )
-                )
-            }}
-        )
+                }}
+            )
+        ),
+        q.Update(
+            q.Ref(q.Collection('travelGroups'), travelGroupId),
+            {data: {lastUpdated: q.Now()}}
+        ),
     )
 }
