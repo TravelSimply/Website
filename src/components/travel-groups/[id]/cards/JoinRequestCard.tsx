@@ -92,29 +92,35 @@ export default function JoinRequestCard({request, isAdmin, travellers, travelGro
                                     </Grid>
                                 </Grid>
                             </Box>
-                            <Box ml={1} mt={1}>
-                                <Typography variant="body1">
-                                    Requested {sentDiff} ago.
-                                </Typography>
-                            </Box>
                         </Box>
                     </Grid>
-                    {isAdmin && <Grid item>
-                        <Box p={2} height="100%" bgcolor="orangeBg.light">
-                            <Grid container spacing={3}>
-                                <Grid item>
-                                    <OrangeDensePrimaryButton disabled={loading} onClick={() => acceptRequest()}>
-                                        Accept
-                                    </OrangeDensePrimaryButton>
-                                </Grid>
-                                <Grid item>
-                                    <OrangeDenseSecondaryButton disabled={loading} onClick={() => rejectRequest()}>
-                                        Reject
-                                    </OrangeDenseSecondaryButton>
-                                </Grid>
+                    <Grid item>
+                        <Grid container height="100%" direction="column" justifyContent="space-between">
+                            <Grid item>
+                                <Box ml={1} mb={2}>
+                                    <Typography variant="body1">
+                                        Requested {sentDiff} ago.
+                                    </Typography>
+                                </Box>
                             </Grid>
-                        </Box>
-                    </Grid>}
+                            {isAdmin && <Grid item>
+                                <Box bgcolor="orangeBg.light">
+                                    <Grid container>
+                                        <Grid item m={2}>
+                                            <OrangeDensePrimaryButton disabled={loading} onClick={() => acceptRequest()}>
+                                                Accept
+                                            </OrangeDensePrimaryButton>
+                                        </Grid>
+                                        <Grid item m={2}>
+                                            <OrangeDenseSecondaryButton disabled={loading} onClick={() => rejectRequest()}>
+                                                Reject
+                                            </OrangeDenseSecondaryButton>
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+                            </Grid>}
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Paper>
         </Box>
