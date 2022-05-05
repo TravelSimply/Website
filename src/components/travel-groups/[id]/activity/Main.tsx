@@ -1,7 +1,9 @@
-import { Box } from "@mui/material";
+import { Box, Container } from "@mui/material";
 import { ClientTravelGroup, ClientTravelGroupInvitationWithToPopulated, ClientTravelGroupJoinRequestWithFromPopulated, ClientTravelGroupNotifications, ClientTravelGroupProposal, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
 import { PrimaryLink } from "../../../misc/links";
 import useSWR from 'swr'
+import {useState} from 'react'
+import Activity from './Activity'
 
 interface Props {
     user: ClientUser;
@@ -34,6 +36,8 @@ export default function Main({user, travelGroup}:Props) {
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
     )
 
+    const [search, setSearch] = useState('')
+
     console.log('travellers', travellers)
     console.log('invites', invites)
     console.log('requests', requests)
@@ -51,14 +55,16 @@ export default function Main({user, travelGroup}:Props) {
                     </PrimaryLink>
                 </Box>
             </Box>
-            <Box maxWidth="lg">
+            <Container maxWidth="lg">
                 <Box mb={3}>
                     search bar
                 </Box>
                 <Box>
-                    other stuff
+                    <Activity travellers={travellers} invites={invites} requests={requests}
+                    proposals={proposals} notifications={notifications} search={search}
+                    travelGroup={travelGroup} user={user} />
                 </Box>
-            </Box>
+            </Container>
         </Box>
     )
 }

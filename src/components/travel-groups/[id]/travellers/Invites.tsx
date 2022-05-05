@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from "react";
 import { mutate } from "swr";
 import { ClientTravelGroup, ClientTravelGroupInvitationUsersPopulated, ClientTravelGroupInvitationWithToPopulated, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
 import { searchForTravelGroupInvites } from "../../../../utils/search";
+import { handleRemoveInvite } from "../utils/invites";
 import InviteCard from './InviteCard'
 
 interface Props {
@@ -58,14 +59,7 @@ export default function Invites({users, invites, search, travelGroup, isAdmin}:P
     }, [search])
 
     const removeInvite = useCallback((inv:ClientTravelGroupInvitationUsersPopulated) => {
-        const invitesCopy = [...invites]
-        for (let i = 0; i < invitesCopy.length; i++) {
-            if (invitesCopy[i].ref['@ref'].id === inv.ref['@ref'].id) {
-                invitesCopy.splice(i, 1)
-                break
-            }
-        }
-        mutate(`/api/travel-groups/${travelGroup.ref['@ref'].id}/invitations`, invitesCopy, false)
+        handleRemoveInvite(inv, invites, travelGroup)
     }, [invites])
 
     return (
