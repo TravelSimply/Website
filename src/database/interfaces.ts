@@ -417,7 +417,7 @@ interface ClientTravelGroupNotificationsData extends Omit<TravelGroupNotificatio
     notifications: {
         time: {'@ts': string};
         type: string;
-        user?: string[];
+        users?: string[];
         msg: string;
     }[];
 }
