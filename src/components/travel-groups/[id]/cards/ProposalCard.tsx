@@ -1,10 +1,13 @@
-import {Box, Grid, Paper, Typography} from '@mui/material'
+import {Box, Grid, IconButton, Paper, Typography} from '@mui/material'
 import { useMemo } from 'react';
 import { ClientTravelGroup, ClientTravelGroupProposalWithByPopulated } from "../../../../database/interfaces";
 import dayjs from 'dayjs'
 import EditIcon from '@mui/icons-material/Edit';
-import { OrangeDensePrimaryButton } from '../../../mui-customizations/buttons';
+import { OrangeDensePrimaryButton, OrangePrimaryIconButton } from '../../../mui-customizations/buttons';
 import { findSentDiff } from '../../../../utils/dates';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 interface Props {
     isAdmin: boolean;
@@ -57,8 +60,10 @@ export default function ProposalCard({isAdmin, travelGroup, proposal, onAccepted
                             <Box>
                                 <Grid container wrap="nowrap" spacing={2} alignItems="center">
                                     <Grid item>
-                                        <Box m={1}>
-                                            <EditIcon color="primary" sx={{fontSize: {xs: 50, sm: 50}}} />
+                                        <Box m={1} sx={{width: {xs: 50, sm: 100}, height: {xs: 50, sm: 100}}}
+                                        borderRadius="50%" display="flex" justifyContent="center" alignItems="center"
+                                        bgcolor="primary.light">
+                                            <EditIcon sx={{fontSize: {xs: 50, sm: 50}, color: '#fff'}} />
                                         </Box>
                                     </Grid>
                                     <Grid item>
@@ -66,25 +71,59 @@ export default function ProposalCard({isAdmin, travelGroup, proposal, onAccepted
                                             <Typography gutterBottom variant="h6">
                                                 Proposal to {msg}
                                             </Typography>
-                                            {!proposal.data.data.date && <OrangeDensePrimaryButton>
-                                                Preview
-                                            </OrangeDensePrimaryButton>}
                                         </Box>
                                     </Grid>
                                 </Grid>
                             </Box> 
+                            <Box mb={2}>
+                                <Grid container wrap="nowrap" spacing={2}>
+                                    <Grid item>
+                                        <Box m={1} sx={{width: {xs: 50, sm: 100}}} />
+                                    </Grid>
+                                    <Grid item>
+                                        {!proposal.data.data.date && <OrangeDensePrimaryButton>
+                                            Preview     
+                                        </OrangeDensePrimaryButton>}
+                                    </Grid>
+                                </Grid>
+                            </Box>
                         </Box>
                     </Grid>
                     <Grid item>
-                        <Box p={2} height="100%">
-                            <Box ml={1} mt={1}>
-                                <Typography variant="body1">
-                                    Proposed by @{proposal.data.by.data.username} {diff}
-                                </Typography>
-                            </Box>
-                            <Box bgcolor="orangeBg.light">
-                            </Box>
-                        </Box>
+                        <Grid container height="100%" direction="column" justifyContent="space-between">
+                            <Grid item>
+                                <Box ml={1} mb={2}>
+                                    <Typography variant="body1">
+                                        Proposed by @{proposal.data.by.data.username} {diff} ago.
+                                    </Typography>
+                                </Box>
+                            </Grid>
+                            <Grid item>
+                                <Box bgcolor="orangeBg.light">
+                                    <Grid container justifyContent="space-between">
+                                        <Grid item flex={1}>
+                                            <Grid container>
+                                                <Grid item ml={2} mr={1} my={2}>
+                                                    <IconButton>
+                                                        <ArrowUpwardIcon />
+                                                    </IconButton>
+                                                </Grid>
+                                                <Grid item mx={1} my={2}>
+                                                    <IconButton>
+                                                        <ArrowDownwardIcon />
+                                                    </IconButton>
+                                                </Grid>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid item my={2} mr={2}>
+                                            <OrangePrimaryIconButton>
+                                                <MoreVertIcon />
+                                            </OrangePrimaryIconButton>
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+                            </Grid>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Paper>

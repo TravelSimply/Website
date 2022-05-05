@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 import {mutate} from 'swr'
 import InviteCard from "../cards/InviteCard";
 import JoinRequestCard from "../cards/JoinRequestCard";
+import ProposalCard from '../cards/ProposalCard'
 import { handleRemoveInvite } from "../utils/invites";
 import { handleAcceptRequest, handleRejectRequest } from "../utils/joinRequests";
 
@@ -48,8 +49,20 @@ export default function Activity({travellers, invites, requests, proposals, noti
                 }
             }).filter(inv => inv).map(inv => ({type: 'invite', time: dayjs(inv.data.timeSent['@ts']), content: inv})),
             ...requests.map(req => ({type: 'request', time: dayjs(req.data.timeSent['@ts']), content: req})),
-            ...proposals.map(prop => ({type: 'proposal', time: dayjs(prop.data.timeSent['@ts']), content: prop})),
-            ...notifications.data.notifications.map(not => ({type: 'update', time: dayjs(not.time['@ts']), content: not}))
+            ...proposals.map(prop => {
+                const u = travellers.find(u => u.ref['@ref'].id === prop.data.by)
+                if (!u) {
+                    return null
+                }
+                return {
+                    ...prop,
+                    data: {
+                        ...prop.data,
+                        by: u
+                    }
+                }
+            }).filter(prop => prop).map(prop => ({type: 'proposal', time: dayjs(prop.data.timeSent['@ts']), content: prop})),
+            // ...notifications.data.notifications.map(not => ({type: 'update', time: dayjs(not.time['@ts']), content: not}))
         ].sort((a, b) => b.time.diff(a.time)))
     }, [invites, requests, proposals, notifications])
 
@@ -64,6 +77,10 @@ export default function Activity({travellers, invites, requests, proposals, noti
     const rejectRequest = useCallback((requestId:string) => {
         handleRejectRequest(requestId, requests, travelGroup)
     }, [travellers, requests])
+
+    const acceptProposal = () => {}
+
+    const rejectProposal = () => {}
 
     console.log(allItems)
 
@@ -81,6 +98,9 @@ export default function Activity({travellers, invites, requests, proposals, noti
                             <JoinRequestCard request={item.content as any} isAdmin={isAdmin}
                             travelGroup={travelGroup} travellers={travellers} accept={acceptRequest}
                             reject={rejectRequest} />
+                        : item.type === 'proposal' ?
+                            <ProposalCard isAdmin={isAdmin} travelGroup={travelGroup} proposal={item.content as any}
+                            onAccepted={() => acceptProposal()} onRejected={() => rejectProposal()} /> 
                         : null}
                     </Grid>
                 ))}
