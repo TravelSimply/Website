@@ -99,7 +99,7 @@ export default function JoinRequestCard({request, isAdmin, travellers, travelGro
                             <Grid item>
                                 <Box ml={1} mb={2}>
                                     <Typography variant="body1">
-                                        Requested {sentDiff} ago.
+                                        Requested to join {sentDiff} ago.
                                     </Typography>
                                 </Box>
                             </Grid>
