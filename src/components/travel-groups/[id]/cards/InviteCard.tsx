@@ -65,19 +65,29 @@ export default function InviteCard({invite, isAdmin, travelGroup, remove}:Props)
                                     </Grid>
                                 </Grid>
                             </Box>
-                            <Box ml={1} mt={1}>
-                                <Typography variant="body1">
-                                    Invited by @{invite.data.from.data.username} {sentDiff} ago.
-                                </Typography>
-                            </Box>
                         </Box>
                     </Grid>
                     {isAdmin && <Grid item>
-                        <Box p={2} height="100%" bgcolor="orangeBg.light">
-                            <OrangeDensePrimaryButton onClick={() => rescindInvite()} disabled={loading}>
-                                Rescind
-                            </OrangeDensePrimaryButton>
-                        </Box>
+                        <Grid container height="100%" direction="column" justifyContent="space-between">
+                            <Grid item>
+                                <Box ml={1} mb={2}>
+                                    <Typography variant="body1">
+                                        Invited by @{invite.data.from.data.username} {sentDiff} ago.
+                                    </Typography>
+                                </Box>
+                            </Grid>
+                            {isAdmin && <Grid item>
+                                <Box bgcolor="orangeBg.light">
+                                    <Grid container>
+                                        <Grid item m={2}>
+                                            <OrangeDensePrimaryButton onClick={() => rescindInvite()} disabled={loading}>
+                                                Rescind
+                                            </OrangeDensePrimaryButton>
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+                            </Grid>}
+                        </Grid>
                     </Grid>}
                 </Grid>
             </Paper>
