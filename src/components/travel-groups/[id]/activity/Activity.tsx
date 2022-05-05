@@ -6,6 +6,7 @@ import {mutate} from 'swr'
 import InviteCard from "../travellers/InviteCard";
 import JoinRequestCard from "../travellers/JoinRequestCard";
 import { handleRemoveInvite } from "../utils/invites";
+import { handleAcceptRequest, handleRejectRequest } from "../utils/joinRequests";
 
 interface Props {
     travelGroup: ClientTravelGroup;
@@ -57,25 +58,11 @@ export default function Activity({travellers, invites, requests, proposals, noti
     }, [invites])
 
     const acceptRequest = useCallback((contactInfo:ClientContactInfo) => {
-
-        const user = requests.find(u => u.data.from.ref['@ref'].id === contactInfo.data.userId)?.data.from
-
-        mutate(`/api/travel-groups/${travelGroup.ref['@ref'].id}/travellers`,
-        [...travellers, {
-            ...user,
-            data: {
-                ...user.data,
-                contactInfo
-            } 
-        }].sort((a, b) => a.data.lastName?.localeCompare(b.data.lastName)), false)
-
+        handleAcceptRequest(contactInfo, travellers, requests, travelGroup)
     }, [travellers, requests])
 
     const rejectRequest = useCallback((requestId:string) => {
-
-        mutate(`/api/travel-groups/${travelGroup.ref['@ref'].id}/join-requests`,
-        requests.filter(req => req.ref['@ref'].id !== requestId), false)
-        
+        handleRejectRequest(requestId, requests, travelGroup)
     }, [travellers, requests])
 
     console.log(allItems)

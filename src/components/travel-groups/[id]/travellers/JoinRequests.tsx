@@ -3,6 +3,7 @@ import {useCallback, useEffect, useMemo, useState} from 'react'
 import { mutate } from 'swr';
 import { ClientContactInfo, ClientTravelGroup, ClientTravelGroupJoinRequestWithFromPopulated, ClientUserWithContactInfo } from "../../../../database/interfaces";
 import { searchForTravelGroupJoinRequests } from '../../../../utils/search';
+import { handleAcceptRequest, handleRejectRequest } from '../utils/joinRequests';
 import JoinRequestCard from './JoinRequestCard';
 
 interface Props {
@@ -44,25 +45,11 @@ export default function JoinRequests({joinRequests, search, isAdmin, travellers,
     }, [search])
 
     const acceptRequest = useCallback((contactInfo:ClientContactInfo) => {
-
-        const user = joinRequests.find(u => u.data.from.ref['@ref'].id === contactInfo.data.userId)?.data.from
-
-        mutate(`/api/travel-groups/${travelGroup.ref['@ref'].id}/travellers`,
-        [...travellers, {
-            ...user,
-            data: {
-                ...user.data,
-                contactInfo
-            } 
-        }].sort((a, b) => a.data.lastName?.localeCompare(b.data.lastName)), false)
-
+        handleAcceptRequest(contactInfo, travellers, joinRequests, travelGroup)
     }, [travellers, joinRequests])
 
     const rejectRequest = useCallback((requestId:string) => {
-
-        mutate(`/api/travel-groups/${travelGroup.ref['@ref'].id}/join-requests`,
-        joinRequests.filter(req => req.ref['@ref'].id !== requestId), false)
-        
+        handleRejectRequest(requestId, joinRequests, travelGroup)
     }, [travellers, joinRequests])
 
     useMemo(() => {
