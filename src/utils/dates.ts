@@ -10,5 +10,5 @@ export function findSentDiff(date:Dayjs) {
     if (diff >= 1) {
         return diff + ' hours'
     }
-    return dayjs().diff(date, 'minutes')
+    return dayjs().diff(date, 'minutes') + ' minutes'
 }
