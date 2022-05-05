@@ -10,7 +10,7 @@ import { OrangeButtonGroup } from "../../../mui-customizations/buttonGroup";
 import Invites from "./Invites";
 import JoinRequests from "./JoinRequests";
 import SendInvite from "./SendInvite";
-import TravellerCard from "./TravellerCard";
+import TravellerCard from "../cards/TravellerCard";
 import Travellers from "./Travellers";
 
 interface Props {

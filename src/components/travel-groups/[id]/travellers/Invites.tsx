@@ -4,7 +4,7 @@ import { mutate } from "swr";
 import { ClientTravelGroup, ClientTravelGroupInvitationUsersPopulated, ClientTravelGroupInvitationWithToPopulated, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
 import { searchForTravelGroupInvites } from "../../../../utils/search";
 import { handleRemoveInvite } from "../utils/invites";
-import InviteCard from './InviteCard'
+import InviteCard from '../cards/InviteCard'
 
 interface Props {
     users: ClientUserWithContactInfo[];

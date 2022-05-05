@@ -1,7 +1,7 @@
 import {useState, useMemo, useCallback} from 'react'
 import { ClientTravelGroup, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
 import {Box, Grid} from '@mui/material'
-import TravellerCard from './TravellerCard'
+import TravellerCard from '../cards/TravellerCard'
 import {mutate} from 'swr'
 import { searchForUsers } from '../../../../utils/search';
 import Snackbar from '../../../misc/snackbars'

@@ -3,8 +3,8 @@ import { ClientContactInfo, ClientTravelGroup, ClientTravelGroupInvitationUsersP
 import {useCallback, useMemo, useState} from 'react'
 import dayjs from 'dayjs'
 import {mutate} from 'swr'
-import InviteCard from "../travellers/InviteCard";
-import JoinRequestCard from "../travellers/JoinRequestCard";
+import InviteCard from "../cards/InviteCard";
+import JoinRequestCard from "../cards/JoinRequestCard";
 import { handleRemoveInvite } from "../utils/invites";
 import { handleAcceptRequest, handleRejectRequest } from "../utils/joinRequests";
 

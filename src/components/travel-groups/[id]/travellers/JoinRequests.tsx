@@ -4,7 +4,7 @@ import { mutate } from 'swr';
 import { ClientContactInfo, ClientTravelGroup, ClientTravelGroupJoinRequestWithFromPopulated, ClientUserWithContactInfo } from "../../../../database/interfaces";
 import { searchForTravelGroupJoinRequests } from '../../../../utils/search';
 import { handleAcceptRequest, handleRejectRequest } from '../utils/joinRequests';
-import JoinRequestCard from './JoinRequestCard';
+import JoinRequestCard from '../cards/JoinRequestCard';
 
 interface Props {
     joinRequests: ClientTravelGroupJoinRequestWithFromPopulated[];
