@@ -99,7 +99,7 @@ export default function Activity({travellers, invites, requests, proposals, noti
                             travelGroup={travelGroup} travellers={travellers} accept={acceptRequest}
                             reject={rejectRequest} />
                         : item.type === 'proposal' ?
-                            <ProposalCard isAdmin={isAdmin} travelGroup={travelGroup} proposal={item.content as any}
+                            <ProposalCard isAdmin={isAdmin} user={user} travelGroup={travelGroup} proposal={item.content as any}
                             onAccepted={() => acceptProposal()} onRejected={() => rejectProposal()} /> 
                         : null}
                     </Grid>

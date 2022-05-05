@@ -1,6 +1,6 @@
 import {Box, Grid, IconButton, Paper, Typography} from '@mui/material'
-import { useMemo } from 'react';
-import { ClientTravelGroup, ClientTravelGroupProposalWithByPopulated } from "../../../../database/interfaces";
+import { useMemo, useState } from 'react';
+import { ClientTravelGroup, ClientTravelGroupProposalWithByPopulated, ClientUser } from "../../../../database/interfaces";
 import dayjs from 'dayjs'
 import EditIcon from '@mui/icons-material/Edit';
 import { OrangeDensePrimaryButton, OrangePrimaryIconButton } from '../../../mui-customizations/buttons';
@@ -8,16 +8,50 @@ import { findSentDiff } from '../../../../utils/dates';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import axios from 'axios'
 
 interface Props {
     isAdmin: boolean;
+    user: ClientUser;
     travelGroup: ClientTravelGroup;
     proposal: ClientTravelGroupProposalWithByPopulated;
     onAccepted: () => void;
     onRejected: () => void;
 }
 
-export default function ProposalCard({isAdmin, travelGroup, proposal, onAccepted, onRejected}:Props) {
+export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAccepted, onRejected}:Props) {
+
+    const [votesFor, setVotesFor] = useState(proposal.data.for)
+    const [votesAgainst, setVotesAgainst] = useState(proposal.data.against)
+    const [loading, setLoading] = useState(false)
+
+    const removeIdFromArr = (arr:string[]) => {
+        const aCopy = [...arr]
+        aCopy.splice(aCopy.indexOf(user.ref['@ref'].id), 1)
+        return aCopy
+    }
+
+    useMemo(() => {
+        if (votesFor.includes(user.ref['@ref'].id) && votesAgainst.includes(user.ref['@ref'].id)) {
+            setVotesAgainst(removeIdFromArr(votesAgainst))
+        }
+    }, [votesFor])
+
+    useMemo(() => {
+        if (votesAgainst.includes(user.ref['@ref'].id) && votesFor.includes(user.ref['@ref'].id)) {
+            setVotesFor(removeIdFromArr(votesFor))
+        }
+    }, [votesAgainst])
+
+    const vote = useMemo(() => {
+        if (votesFor.includes(user.ref['@ref'].id)) {
+            return 'for'
+        }
+        if (votesAgainst.includes(user.ref['@ref'].id)) {
+            return 'against'
+        }
+        return ''
+    }, [votesFor, votesAgainst])
 
     const msg = useMemo(() => {
         if (proposal.data.data.date) {
@@ -45,11 +79,84 @@ export default function ProposalCard({isAdmin, travelGroup, proposal, onAccepted
             })
         }
         return `change the ${changeList}`
-    }, [proposal]) 
+    }, []) 
 
     const diff = useMemo(() => {
         return findSentDiff(dayjs(proposal.data.timeSent['@ts']))
-    }, [proposal])
+    }, [])
+
+    const cancelVote = async (cancelling:string) => {
+
+        if (cancelling === 'for') {
+            setVotesFor(removeIdFromArr(votesFor))
+        } else {
+            setVotesAgainst(removeIdFromArr(votesAgainst))
+        }
+        setLoading(true)
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/proposals/vote`,
+                data: {
+                    cancel: cancelling,
+                    proposalId: proposal.ref['@ref'].id
+                }
+            })
+
+        } catch (e) { }
+        
+        setLoading(false)
+    }
+
+    const voteFor = async () => {
+        if (vote === 'for') {
+            return cancelVote('for')
+        }
+
+        setVotesFor([...votesFor, user.ref['@ref'].id])
+        setLoading(true)
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/proposals/vote`,
+                data: {
+                    vote: 'for',
+                    proposalId: proposal.ref['@ref'].id
+                }
+            })
+
+        } catch (e) { }
+
+        setLoading(false)
+    }
+
+    const voteAgainst = async () => {
+        if (vote === 'against') {
+            return cancelVote('against')
+        }
+
+        setVotesAgainst([...votesAgainst, user.ref['@ref'].id])
+        setLoading(true)
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/proposals/vote`,
+                data: {
+                    vote: 'against',
+                    proposalId: proposal.ref['@ref'].id
+                }
+            })
+
+        } catch (e) { }
+
+        setLoading(false)
+    }
 
     return (
         <Box maxWidth={400} height="100%">
@@ -104,13 +211,17 @@ export default function ProposalCard({isAdmin, travelGroup, proposal, onAccepted
                                         <Grid item flex={1}>
                                             <Grid container>
                                                 <Grid item ml={2} mr={1} my={2}>
-                                                    <IconButton>
-                                                        <ArrowUpwardIcon />
+                                                    <IconButton onClick={() => voteFor()} disabled={loading}>
+                                                        <ArrowUpwardIcon
+                                                        color={vote === 'for' ? 'primary' : 'inherit'} />
+                                                        {votesFor.length}
                                                     </IconButton>
                                                 </Grid>
                                                 <Grid item mx={1} my={2}>
-                                                    <IconButton>
-                                                        <ArrowDownwardIcon />
+                                                    <IconButton onClick={() => voteAgainst()} disabled={loading}>
+                                                        <ArrowDownwardIcon
+                                                        color={vote === 'against' ? 'primary' : 'inherit'} />
+                                                        {votesAgainst.length}
                                                     </IconButton>
                                                 </Grid>
                                             </Grid>

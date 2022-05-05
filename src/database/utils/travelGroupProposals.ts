@@ -82,3 +82,68 @@ export async function getTravelGroupProposals(travelGroupId:string):Promise<{dat
         ))
     )
 }
+
+function voteInnerQuery(id:string, userId:string, type:string) {
+
+    return q.Let(
+        {
+            type: q.Select(['data'], q.Paginate(q.Match(q.Index(`travelGroupProposals_by_id_w_${type}`), id)))
+        },
+        q.If(
+            q.ContainsValue(userId, q.Var('type')),
+            null,
+            q.Update(
+                q.Ref(q.Collection('travelGroupProposals'), id),
+                {data: {
+                    [type]: q.Append(userId, q.Var('type'))
+                }}
+            )
+        )
+    )
+}
+
+function removeVoteInnerQuery(id:string, userId:string, type:string) {
+
+    return q.Let(
+        {
+            type: q.Select(['data'], q.Paginate(q.Match(q.Index(`travelGroupProposals_by_id_w_${type}`), id)))
+        },
+        q.If(
+            q.ContainsValue(userId, q.Var('type')),
+            q.Update(
+                q.Ref(q.Collection('travelGroupProposals'), id),
+                {data: {
+                    [type]: q.Filter(q.Var('type'), q.Lambda('id', q.Not(q.Equals(q.Var('id'), userId))))
+                }}
+            ),
+            null
+        )
+    )
+}
+
+export async function voteForProposal(id:string, userId:string) {
+
+    return await client.query(
+        q.Do(
+            voteInnerQuery(id, userId, 'for'),
+            removeVoteInnerQuery(id, userId, 'against')
+        )
+    )
+}
+
+export async function voteAgainstProposal(id:string, userId:string) {
+
+    return await client.query(
+        q.Do(
+            voteInnerQuery(id, userId, 'against'),
+            removeVoteInnerQuery(id, userId, 'for')
+        )
+    )
+}
+
+export async function cancelProposalVote(id:string, userId:string, type:string) {
+    
+    return await client.query(
+        removeVoteInnerQuery(id, userId, type)
+    )
+}
