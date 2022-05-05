@@ -419,7 +419,7 @@ interface ClientTravelGroupNotificationsData extends Omit<TravelGroupNotificatio
         type: string;
         user?: string[];
         msg: string;
-    }
+    }[];
 }
 
 export interface TravelGroupNotifications {
