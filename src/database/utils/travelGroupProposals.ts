@@ -21,7 +21,7 @@ export async function createProposal(data:TravelGroupProposal['data'], userJunkI
             ),
             q.Create(
                 q.Collection('travelGroupProposals'),
-                {data}
+                {data: {...data, timeSent: q.Now()}}
             ),
             q.Update(
                 q.Ref(q.Collection('travelGroups'), data.travelGroup),

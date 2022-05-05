@@ -361,6 +361,7 @@ interface TravelGroupProposalData {
     type: string;
     for: string[];
     against: string[];
+    timeSent: Expr; // Time
     data: {
         name?: string;
         desc?: string;
@@ -373,7 +374,13 @@ interface TravelGroupProposalData {
     }
 }
 
-interface ClientTravelGroupProposalData extends Omit<TravelGroupProposalData, 'data'> {
+interface ClientTravelGroupProposalData {
+    travelGroup: string;
+    by: string; // User
+    type: string;
+    for: string[];
+    against: string[];
+    timeSent: {'@ts': string};
     data: {
         name?: string;
         desc?: string;
