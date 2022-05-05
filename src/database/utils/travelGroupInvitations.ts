@@ -1,6 +1,7 @@
 import {query as q} from 'faunadb'
 import client from '../fauna'
 import { TravelGroupInvitation, TravelGroupInvitationWithToPopulated } from '../interfaces'
+import { addTravelGroupNotificationQuery, getTravelGroupNotificationsInnerQuery } from './travelGroupNotifications'
 import { addBasicNotification } from './users'
 
 export async function getTravelGroupInvitations(travelGroupId:string):Promise<{data: TravelGroupInvitation[]}> {
@@ -60,9 +61,19 @@ export async function sendInvitationsWithNotificationUpdate(from:string, to:stri
     )
 }
 
-export async function rescindInvitation(inviteId:string):Promise<TravelGroupInvitation> {
+export async function rescindInvitation(inviteId:string, toUsername:string, 
+    travelGroupId:string):Promise<TravelGroupInvitation> {
+
+    const update = {
+        time: q.Now(),
+        type: 'rescindInvitation',
+        users: [toUsername]
+    }
 
     return await client.query(
-        q.Delete(q.Ref(q.Collection('travelGroupInvitations'), inviteId))
+        q.Do(
+            q.Delete(q.Ref(q.Collection('travelGroupInvitations'), inviteId)),
+            addTravelGroupNotificationQuery(travelGroupId, update)
+        )
     )
 }

@@ -409,7 +409,6 @@ interface TravelGroupNotificationsData {
         time: Expr; // Time
         type: string;
         users?: string[]; // usernames,
-        msg: string;
     }[];
 }
 
@@ -418,7 +417,6 @@ interface ClientTravelGroupNotificationsData extends Omit<TravelGroupNotificatio
         time: {'@ts': string};
         type: string;
         users?: string[];
-        msg: string;
     }[];
 }
 
