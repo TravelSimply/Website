@@ -193,7 +193,8 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
                 data: {
                     proposalId: proposal.ref['@ref'].id,
                     proposalUserUsername: proposal.data.by.data.username || '',
-                    data: proposal.data.data
+                    data: proposal.data.data,
+                    travelGroupPublicId: travelGroup.data.image?.publicId
                 }
             })
 
@@ -217,6 +218,7 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
                 data: {
                     proposalId: proposal.ref['@ref'].id,
                     proposalUserUsername: proposal.data.by.data.username || '',
+                    proposalPublicId: proposal.data.data.image?.publicId
                 }
             })
 
