@@ -35,7 +35,6 @@ export default verifyUser(async function UpdateTravelGroup(req:NextApiRequest, r
 
         await new Promise((resolve, reject) => {
             cloudinary.uploader.destroy(originalPublicId, {invalidate: true}, (err, result) => {
-                console.log('UPLOADING FINISHED')
                 if (err) reject('Error uploading to cloudinary')
                 resolve(result)
             })
