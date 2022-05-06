@@ -90,8 +90,6 @@ export default function Activity({travellers, invites, requests, proposals, noti
         )
     }
 
-    console.log(allItems)
-
     const isAdmin = useMemo(() => travelGroup.data.owner === user.ref['@ref'].id, [user, travelGroup])
 
     return (

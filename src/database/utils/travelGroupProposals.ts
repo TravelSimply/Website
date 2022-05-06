@@ -182,3 +182,19 @@ export async function acceptProposal(id:string, travelGroupId:string, proposalUs
         )
     )
 }
+
+export async function rejectProposal(id:string, travelGroupId:string, proposalUserUsername:string) {
+
+    const update = {
+        time: q.Now(),
+        type: 'rejectProposal',
+        users: [proposalUserUsername]
+    }
+
+    return await client.query(
+        q.Do(
+            q.Delete(q.Ref(q.Collection('travelGroupProposals'), id)),
+            addTravelGroupNotificationQuery(travelGroupId, update)
+        )
+    )
+}

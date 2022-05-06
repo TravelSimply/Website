@@ -199,6 +199,29 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
         }
     }
 
+    const reject = async () => {
+
+        setAnchorEl(null)
+        setLoading(false)
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/proposals/reject`,
+                data: {
+                    proposalId: proposal.ref['@ref'].id,
+                    proposalUserUsername: proposal.data.by.data.username || '',
+                }
+            })
+
+            onRejected()
+        } catch (e) {
+            setSnackbarMsg({type: 'error', content: 'Error Rejecting Proposal'})
+            setLoading(false)
+        }
+    }
+
     return (
         <Box maxWidth={400} height="100%">
             <Paper sx={{height: '100%'}}>
@@ -277,7 +300,7 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
                                                 <MenuItem onClick={() => accept()}>
                                                     Accept 
                                                 </MenuItem>
-                                                <MenuItem>
+                                                <MenuItem onClick={() => reject()}>
                                                     Reject 
                                                 </MenuItem>
                                             </Menu>
