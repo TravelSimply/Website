@@ -40,12 +40,6 @@ export default function Main({user, travelGroup}:Props) {
     const [search, setSearch] = useState('')
     const [filters, setFilters] = useState([true, true, true, true])
 
-    console.log('travellers', travellers)
-    console.log('invites', invites)
-    console.log('requests', requests)
-    console.log('proposals', proposals)
-    console.log('notifications', notifications)
-
     return (
         <Box>
             <Box mb={3} py={1} bgcolor="orangeBg.light" 
