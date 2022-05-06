@@ -10,6 +10,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import axios from 'axios'
 import Snackbar from '../../../misc/snackbars'
+import ProposalPreview from './ProposalPreview';
 
 interface Props {
     isAdmin: boolean;
@@ -27,6 +28,10 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
     const [loading, setLoading] = useState(false)
     const [anchorEl, setAnchorEl] = useState<HTMLElement>(null)
     const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
+    const [viewPreview, setViewPreview] = useState(false)
+
+    const openPreview = () => setViewPreview(true)
+    const closePreview = () => setViewPreview(false)
 
     const onMoreClick = (e:MouseEvent<HTMLElement>) => {
         setAnchorEl(e.currentTarget)
@@ -252,7 +257,8 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
                                         <Box m={1} sx={{width: {xs: 50, sm: 100}}} />
                                     </Grid>
                                     <Grid item>
-                                        {!proposal.data.data.date && <OrangeDensePrimaryButton>
+                                        {!proposal.data.data.date && <OrangeDensePrimaryButton 
+                                        onClick={() => openPreview()}>
                                             Preview     
                                         </OrangeDensePrimaryButton>}
                                     </Grid>
@@ -290,7 +296,7 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
                                                 </Grid>
                                             </Grid>
                                         </Grid>
-                                        <Grid item my={2} mr={2}>
+                                        {isAdmin && <Grid item my={2} mr={2}>
                                             <OrangePrimaryIconButton disabled={loading} onClick={onMoreClick}>
                                                 <MoreVertIcon />
                                             </OrangePrimaryIconButton>
@@ -304,7 +310,7 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
                                                     Reject 
                                                 </MenuItem>
                                             </Menu>
-                                        </Grid>
+                                        </Grid>}
                                     </Grid>
                                 </Box>
                             </Grid>
@@ -312,6 +318,7 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
                     </Grid>
                 </Grid>
             </Paper>
+            <ProposalPreview open={viewPreview} close={closePreview} travelGroup={travelGroup} proposal={proposal} />
             <Snackbar msg={snackbarMsg} setMsg={setSnackbarMsg} />
         </Box>
     )
