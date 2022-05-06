@@ -4,6 +4,7 @@ import { PrimaryLink } from "../../../misc/links";
 import useSWR from 'swr'
 import {useState} from 'react'
 import Activity from './Activity'
+import Search from "./Search";
 
 interface Props {
     user: ClientUser;
@@ -37,6 +38,7 @@ export default function Main({user, travelGroup}:Props) {
     )
 
     const [search, setSearch] = useState('')
+    const [filters, setFilters] = useState([true, true, true, true])
 
     console.log('travellers', travellers)
     console.log('invites', invites)
@@ -57,7 +59,7 @@ export default function Main({user, travelGroup}:Props) {
             </Box>
             <Container maxWidth="lg">
                 <Box mb={3}>
-                    search bar
+                    <Search search={setSearch} setSearch={setSearch} filters={filters} setFilters={setFilters} />
                 </Box>
                 <Box>
                     <Activity travellers={travellers} invites={invites} requests={requests}
