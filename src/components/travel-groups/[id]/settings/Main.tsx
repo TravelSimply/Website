@@ -11,6 +11,7 @@ import Snackbar from '../../../misc/snackbars'
 import axios from 'axios';
 import useSWR from 'swr'
 import ChangeOwner from './ChangeOwner'
+import Router from 'next/router'
 
 interface Props {
     travelGroup: ClientTravelGroup;
@@ -110,6 +111,26 @@ export default function Main({travelGroup:dbTravelGroup, user}:Props) {
         setChangeOwner(false)
     }
 
+    const leave = async () => {
+        setLoading(true)
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/travellers/leave`,
+                data: {
+                    username: user.data.username
+                }
+            })
+
+            Router.push('/travel-groups')
+        } catch (e) {
+            setLoading(false)
+            setSnackbarMsg({type: 'error', content: 'Error Leaving Travel Group'})
+        }
+    }
+
     return (
         <Box>
             <Box mb={3} py={1} bgcolor="orangeBg.light" borderBottom="1px solid rgba(0,0,0,0.34)">
@@ -195,15 +216,16 @@ export default function Main({travelGroup:dbTravelGroup, user}:Props) {
                             <Box>
                                 <Grid container spacing={3}>
                                     <Grid item>
-                                        <OrangePrimaryButton sx={{minWidth: 200}}>
+                                        <OrangePrimaryButton disabled={loading} sx={{minWidth: 200}}
+                                        onClick={() => leave()}>
                                             Leave Travel Group
                                         </OrangePrimaryButton>
                                     </Grid>
-                                    <Grid item>
-                                        <OrangeSecondaryButton sx={{minWidth: 200}}>
+                                    {isAdmin && <Grid item>
+                                        <OrangeSecondaryButton disabled={loading} sx={{minWidth: 200}}>
                                             Disband Travel Group
                                         </OrangeSecondaryButton>
-                                    </Grid>
+                                    </Grid>}
                                 </Grid>
                             </Box>
                         </Box>

@@ -1,7 +1,8 @@
 import {query as q} from 'faunadb'
 import client from '../fauna'
 import { ClientTravelGroupData, TravelGroup, TravelGroupProposal, TravelGroupStringDates, TravelGroupWithPopulatedTravellersAndContactInfo, User, UserWithContactInfo } from '../interfaces'
-import { populateUserWithContactInfo } from './users'
+import { addTravelGroupNotificationQuery } from './travelGroupNotifications'
+import { addBasicNotification, populateUserWithContactInfo } from './users'
 
 export async function getUserTravelGroupDates(userId:string):Promise<{data: [string, string][]}> {
 
@@ -220,6 +221,69 @@ export async function updateMembersWithOwnerCheck(id:string, userId:string, memb
                 // send a notification
             ),
             null
+        )
+    )
+}
+
+function disbandTravelGroupQuery(id:string) {
+
+    return q.Let(
+        {
+            invites: q.Paginate(q.Match(q.Index('travelGroupInvitations_by_travelGroup'), id), {size: 1000}),
+            requests: q.Paginate(q.Match(q.Index('travelGroupJoinRequests_by_travelGroup'), id), {size: 1000}),
+            notifications: q.Paginate(q.Match(q.Index('travelGroupNotifications_by_travelGroup'), id)),
+            proposals: q.Paginate(q.Match(q.Match(q.Index('travelGroupProposals_by_travelGroup'), id)), {size: 1000})
+        },
+        q.Do(
+            q.Map(q.Var('invites'), (ref) => q.Delete(ref)),
+            q.Map(q.Var('requests'), (ref) => q.Delete(ref)),
+            q.Map(q.Var('notifications'), (ref) => q.Delete(ref)),
+            q.Map(q.Var('proposals'), (ref) => q.Delete(ref)),
+            q.Delete(q.Ref(q.Collection('travelGroups'), id))
+        )
+    )
+}
+
+export async function leaveTravelGroup(id:string, userId:string, username:string) {
+
+    const update = {
+        time: q.Now(),
+        type: 'leave',
+        users: [username]
+    }
+
+    return await client.query(
+        q.Let(
+            {
+                travelGroup: q.Get(q.Ref(q.Collection('travelGroups'), id))
+            },
+            q.If(
+                q.Equals(1, q.Count(q.Select(['data', 'members'], q.Var('travelGroup')))),
+                disbandTravelGroupQuery(id),
+                q.Let(
+                    {
+                        remainingMembers: q.Filter(q.Select(['data', 'members'], q.Var('travelGroup')), q.Lambda(
+                            'member',
+                            q.Not(q.Equals(userId, q.Var('member')))
+                        )),
+                        travelGroup: q.Var('travelGroup')
+                    },
+                    q.Do(
+                        q.Update(
+                            q.Select('ref', q.Var('travelGroup')),
+                            {data: {
+                                members: q.Var('remainingMembers'),
+                                owner: q.If(
+                                    q.Equals(userId, q.Select(['data', 'owner'], q.Var('travelGroup'))),
+                                    q.Select(0, q.Var('remainingMembers')),
+                                    q.Select(['data', 'owner'], q.Var('travelGroup'))
+                                )
+                            }}
+                        ),
+                        addTravelGroupNotificationQuery(id, update)
+                    )
+                )
+            )
         )
     )
 }
