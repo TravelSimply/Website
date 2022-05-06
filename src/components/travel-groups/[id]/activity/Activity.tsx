@@ -19,9 +19,10 @@ interface Props {
     proposals: ClientTravelGroupProposal[];
     notifications: ClientTravelGroupNotifications;
     search: string;
+    filters: boolean[];
 }
 
-export default function Activity({travellers, invites, requests, proposals, notifications, search,
+export default function Activity({travellers, invites, requests, proposals, notifications, search, filters,
     travelGroup, user}:Props) {
 
     if (!travellers || !invites || !requests || !proposals || !notifications) {
@@ -90,6 +91,15 @@ export default function Activity({travellers, invites, requests, proposals, noti
     useMemo(() => {
         setSearchedItems(allItems.filter(item => item.searchTerms.find((t:string) => t.includes(search.trim().toLowerCase()))))
     }, [search])
+
+    useMemo(() => {
+        setSearchedItems(allItems.filter(item => {
+            if (item.type === 'invite') return filters[0]
+            if (item.type === 'joinRequest') return filters[1]
+            if (item.type === 'proposal') return filters[2]
+            return filters[3]
+        }))
+    }, [filters])
 
     const removeInvite = useCallback((inv:ClientTravelGroupInvitationUsersPopulated) => {
         handleRemoveInvite(inv, invites, travelGroup)

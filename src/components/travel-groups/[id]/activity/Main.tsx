@@ -63,7 +63,7 @@ export default function Main({user, travelGroup}:Props) {
                 </Box>
                 <Box>
                     <Activity travellers={travellers} invites={invites} requests={requests}
-                    proposals={proposals} notifications={notifications} search={search}
+                    proposals={proposals} notifications={notifications} search={search} filters={filters}
                     travelGroup={travelGroup} user={user} />
                 </Box>
             </Container>
