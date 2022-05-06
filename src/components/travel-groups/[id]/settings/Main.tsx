@@ -2,7 +2,7 @@ import {useMemo, useState} from 'react'
 import { ClientTravelGroup, ClientUser } from "../../../../database/interfaces";
 import {Box, Container, Divider, Paper, Typography, Grid} from '@mui/material'
 import { PrimaryLink } from "../../../misc/links";
-import { OrangePrimaryButton, OrangePrimaryIconButton } from '../../../mui-customizations/buttons';
+import { OrangePrimaryButton, OrangePrimaryIconButton, OrangeSecondaryButton } from '../../../mui-customizations/buttons';
 import EditIcon from '@mui/icons-material/Edit'
 import CancelIcon from '@mui/icons-material/Cancel'
 import SettingsForm, {Props as SettingsFormProps} from '../../../forms/travel-groups/create/Settings'
@@ -156,6 +156,25 @@ export default function Main({travelGroup:dbTravelGroup, user}:Props) {
                                 <Box maxWidth={170}>
                                     <Divider sx={{bgcolor: 'primary.main', height: 2}} />
                                 </Box>
+                            </Box>
+                            <Box mb={3}>
+                                <OrangePrimaryButton sx={{minWidth: 200}}>
+                                    Change Owner
+                                </OrangePrimaryButton>
+                            </Box>
+                            <Box>
+                                <Grid container spacing={3}>
+                                    <Grid item>
+                                        <OrangePrimaryButton sx={{minWidth: 200}}>
+                                            Leave Travel Group
+                                        </OrangePrimaryButton>
+                                    </Grid>
+                                    <Grid item>
+                                        <OrangeSecondaryButton sx={{minWidth: 200}}>
+                                            Disband Travel Group
+                                        </OrangeSecondaryButton>
+                                    </Grid>
+                                </Grid>
                             </Box>
                         </Box>
                     </Paper>
