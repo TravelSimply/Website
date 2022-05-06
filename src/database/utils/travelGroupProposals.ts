@@ -1,6 +1,7 @@
 import {query as q, Expr} from 'faunadb'
 import client from '../fauna'
 import { TravelGroupProposal } from '../interfaces'
+import { addTravelGroupNotificationQuery } from './travelGroupNotifications'
 
 export async function createProposal(data:TravelGroupProposal['data'], userJunkIds?:string[]) {
 
@@ -145,5 +146,39 @@ export async function cancelProposalVote(id:string, userId:string, type:string) 
     
     return await client.query(
         removeVoteInnerQuery(id, userId, type)
+    )
+}
+
+export async function acceptProposal(id:string, travelGroupId:string, proposalUserUsername:string, 
+    data:TravelGroupProposal['data']['data']) {
+
+    const filteredData:any = {}
+    if (data.date) {
+        filteredData.date = {
+            ...data.date,
+            unknown: false,
+            roughly: false
+        }
+    }
+    if (data.desc) filteredData.desc = data.desc
+    if (data.destination) filteredData.destination = data.destination
+    if (data.image) filteredData.image = data.image
+    if (data.name) filteredData.name = data.name
+
+    const update = {
+        time: q.Now(),
+        type: 'acceptProposal',
+        users: [proposalUserUsername]
+    }
+
+    return await client.query(
+        q.Do(
+            q.Update(
+                q.Ref(q.Collection('travelGroups'), travelGroupId),
+                {data: filteredData}
+            ),
+            q.Delete(q.Ref(q.Collection('travelGroupProposals'), id)),
+            addTravelGroupNotificationQuery(travelGroupId, update)
+        )
     )
 }

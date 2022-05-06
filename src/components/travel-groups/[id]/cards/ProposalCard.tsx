@@ -1,5 +1,5 @@
-import {Box, Grid, IconButton, Paper, Typography} from '@mui/material'
-import { useMemo, useState } from 'react';
+import {Box, Grid, IconButton, Menu, MenuItem, Paper, Typography} from '@mui/material'
+import { useMemo, useState, MouseEvent } from 'react';
 import { ClientTravelGroup, ClientTravelGroupProposalWithByPopulated, ClientUser } from "../../../../database/interfaces";
 import dayjs from 'dayjs'
 import EditIcon from '@mui/icons-material/Edit';
@@ -9,6 +9,7 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import axios from 'axios'
+import Snackbar from '../../../misc/snackbars'
 
 interface Props {
     isAdmin: boolean;
@@ -24,6 +25,16 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
     const [votesFor, setVotesFor] = useState(proposal.data.for)
     const [votesAgainst, setVotesAgainst] = useState(proposal.data.against)
     const [loading, setLoading] = useState(false)
+    const [anchorEl, setAnchorEl] = useState<HTMLElement>(null)
+    const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
+
+    const onMoreClick = (e:MouseEvent<HTMLElement>) => {
+        setAnchorEl(e.currentTarget)
+    }
+
+    const onMoreClose = () => {
+        setAnchorEl(null)
+    }
 
     const removeIdFromArr = (arr:string[]) => {
         const aCopy = [...arr]
@@ -105,7 +116,9 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
                 }
             })
 
-        } catch (e) { }
+        } catch (e) {
+            setSnackbarMsg({type: 'error', content: 'Error Removing Vote'})
+        }
         
         setLoading(false)
     }
@@ -129,7 +142,9 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
                 }
             })
 
-        } catch (e) { }
+        } catch (e) {
+            setSnackbarMsg({type: 'error', content: 'Error Adding Vote'})
+        }
 
         setLoading(false)
     }
@@ -153,9 +168,35 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
                 }
             })
 
-        } catch (e) { }
+        } catch (e) {
+            setSnackbarMsg({type: 'error', content: 'Error Adding Vote'})
+        }
 
         setLoading(false)
+    }
+
+    const accept = async () => {
+
+        setAnchorEl(null)
+        setLoading(true)
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/proposals/accept`, 
+                data: {
+                    proposalId: proposal.ref['@ref'].id,
+                    proposalUserUsername: proposal.data.by.data.username || '',
+                    data: proposal.data.data
+                }
+            })
+
+            onAccepted()
+        } catch (e) {
+            setSnackbarMsg({type: 'error', content: 'Error Accepting Proposal'})
+            setLoading(false)
+        }
     }
 
     return (
@@ -227,9 +268,19 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
                                             </Grid>
                                         </Grid>
                                         <Grid item my={2} mr={2}>
-                                            <OrangePrimaryIconButton>
+                                            <OrangePrimaryIconButton disabled={loading} onClick={onMoreClick}>
                                                 <MoreVertIcon />
                                             </OrangePrimaryIconButton>
+                                            <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={onMoreClose}
+                                            anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
+                                            transformOrigin={{horizontal: 'center', vertical: 'top'}}>
+                                                <MenuItem onClick={() => accept()}>
+                                                    Accept 
+                                                </MenuItem>
+                                                <MenuItem>
+                                                    Reject 
+                                                </MenuItem>
+                                            </Menu>
                                         </Grid>
                                     </Grid>
                                 </Box>
@@ -238,6 +289,7 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
                     </Grid>
                 </Grid>
             </Paper>
+            <Snackbar msg={snackbarMsg} setMsg={setSnackbarMsg} />
         </Box>
     )
 }

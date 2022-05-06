@@ -78,9 +78,17 @@ export default function Activity({travellers, invites, requests, proposals, noti
         handleRejectRequest(requestId, requests, travelGroup)
     }, [travellers, requests])
 
-    const acceptProposal = () => {}
+    const acceptProposal = (id:string) => {
+        mutate(`/api/travel-groups/${travelGroup.ref['@ref'].id}/proposals`, 
+            proposals.filter(p => p.ref['@ref'].id !== id), false
+        )
+    }
 
-    const rejectProposal = () => {}
+    const rejectProposal = (id:string) => {
+        mutate(`/api/travel-groups/${travelGroup.ref['@ref'].id}/proposals`,
+            proposals.filter(p => p.ref['@ref'].id !== id), false
+        )
+    }
 
     console.log(allItems)
 
@@ -100,7 +108,8 @@ export default function Activity({travellers, invites, requests, proposals, noti
                             reject={rejectRequest} />
                         : item.type === 'proposal' ?
                             <ProposalCard isAdmin={isAdmin} user={user} travelGroup={travelGroup} proposal={item.content as any}
-                            onAccepted={() => acceptProposal()} onRejected={() => rejectProposal()} /> 
+                            onAccepted={() => acceptProposal(item.content.ref['@ref'].id)}
+                            onRejected={() => rejectProposal(item.content.ref['@ref'].id)} /> 
                         : null}
                     </Grid>
                 ))}
