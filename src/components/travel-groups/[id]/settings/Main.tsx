@@ -1,5 +1,5 @@
 import {useMemo, useState} from 'react'
-import { ClientTravelGroup, ClientUser } from "../../../../database/interfaces";
+import { ClientTravelGroup, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
 import {Box, Container, Divider, Paper, Typography, Grid} from '@mui/material'
 import { PrimaryLink } from "../../../misc/links";
 import { OrangePrimaryButton, OrangePrimaryIconButton, OrangeSecondaryButton } from '../../../mui-customizations/buttons';
@@ -9,6 +9,8 @@ import SettingsForm, {Props as SettingsFormProps} from '../../../forms/travel-gr
 import { FormikContextType, FormikHelpers, FormikContext } from 'formik';
 import Snackbar from '../../../misc/snackbars'
 import axios from 'axios';
+import useSWR from 'swr'
+import ChangeOwner from './ChangeOwner'
 
 interface Props {
     travelGroup: ClientTravelGroup;
@@ -22,6 +24,14 @@ export default function Main({travelGroup:dbTravelGroup, user}:Props) {
     const [editing, setEditing] = useState(false)
     const [loading, setLoading] = useState(false)
     const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
+
+    const [changeOwner, setChangeOwner] = useState(false)
+
+    const {data:travellers, isValidating:isValidatingTravellers} = useSWR<ClientUserWithContactInfo[]>(
+        `/api/travel-groups/${travelGroup.ref['@ref'].id}/travellers`,
+        {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000})
+
+    const isAdmin = useMemo(() => user.ref['@ref'].id === travelGroup.data.owner, [travelGroup])
 
     const settings = useMemo(() => {
         const items = []
@@ -81,6 +91,25 @@ export default function Main({travelGroup:dbTravelGroup, user}:Props) {
         settingsFormContext.submitForm()
     }
 
+    const onChangeOwnerClose = () => setChangeOwner(false)
+
+    const updateOwner = async (id:string) => {
+        if (!id) {
+            setSnackbarMsg({type: 'error', content: 'Error Transfering Ownership'})
+            return
+        }
+
+        setTravelGroup({
+            ...travelGroup,
+            data: {
+                ...travelGroup.data,
+                owner: id
+            }
+        })
+        setSnackbarMsg({type: 'success', content: 'Transferred Ownership'})
+        setChangeOwner(false)
+    }
+
     return (
         <Box>
             <Box mb={3} py={1} bgcolor="orangeBg.light" borderBottom="1px solid rgba(0,0,0,0.34)">
@@ -136,7 +165,7 @@ export default function Main({travelGroup:dbTravelGroup, user}:Props) {
                                     </Box>
                                 ))} 
                             </Box>}
-                            {user.ref['@ref'].id === travelGroup.data.owner && <Box position="absolute"
+                            {isAdmin && <Box position="absolute"
                             top={0} right={0}>
                                 <OrangePrimaryIconButton onClick={() => setEditing(!editing)}>
                                     {editing ? <CancelIcon sx={{fontSize: 30}} /> : 
@@ -157,11 +186,12 @@ export default function Main({travelGroup:dbTravelGroup, user}:Props) {
                                     <Divider sx={{bgcolor: 'primary.main', height: 2}} />
                                 </Box>
                             </Box>
-                            <Box mb={3}>
-                                <OrangePrimaryButton sx={{minWidth: 200}}>
+                            {isAdmin && <Box mb={3}>
+                                <OrangePrimaryButton sx={{minWidth: 200}}
+                                onClick={() => setChangeOwner(true)}>
                                     Change Owner
                                 </OrangePrimaryButton>
-                            </Box>
+                            </Box>}
                             <Box>
                                 <Grid container spacing={3}>
                                     <Grid item>
@@ -180,6 +210,8 @@ export default function Main({travelGroup:dbTravelGroup, user}:Props) {
                     </Paper>
                 </Box>
             </Container>
+            {isAdmin && <ChangeOwner open={changeOwner} onClose={onChangeOwnerClose} onUpdateOwner={updateOwner}
+            travelGroup={travelGroup} travellers={travellers}  />}
             <Snackbar msg={snackbarMsg} setMsg={setSnackbarMsg} />
         </Box>
     )
