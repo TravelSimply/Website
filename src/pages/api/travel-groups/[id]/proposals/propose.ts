@@ -17,7 +17,8 @@ export default verifyUser(async function Propose(req:NextApiRequest, res:NextApi
             type: req.body.type,
             for: [],
             against: [],
-            data: req.body.data
+            data: req.body.data,
+            timeSent: null
         }
 
         let junkIds = undefined
@@ -27,9 +28,9 @@ export default verifyUser(async function Propose(req:NextApiRequest, res:NextApi
             junkIds.splice(junkIds.indexOf(info.data.image.publicId), 1)
         }
 
-        await createProposal(info, junkIds)
+        const proposal = await createProposal(info, junkIds)
 
-        return res.status(200).json({msg: 'Success'})
+        return res.status(200).json(proposal)
     } catch (e) {
         console.log(e)
         return res.status(500).json({msg: 'Internal Server Error'})

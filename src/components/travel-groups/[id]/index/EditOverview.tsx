@@ -1,13 +1,15 @@
 import { Avatar, Badge, Box, Grid, IconButton, CircularProgress } from "@mui/material";
-import { ClientTravelGroup, ClientUser } from "../../../../database/interfaces";
+import { ClientTravelGroup, ClientTravelGroupProposal, ClientUser } from "../../../../database/interfaces";
 import CreateIcon from '@mui/icons-material/Create'
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useRef, useState } from "react";
 import { FormikContextType, FormikHelpers } from "formik";
 import OverviewForm, {Props as OverviewFormProps} from '../../../forms/travel-groups/modify/Overview'
 import { OrangePrimaryButton, OrangeSecondaryButton } from "../../../mui-customizations/buttons";
 import { uploadTempImage } from "../../../../utils/images";
 import Snackbar from '../../../misc/snackbars'
 import axios from "axios";
+import useSWR, {mutate, useSWRConfig} from 'swr'
+import { updateProposalsCache } from "../utils/proposals";
 
 interface Props {
     travelGroup: ClientTravelGroup;
@@ -23,6 +25,8 @@ export default function EditOverview({travelGroup, isAdmin, junkIds, onEditCompl
     const [img, setImg] = useState({src: travelGroup.data.image?.src, publicId: junkIds?.at(0) || undefined})
     const [uploadingImage, setUploadingImage] =  useState(false)
     const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
+
+    const {cache} = useSWRConfig()
 
     const [loading, setLoading] = useState(false)
     const [submitType, setSubmitType] = useState('')
@@ -47,6 +51,10 @@ export default function EditOverview({travelGroup, isAdmin, junkIds, onEditCompl
         }
 
         setUploadingImage(false)
+    }
+
+    const updateProposals = (proposal:ClientTravelGroupProposal) => {
+        updateProposalsCache(proposal, travelGroup, cache)
     }
 
     const onFormSubmit = async (values:OverviewFormProps['vals'], actions:FormikHelpers<OverviewFormProps['vals']>) => {
@@ -82,7 +90,7 @@ export default function EditOverview({travelGroup, isAdmin, junkIds, onEditCompl
         try {
 
             if (submitType === 'proposal') {
-                await axios({
+                const {data: proposal} = await axios({
                     method: 'POST',
                     url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/proposals/propose`,
                     data: {
@@ -91,6 +99,7 @@ export default function EditOverview({travelGroup, isAdmin, junkIds, onEditCompl
                         userJunkIds: junkIds?.length > 0 ? junkIds.splice(junkIds.indexOf(img.publicId), 1) : []
                     }
                 })
+                updateProposals(proposal)
                 onEditComplete(submitType)
             } else {
                 await axios({

@@ -3,7 +3,8 @@ import client from '../fauna'
 import { TravelGroupProposal } from '../interfaces'
 import { addTravelGroupNotificationQuery } from './travelGroupNotifications'
 
-export async function createProposal(data:TravelGroupProposal['data'], userJunkIds?:string[]) {
+export async function createProposal(data:TravelGroupProposal['data'], 
+    userJunkIds?:string[]):Promise<TravelGroupProposal> {
 
     if (data.data.date) {
         data.data.date.start = q.Date(data.data.date.start)
@@ -20,14 +21,22 @@ export async function createProposal(data:TravelGroupProposal['data'], userJunkI
                 ),
                 null
             ),
-            q.Create(
-                q.Collection('travelGroupProposals'),
-                {data: {...data, timeSent: q.Now()}}
-            ),
             q.Update(
                 q.Ref(q.Collection('travelGroups'), data.travelGroup),
                 {data: {lastUpdated: q.Now()}}
             ),
+            q.Let(
+                {
+                    proposal: q.Create(
+                        q.Collection('travelGroupProposals'),
+                        {data: {...data, timeSent: q.Now()}}
+                    )
+                },
+                {
+                    ref: q.Select('ref', q.Var('proposal')),
+                    data: proposalDataWithStringDates(q.Var('proposal'))
+                }
+            )
             // update user notifications
         )
     )

@@ -1,13 +1,14 @@
 import { Backdrop, Box, Grid, RadioGroup, TextField, Typography, CircularProgress } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { useMemo, useState, ChangeEvent, useCallback } from "react";
-import useSWR from "swr";
-import { ClientTravelGroup, ClientAvailability } from "../../../../database/interfaces";
+import useSWR, { useSWRConfig } from "swr";
+import { ClientTravelGroup, ClientAvailability, ClientTravelGroupProposal } from "../../../../database/interfaces";
 import Calendar from "../../../calendar/Calendar";
 import { RadioWithDesc } from "../../../forms/FormikFields";
 import { OrangePrimaryButton, OrangeSecondaryButton } from "../../../mui-customizations/buttons";
 import Snackbar from '../../../misc/snackbars'
 import axios from "axios";
+import { updateProposalsCache } from "../utils/proposals";
 
 interface Props {
     travelGroup: ClientTravelGroup;
@@ -20,6 +21,12 @@ export default function ProposeDate({travelGroup, onDateChangeComplete}:Props) {
     const [availabilityDisplaying, setAvailabilityDisplaying] = useState('')
     const [loading, setLoading] = useState(false)
     const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
+
+    const {cache} = useSWRConfig()
+
+    const updateProposals = (proposal:ClientTravelGroupProposal) => {
+        updateProposalsCache(proposal, travelGroup, cache)
+    }
 
     const [availability, setAvailability] = useState({
         ref: {'@ref': {id: 'dummyId', ref: null}},
@@ -204,7 +211,7 @@ export default function ProposeDate({travelGroup, onDateChangeComplete}:Props) {
 
         try {
 
-            await axios({
+            const {data: proposal} = await axios({
                 method: 'POST',
                 url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/proposals/propose`,
                 data: {
@@ -218,6 +225,7 @@ export default function ProposeDate({travelGroup, onDateChangeComplete}:Props) {
                 }
             })
 
+            updateProposals(proposal)
             onDateChangeComplete('proposal')
         } catch (e) {
             setSnackbarMsg({type: 'error', content: 'Error Creating Proposal'})
