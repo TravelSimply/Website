@@ -8,6 +8,7 @@ import JoinRequestCard from "../cards/JoinRequestCard";
 import ProposalCard from '../cards/ProposalCard'
 import { handleRemoveInvite } from "../utils/invites";
 import { handleAcceptRequest, handleRejectRequest } from "../utils/joinRequests";
+import UpdateCard from "../cards/UpdateCard";
 
 interface Props {
     travelGroup: ClientTravelGroup;
@@ -62,7 +63,7 @@ export default function Activity({travellers, invites, requests, proposals, noti
                     }
                 }
             }).filter(prop => prop).map(prop => ({type: 'proposal', time: dayjs(prop.data.timeSent['@ts']), content: prop})),
-            // ...notifications.data.notifications.map(not => ({type: 'update', time: dayjs(not.time['@ts']), content: not}))
+            ...notifications.data.notifications.map(not => ({type: 'update', time: dayjs(not.time['@ts']), content: not}))
         ].sort((a, b) => b.time.diff(a.time)))
     }, [invites, requests, proposals, notifications])
 
@@ -108,6 +109,8 @@ export default function Activity({travellers, invites, requests, proposals, noti
                             <ProposalCard isAdmin={isAdmin} user={user} travelGroup={travelGroup} proposal={item.content as any}
                             onAccepted={() => acceptProposal(item.content.ref['@ref'].id)}
                             onRejected={() => rejectProposal(item.content.ref['@ref'].id)} /> 
+                        : item.type === 'update' ? 
+                            <UpdateCard update={item.content as any} /> 
                         : null}
                     </Grid>
                 ))}
