@@ -89,6 +89,7 @@ export default function Activity({travellers, invites, requests, proposals, noti
     }, [allItems])
 
     useMemo(() => {
+        if (!search) return
         setSearchedItems(allItems.filter(item => item.searchTerms.find((t:string) => t.includes(search.trim().toLowerCase()))))
     }, [search])
 
