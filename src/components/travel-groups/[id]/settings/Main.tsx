@@ -139,7 +139,9 @@ export default function Main({travelGroup:dbTravelGroup, user}:Props) {
             await axios({
                 method: 'POST',
                 url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/disband`,
-                data: {}
+                data: {
+                    travelGroupPublicId: travelGroup.data.image?.publicId
+                }
             })
 
             Router.push('/travel-groups')

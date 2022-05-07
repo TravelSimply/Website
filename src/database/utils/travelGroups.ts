@@ -1,6 +1,6 @@
 import {query as q} from 'faunadb'
 import client from '../fauna'
-import { ClientTravelGroupData, TravelGroup, TravelGroupProposal, TravelGroupStringDates, TravelGroupWithPopulatedTravellersAndContactInfo, User, UserWithContactInfo } from '../interfaces'
+import { ClientTravelGroupData, TravelGroup, TravelGroupNotifications, TravelGroupProposal, TravelGroupStringDates, TravelGroupWithPopulatedTravellersAndContactInfo, User, UserWithContactInfo } from '../interfaces'
 import { addTravelGroupNotificationQuery } from './travelGroupNotifications'
 import { addBasicNotification, populateUserWithContactInfo } from './users'
 
@@ -232,19 +232,21 @@ function disbandTravelGroupQuery(id:string) {
             invites: q.Paginate(q.Match(q.Index('travelGroupInvitations_by_travelGroup'), id), {size: 1000}),
             requests: q.Paginate(q.Match(q.Index('travelGroupJoinRequests_by_travelGroup'), id), {size: 1000}),
             notifications: q.Paginate(q.Match(q.Index('travelGroupNotifications_by_travelGroup'), id)),
-            proposals: q.Paginate(q.Match(q.Index('travelGroupProposals_by_travelGroup'), id), {size: 1000})
+            proposals: q.Paginate(q.Match(q.Index('travelGroupProposals_by_travelGroup'), id), {size: 1000}),
+            publicIds: q.Paginate(q.Match(q.Index('travelGroupProposals_by_travelGroup_w_publicId'), id), {size: 1000})
         },
         q.Do(
             q.Map(q.Var('invites'), (ref) => q.Delete(ref)),
             q.Map(q.Var('requests'), (ref) => q.Delete(ref)),
             q.Map(q.Var('notifications'), (ref) => q.Delete(ref)),
             q.Map(q.Var('proposals'), (ref) => q.Delete(ref)),
-            q.Delete(q.Ref(q.Collection('travelGroups'), id))
+            q.Delete(q.Ref(q.Collection('travelGroups'), id)),
+            q.Var('publicIds')
         )
     )
 }
 
-export async function leaveTravelGroup(id:string, userId:string, username:string) {
+export async function leaveTravelGroup(id:string, userId:string, username:string):Promise<{data: string[]} | TravelGroupNotifications> {
 
     const update = {
         time: q.Now(),
@@ -288,7 +290,7 @@ export async function leaveTravelGroup(id:string, userId:string, username:string
     )
 }
 
-export async function disbandTravelGroup(id:string) {
+export async function disbandTravelGroup(id:string):Promise<{data: string[]}> {
 
     return await client.query(
         disbandTravelGroupQuery(id)
