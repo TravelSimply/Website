@@ -2,7 +2,7 @@ import {query as q} from 'faunadb'
 import client from '../fauna'
 import { ClientTravelGroupData, TravelGroup, TravelGroupNotifications, TravelGroupProposal, TravelGroupStringDates, TravelGroupWithPopulatedTravellersAndContactInfo, User, UserWithContactInfo } from '../interfaces'
 import { addTravelGroupNotificationQuery } from './travelGroupNotifications'
-import { addBasicNotification, populateUserWithContactInfo } from './users'
+import { populateUserWithContactInfo } from './users'
 
 export async function getUserTravelGroupDates(userId:string):Promise<{data: [string, string][]}> {
 

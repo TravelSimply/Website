@@ -2,7 +2,7 @@ import {query as q} from 'faunadb'
 import client from '../fauna'
 import { TravelGroupInvitation, TravelGroupInvitationWithToPopulated } from '../interfaces'
 import { addTravelGroupNotificationQuery, getTravelGroupNotificationsInnerQuery } from './travelGroupNotifications'
-import { addBasicNotification } from './users'
+import { addBasicNotificationQuery } from './userNotifications'
 
 export async function getTravelGroupInvitations(travelGroupId:string):Promise<{data: TravelGroupInvitation[]}> {
 
@@ -53,7 +53,7 @@ export async function sendInvitationsWithNotificationUpdate(from:string, to:stri
                     to: q.Var('id')
                 },
                 q.Do(
-                    addBasicNotification('travelGroupInvitations', q.Select(['ref', 'id'], q.Var('invite')), q.Var('to')),
+                    addBasicNotificationQuery('travelGroupInvitations', q.Select(['ref', 'id'], q.Var('invite')), q.Var('to')),
                     q.Update(
                         q.Ref(q.Collection('travelGroups'), travelGroupId),
                         {data: {lastUpdated: q.Now()}}
