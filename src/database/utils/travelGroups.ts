@@ -246,7 +246,7 @@ function disbandTravelGroupQuery(id:string) {
     )
 }
 
-export async function leaveTravelGroup(id:string, userId:string, username:string):Promise<{data: string[]} | TravelGroupNotifications> {
+export async function leaveTravelGroup(id:string, userId:string, username:string):Promise<any> {
 
     const update = {
         time: q.Now(),

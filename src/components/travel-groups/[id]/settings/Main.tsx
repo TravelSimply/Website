@@ -120,7 +120,8 @@ export default function Main({travelGroup:dbTravelGroup, user}:Props) {
                 method: 'POST',
                 url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/travellers/leave`,
                 data: {
-                    username: user.data.username
+                    username: user.data.username,
+                    travelGroupPublicId: travelGroup.data.image?.publicId
                 }
             })
 
