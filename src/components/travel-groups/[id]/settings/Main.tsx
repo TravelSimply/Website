@@ -131,6 +131,24 @@ export default function Main({travelGroup:dbTravelGroup, user}:Props) {
         }
     }
 
+    const disband = async () => {
+        setLoading(true)
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/disband`,
+                data: {}
+            })
+
+            Router.push('/travel-groups')
+        } catch (e) {
+            setLoading(false)
+            setSnackbarMsg({type: 'error', content: 'Error Disbanding Travel Group'})
+        }
+    }
+
     return (
         <Box>
             <Box mb={3} py={1} bgcolor="orangeBg.light" borderBottom="1px solid rgba(0,0,0,0.34)">
@@ -222,7 +240,8 @@ export default function Main({travelGroup:dbTravelGroup, user}:Props) {
                                         </OrangePrimaryButton>
                                     </Grid>
                                     {isAdmin && <Grid item>
-                                        <OrangeSecondaryButton disabled={loading} sx={{minWidth: 200}}>
+                                        <OrangeSecondaryButton disabled={loading} sx={{minWidth: 200}}
+                                        onClick={() => disband()}>
                                             Disband Travel Group
                                         </OrangeSecondaryButton>
                                     </Grid>}

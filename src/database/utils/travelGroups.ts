@@ -232,7 +232,7 @@ function disbandTravelGroupQuery(id:string) {
             invites: q.Paginate(q.Match(q.Index('travelGroupInvitations_by_travelGroup'), id), {size: 1000}),
             requests: q.Paginate(q.Match(q.Index('travelGroupJoinRequests_by_travelGroup'), id), {size: 1000}),
             notifications: q.Paginate(q.Match(q.Index('travelGroupNotifications_by_travelGroup'), id)),
-            proposals: q.Paginate(q.Match(q.Match(q.Index('travelGroupProposals_by_travelGroup'), id)), {size: 1000})
+            proposals: q.Paginate(q.Match(q.Index('travelGroupProposals_by_travelGroup'), id), {size: 1000})
         },
         q.Do(
             q.Map(q.Var('invites'), (ref) => q.Delete(ref)),
@@ -285,5 +285,12 @@ export async function leaveTravelGroup(id:string, userId:string, username:string
                 )
             )
         )
+    )
+}
+
+export async function disbandTravelGroup(id:string) {
+
+    return await client.query(
+        disbandTravelGroupQuery(id)
     )
 }
