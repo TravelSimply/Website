@@ -26,15 +26,14 @@ export default function TravelGroups({user, travelGroups}:Props) {
 
     const notifications = useUserNotifications(user.ref['@ref'].id, travelGroups.map(g => g.ref['@ref'].id))
 
-    console.log(notifications)
-
     return (
         <>
             <Head>
                 <title>My Travel Groups | Travel Simply</title>
             </Head> 
             <div className={styles.root}>
-                <MainHeader user={user} drawer={{breakpoint: 'md', items: drawerItems}} />
+                <MainHeader user={user} drawer={{breakpoint: 'md', items: drawerItems}}
+                notifications={notifications} />
                 <MainSidebar items={drawerItems} breakpoint="md" />
                 <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
                     <Main user={user} travelGroups={travelGroups} />

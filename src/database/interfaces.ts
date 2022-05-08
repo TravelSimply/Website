@@ -77,6 +77,28 @@ export interface ClientUserNotifications {
     }
 }
 
+export interface ClientPopulatedUserNotifications {
+    notifications: {
+        ref: {'@ref': Ref};
+        data: {
+            userId: string;
+            basic: {
+                seen: boolean;
+                collection: string;
+                id: string;
+                time: {'@ts': string};
+                content?: {
+                    ref: {'@ref': Ref};
+                    travelGroupName: [string] | [];
+                    data: any;
+                };
+            }[];
+            travelGroups: ClientUserNotifications['data']['travelGroups'];
+        }
+    };
+    travelGroups: [string, {'@ts': string} | null, string | null][];
+}
+
 export interface ContactInfo {
     ref: Ref;
     data: {
