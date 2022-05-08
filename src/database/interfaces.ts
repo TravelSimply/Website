@@ -60,6 +60,22 @@ export interface UserNotifications {
     }
 }
 
+export interface ClientUserNotifications {
+    ref: Ref;
+    data: {
+        userId: string;
+        basic: {
+            seen: boolean;
+            collection: string;
+            id: string;
+            time: {'@ts': string};
+        }[];
+        travelGroups: {
+            id: string;
+            lastUpdated: {'@ts': string};
+        }[];
+    }
+}
 
 export interface ContactInfo {
     ref: Ref;

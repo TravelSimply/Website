@@ -8,6 +8,8 @@ import MainSidebar from '../../components/nav/MainSidebar'
 import { Box } from '@mui/material'
 import { getUserTravelGroups } from '../../database/utils/travelGroups'
 import Main from '../../components/travel-groups/index/Main'
+import useSWR from 'swr'
+import { useUserNotifications } from '../../components/hooks/userNotifications'
 
 interface Props {
     user: ClientUser;
@@ -21,6 +23,10 @@ export default function TravelGroups({user, travelGroups}:Props) {
         {href: '/travel-groups/create', name: 'Create Travel Group', selected: false},
         {href: '/travel-groups/find', name: 'Find Travel Groups', selected: false}
     ]
+
+    const notifications = useUserNotifications(user.ref['@ref'].id, travelGroups.map(g => g.ref['@ref'].id))
+
+    console.log(notifications)
 
     return (
         <>
