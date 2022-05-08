@@ -8,6 +8,7 @@ import MainHeader from "../../../components/nav/MainHeader";
 import MainSidebar from "../../../components/nav/MainSidebar";
 import Main from '../../../components/travel-groups/[id]/index/Main'
 import {Box} from '@mui/material'
+import { useUserNotifications } from "../../../components/hooks/userNotifications";
 
 interface Props {
     user: ClientUser;
@@ -38,6 +39,8 @@ export default function TravelGroup({user, travelGroup}:Props) {
 
     const drawerItems = getDrawerItems(travelGroup, 0)
 
+    const notifications = useUserNotifications(user.ref['@ref'].id, [travelGroup.ref['@ref'].id])
+
     return (
         <>
             <Head>
@@ -46,7 +49,8 @@ export default function TravelGroup({user, travelGroup}:Props) {
                 </title>
             </Head> 
             <div className={styles.root}>
-                <MainHeader user={user} drawer={{breakpoint: 'md', items: drawerItems}} />
+                <MainHeader user={user} drawer={{breakpoint: 'md', items: drawerItems}}
+                notifications={notifications} />
                 <MainSidebar breakpoint="md" items={drawerItems} />
                 <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
                     <Main user={user} travelGroup={travelGroup} />

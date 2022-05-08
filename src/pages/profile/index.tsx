@@ -7,6 +7,7 @@ import MainHeader from "../../components/nav/MainHeader";
 import Main from '../../components/account/profile/index/Main'
 import { getAvailabilityAndTravelGroupsOfUser, getAvailabilityOfUser, populateAvailability } from "../../database/utils/availabilities";
 import { getUserContactInfo } from "../../database/utils/contactInfo";
+import { useUserNotifications } from "../../components/hooks/userNotifications";
 
 interface Props {
     user: ClientUser;
@@ -16,13 +17,15 @@ interface Props {
 
 export default function Profile({user, availability, contactInfo}:Props) {
 
+    const notifications = useUserNotifications(user.ref['@ref'].id, [])
+
     return (
         <>
             <Head>
                 <title>Profile | Travel Simply</title>     
             </Head> 
             <div className={styles.root}>
-                <MainHeader user={user} />
+                <MainHeader user={user} notifications={notifications} />
                 <div className={styles.main}>
                     <Main user={user} availability={availability} contactInfo={contactInfo} />
                 </div>
