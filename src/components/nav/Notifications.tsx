@@ -7,6 +7,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications'
 import Link from 'next/link'
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import BackpackIcon from '@mui/icons-material/Backpack';
+import axios from 'axios';
 
 interface Props {
     notifications: UserNotifications;
@@ -52,7 +53,24 @@ export default function Notifications({notifications}:Props) {
     }, [notifications])
 
     const markNewNotificationsAsSeen = async () => {
-        console.log('marking as seen')
+
+        const noContentBasic = notifications.raw.notifications.data.basic.map(n => ({
+            seen: n.seen, id: n.id, time: n.time, collection: n.collection
+        }))
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: '/api/users/notifications/all-seen',
+                data: {
+                    id: notifications.raw.notifications.ref['@ref'].id,
+                    basic: noContentBasic,
+                    travelGroups: notifications.raw.notifications.data.travelGroups
+                }
+            })
+
+        } catch (e) {}
     }
 
     const openNotificationsMenu = (e:MouseEvent<HTMLElement>) => {
@@ -88,7 +106,7 @@ export default function Notifications({notifications}:Props) {
             transformOrigin={{vertical: 'top', horizontal: 'right'}}
             open={Boolean(notificationsAnchor)} sx={{mt: 1.1}}
             onClose={() => closeNotificationsMenu()} PaperProps={{sx: {backgroundColor: "orangeBg.light"}}}>
-                <Box width="min(80vw, 400px)">
+                <Box width="min(80vw, 400px)" maxHeight={600}>
                     <List>
                         {notContent?.map((not, i) => (
                             <Link key={i} href={not.href} as={not.as}>

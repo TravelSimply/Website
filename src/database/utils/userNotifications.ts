@@ -163,3 +163,28 @@ export async function addTravelGroups(id:string, travelGroups:ClientUserNotifica
         )
     )
 }
+
+export async function markAllAsViewed(id:string, basic:ClientUserNotifications['data']['basic'], 
+    travelGroups:ClientUserNotifications['data']['travelGroups']) {
+
+    const basicUpdated = basic.map(n => ({
+        ...n,
+        seen: true,
+        time: q.Time(n.time['@ts'])
+    }))
+
+    const travelGroupsUpdated = travelGroups.map(g => ({
+        ...g,
+        lastUpdated: q.Now()
+    }))
+
+    await client.query(
+        q.Update(
+            q.Ref(q.Collection('userNotifications'), id),
+            {data: {
+                basic: basicUpdated, 
+                travelGroups: travelGroupsUpdated
+            }}
+        )
+    ) 
+}
