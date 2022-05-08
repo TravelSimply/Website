@@ -1,4 +1,4 @@
-import { Badge, Box, IconButton, Menu, List, ListItem, CircularProgress, ListItemIcon, ListItemText, Divider } from '@mui/material';
+import { Badge, Box, IconButton, Menu, List, ListItem, CircularProgress, ListItemIcon, ListItemText, Divider, Grid, Typography, Icon } from '@mui/material';
 import React, {useState, useMemo, MouseEvent} from 'react'
 import { UserNotifications } from "../hooks/userNotifications";
 import { darkPrimaryOnHover } from '../misc/animations';
@@ -8,6 +8,8 @@ import Link from 'next/link'
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import BackpackIcon from '@mui/icons-material/Backpack';
 import axios from 'axios';
+import dayjs, { Dayjs } from 'dayjs';
+import { findSentDiff } from '../../utils/dates';
 
 interface Props {
     notifications: UserNotifications;
@@ -18,6 +20,7 @@ interface INotContent {
     as?: string;
     icon: React.ReactChild;
     msg: string;
+    time: string;
 }
 
 export default function Notifications({notifications}:Props) {
@@ -36,15 +39,16 @@ export default function Notifications({notifications}:Props) {
                 return {
                     href: '/travel-groups/[id]/activity',
                     as: `/travel-groups/${not.data[0]}/activity`,
-                    icon: <BackpackIcon color="primary" />,
-                    msg: `New Activity in ${not.data[2]}`
+                    icon: <BackpackIcon color="primary" fontSize="large" />,
+                    msg: `New Activity in ${not.data[2]}`,
+                    time: findSentDiff(not.time) + ' ago'
                 }
             } else if (not.data.collection === 'travelGroupInvitations' && not.data.content.travelGroupName.length > 0) {
-                console.log('invite')
                 return {
                     href: '/travel-groups/invitations',
-                    icon: <GroupAddIcon color="primary" />,
-                    msg: `You\'ve been invited to join ${not.data.content.travelGroupName[0]}`
+                    icon: <GroupAddIcon color="primary" fontSize="large" />,
+                    msg: `You\'ve been invited to join ${not.data.content.travelGroupName[0]}`,
+                    time: findSentDiff(not.time) + ' ago'
                 }
             } else {
                 return null
@@ -85,10 +89,6 @@ export default function Notifications({notifications}:Props) {
         setNotificationsAnchor(null)
     }
 
-    console.log(notifications)
-    console.log(newNotifications)
-    console.log(notContent)
-
     return (
         <Box>
             <IconButton sx={{...darkPrimaryOnHover}}
@@ -111,15 +111,30 @@ export default function Notifications({notifications}:Props) {
                         {notContent?.map((not, i) => (
                             <Link key={i} href={not.href} as={not.as}>
                                 <a>
-                                    <ListItem sx={{mb: 1, mt: i === 0 ? 0 : 1}}>
-                                        <ListItemIcon>
-                                            {not.icon}
-                                        </ListItemIcon>
-                                        <ListItemText>
-                                            {not.msg}
-                                        </ListItemText>
-                                    </ListItem>     
-                                    {i !== notContent.length - 1 && <Divider />}
+                                    <Box px={2} py={1} sx={{...darkPrimaryOnHover}}>
+                                        <Grid container spacing={2} alignItems="center">
+                                            <Grid item>
+                                                <Box pt={0.3}>
+                                                    {not.icon}
+                                                </Box>
+                                            </Grid>
+                                            <Grid item xs={10}>
+                                                <Typography variant="body1">
+                                                    {not.msg}
+                                                </Typography>
+                                            </Grid>
+                                        </Grid>
+                                        <Grid container spacing={2}>
+                                            <Grid item>
+                                                <BackpackIcon sx={{opacity: 0}} fontSize="large" />
+                                            </Grid>
+                                            <Grid item xs={10}>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {not.time}
+                                                </Typography>
+                                            </Grid>
+                                        </Grid>
+                                    </Box>
                                 </a> 
                             </Link>
                         )) || <CircularProgress />}
