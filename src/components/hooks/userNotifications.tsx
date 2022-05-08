@@ -9,7 +9,7 @@ interface TravelGroup {
 
 export function useUserNotifications(user:string, travelGroups:string[]) {
 
-    const {data} = useSWR(`/api/users/${user}/notifications`)
+    const {data} = useSWR(`/api/users/${user}/notifications`, {dedupingInterval: 60000})
 
     const [updatingTravelGroups, setUpdatingTravelGroups] = useState(false)
 
