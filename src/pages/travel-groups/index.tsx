@@ -16,13 +16,18 @@ interface Props {
     travelGroups: ClientTravelGroup[]
 }
 
+export function getDrawerItems(i:number) {
+    return [
+        {href: '/travel-groups', name: 'My Travel Groups', selected: i === 0},
+        {href: '/travel-groups/create', name: 'Create Travel Group', selected: i === 1},
+        {href: '/travel-groups/find', name: 'Find Travel Groups', selected: i === 2},
+        {href: '/travel-groups/invitations', name: 'Invites', selected: i === 3}
+    ]
+}
+
 export default function TravelGroups({user, travelGroups}:Props) {
 
-    const drawerItems = [
-        {href: '/travel-groups', name: 'My Travel Groups', selected: true},
-        {href: '/travel-groups/create', name: 'Create Travel Group', selected: false},
-        {href: '/travel-groups/find', name: 'Find Travel Groups', selected: false}
-    ]
+    const drawerItems = getDrawerItems(0)
 
     const notifications = useUserNotifications(user.ref['@ref'].id, travelGroups.map(g => g.ref['@ref'].id))
 

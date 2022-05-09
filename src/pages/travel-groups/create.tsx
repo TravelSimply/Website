@@ -10,6 +10,7 @@ import { getAvailabilityAndTravelGroupsOfUser, populateAvailability } from "../.
 import MainSidebar from "../../components/nav/MainSidebar";
 import { Box } from "@mui/material";
 import {useUserNotifications} from '../../components/hooks/userNotifications'
+import { getDrawerItems } from ".";
 
 interface Props {
     user: ClientUser;
@@ -18,11 +19,7 @@ interface Props {
 
 export default function CreateTravelGroup({user, availability}:Props) {
 
-    const drawerItems = [
-        {href: '/travel-groups', name: 'My Travel Groups', selected: false},
-        {href: '/travel-groups/create', name: 'Create Travel Group', selected: true},
-        {href: '/travel-groups/find', name: 'Find Travel Groups', selected: false}
-    ]
+    const drawerItems = getDrawerItems(1)
 
     const notifications = useUserNotifications(user.ref['@ref'].id, [])
 
