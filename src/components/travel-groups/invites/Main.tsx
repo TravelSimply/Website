@@ -1,6 +1,7 @@
 import { Box, Container, Grid } from "@mui/material";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ClientTravelGroupInvitationWithSenderInfo, ClientUser } from "../../../database/interfaces";
+import { searchForTravelGroupInvitesWithSender } from "../../../utils/search";
 import { PrimarySearchBar } from "../../misc/searchBars";
 import InviteCard from "./InviteCard";
 import NoInvites from "./NoInvites";
@@ -10,14 +11,24 @@ interface Props {
     invites: ClientTravelGroupInvitationWithSenderInfo[];
 }
 
-export default function Main({user, invites}:Props) {
+export default function Main({user, invites:dbInvites}:Props) {
 
-    if (invites.length === 0) {
+    if (dbInvites.length === 0) {
         return <NoInvites />
     }
 
+    const [invites, setInvites] = useState(dbInvites)
     const [search, setSearch] = useState('')
     const [searchedInvites, setSearchedInvites] = useState(invites)
+
+    useMemo(() => {
+
+        if (!search) {
+            return setSearchedInvites(invites)
+        }
+
+        setSearchedInvites(searchForTravelGroupInvitesWithSender(search, invites))
+    }, [search])
 
     return (
         <Box mt={3}>
