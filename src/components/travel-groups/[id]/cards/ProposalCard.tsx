@@ -271,7 +271,7 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
                     <Grid item>
                         <Grid container height="100%" direction="column" justifyContent="space-between">
                             <Grid item>
-                                <Box ml={1} mb={2}>
+                                <Box ml={3} mb={2}>
                                     <Typography variant="body1">
                                         Proposed by @{proposal.data.by.data.username} {diff} ago.
                                     </Typography>
@@ -282,7 +282,7 @@ export default function ProposalCard({isAdmin, user, travelGroup, proposal, onAc
                                     <Grid container justifyContent="space-between">
                                         <Grid item flex={1}>
                                             <Grid container>
-                                                <Grid item ml={2} mr={1} my={2}>
+                                                <Grid item ml={3} mr={1} my={2}>
                                                     <IconButton onClick={() => voteFor()} disabled={loading}>
                                                         <ArrowUpwardIcon
                                                         color={vote === 'for' ? 'primary' : 'inherit'} />

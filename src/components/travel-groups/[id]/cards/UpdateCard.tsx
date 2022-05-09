@@ -48,7 +48,7 @@ export default function UpdateCard({update}:Props) {
                         </Box>
                     </Grid>
                     <Grid item>
-                        <Box ml={2} mb={2}>
+                        <Box ml={3} mb={2}>
                             <Typography variant="body1">
                                 {diff} ago.
                             </Typography>

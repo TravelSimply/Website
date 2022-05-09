@@ -97,7 +97,7 @@ export default function JoinRequestCard({request, isAdmin, travellers, travelGro
                     <Grid item>
                         <Grid container height="100%" direction="column" justifyContent="space-between">
                             <Grid item>
-                                <Box ml={1} mb={2}>
+                                <Box ml={3} mb={2}>
                                     <Typography variant="body1">
                                         Requested to join {sentDiff} ago.
                                     </Typography>
@@ -106,12 +106,12 @@ export default function JoinRequestCard({request, isAdmin, travellers, travelGro
                             {isAdmin && <Grid item>
                                 <Box bgcolor="orangeBg.light">
                                     <Grid container>
-                                        <Grid item m={2}>
+                                        <Grid item ml={3} my={2}>
                                             <OrangeDensePrimaryButton disabled={loading} onClick={() => acceptRequest()}>
                                                 Accept
                                             </OrangeDensePrimaryButton>
                                         </Grid>
-                                        <Grid item m={2}>
+                                        <Grid item ml={3} m={2}>
                                             <OrangeDenseSecondaryButton disabled={loading} onClick={() => rejectRequest()}>
                                                 Reject
                                             </OrangeDenseSecondaryButton>
