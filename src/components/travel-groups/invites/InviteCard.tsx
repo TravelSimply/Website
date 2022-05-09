@@ -4,6 +4,8 @@ import { ClientTravelGroupInvitationWithSenderInfo } from "../../../database/int
 import { findSentDiff } from "../../../utils/dates";
 import {Avatar, Box, Grid, ListItemText, Paper, Typography} from '@mui/material'
 import { OrangeDensePrimaryButton, OrangeDenseSecondaryButton } from "../../mui-customizations/buttons";
+import Link from 'next/link'
+import { PrimaryLink } from "../../misc/links";
 
 interface Props {
     invite: ClientTravelGroupInvitationWithSenderInfo;
@@ -37,9 +39,14 @@ export default function InviteCard({invite, remove}:Props) {
                                     </Grid>
                                     <Grid item>
                                         <Box mx={1}>
-                                            <ListItemText primary={<Typography variant="h6">
-                                                {invite.data.travelGroup.info[0]}
-                                            </Typography>} />
+                                            <ListItemText primary={<PrimaryLink href="/travel-groups/[id]/preview"
+                                            as={`/travel-groups/${invite.data.travelGroup.id}/preview`}>
+                                                <a>
+                                                    <Typography variant="h6">
+                                                        {invite.data.travelGroup.info[0]}
+                                                    </Typography>
+                                                </a>
+                                            </PrimaryLink>} />
                                         </Box>
                                     </Grid>
                                 </Grid>
@@ -58,12 +65,12 @@ export default function InviteCard({invite, remove}:Props) {
                             <Grid item>
                                 <Box bgcolor="orangeBg.light">
                                     <Grid container>
-                                        <Grid item m={2}>
+                                        <Grid item ml={3} my={2}>
                                             <OrangeDensePrimaryButton disabled={loading}>
                                                 Accept
                                             </OrangeDensePrimaryButton>
                                         </Grid>
-                                        <Grid item m={2}>
+                                        <Grid item ml={3} my={2}>
                                             <OrangeDenseSecondaryButton disabled={loading}>
                                                 Rescind
                                             </OrangeDenseSecondaryButton>
