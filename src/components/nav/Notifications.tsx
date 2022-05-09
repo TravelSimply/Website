@@ -10,6 +10,7 @@ import BackpackIcon from '@mui/icons-material/Backpack';
 import axios from 'axios';
 import dayjs, { Dayjs } from 'dayjs';
 import { findSentDiff } from '../../utils/dates';
+import { mutate } from 'swr';
 
 interface Props {
     notifications: UserNotifications;
@@ -74,6 +75,7 @@ export default function Notifications({notifications}:Props) {
                 }
             })
 
+            mutate(`/api/users/${notifications.raw.notifications.data.userId}/notifications`)
         } catch (e) {}
     }
 
