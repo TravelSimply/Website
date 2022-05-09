@@ -1,21 +1,24 @@
 import {useMemo, useState} from 'react'
 import { Alert, AlertTitle, Collapse, Container, Grid, IconButton, Paper, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import { ClientTravelGroup, ClientTravelGroupInvitation, ClientTravelGroupInvitationWithToPopulated, ClientUser, TravelGroupInvitation } from "../../../../database/interfaces";
+import { ClientTravelGroup, ClientTravelGroupInvitation, ClientTravelGroupInvitationWithToPopulated, ClientUser, ClientUserWithContactInfo, TravelGroupInvitation } from "../../../../database/interfaces";
 import UserAdder from '../../../account/profile/UserAdder';
 import CloseIcon from '@mui/icons-material/Close'
 import { OrangePrimaryButton } from '../../../mui-customizations/buttons';
 import axios from 'axios';
 import Snackbar from '../../../misc/snackbars'
 import { mutate } from 'swr';
+import RestrictedUserAdder from '../../../account/profile/RestrictedUserAdder';
 
 interface Props {
     user: ClientUser;
     travelGroup: ClientTravelGroup;
     invites: ClientTravelGroupInvitationWithToPopulated[];
+    friends: string[];
+    travellers: ClientUserWithContactInfo[];
 }
 
-export default function SendInvite({user, travelGroup, invites}:Props) {
+export default function SendInvite({user, travelGroup, invites, friends, travellers}:Props) {
 
     if (!invites) {
         return null
@@ -34,25 +37,12 @@ export default function SendInvite({user, travelGroup, invites}:Props) {
 
     const [loading, setLoading] = useState(false)
 
-    useMemo(() => {
+    const restrictedUsers = useMemo(() => {
+        if (!friends) return []
+        if (!travellers) return []
 
-        const addedUser = addedTravellers[addedTravellers.length - 1]
-
-        if (!addedUser) {
-            return
-        }
-
-        if (travelGroup.data.members.includes(addedUser.ref['@ref'].id)) {
-            setAlert(`@${addedUser.data.username} is already in the group!`)
-            return setStartingAddList(addedTravellers.slice(0, -1))
-        }
-
-        if (invites.find(inv => inv.data.to.ref['@ref'].id === addedUser.ref['@ref'].id)) {
-            setAlert(`@${addedUser.data.username} is already invited!`)
-            return setStartingAddList(addedTravellers.slice(0, -1))
-        }
-
-    }, [addedTravellers])
+        return friends.filter(f => !travellers.find(t => t.data.username === f) && !invites.find(inv => inv.data.to.data.username === f))
+    }, [friends])
 
     const sendInvites = async () => {
         setLoading(true)
@@ -99,17 +89,14 @@ export default function SendInvite({user, travelGroup, invites}:Props) {
                                     Invite new Travellers!
                                 </Typography>
                             </Box>
-                            <UserAdder startingAddList={startingAddList} setAddedUsers={setAddedTravellers}>
-                                {alert && <Box mt={1}>
-                                    <Collapse in={Boolean(alert)}>
-                                        <Alert severity="info" action={<IconButton size="small" onClick={() => setAlert('')}>
-                                            <CloseIcon /> 
-                                        </IconButton>}>
-                                            <AlertTitle>{alert}</AlertTitle>
-                                        </Alert>
-                                    </Collapse>
+                            <RestrictedUserAdder startingAddList={startingAddList} setAddedUsers={setAddedTravellers}
+                            restrictedUsernames={restrictedUsers}>
+                                {addedTravellers.length === 0 && <Box mt={1} textAlign="center">
+                                    <Typography variant="body1">
+                                        You can only invite friends not in this Travel Group.     
+                                    </Typography>
                                 </Box>}
-                            </UserAdder>
+                            </RestrictedUserAdder>
                         </Grid>
                         <Grid item>
                             {addedTravellers.length > 0 && <Box mt={2}>

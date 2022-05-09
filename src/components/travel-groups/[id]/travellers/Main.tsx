@@ -124,7 +124,8 @@ export default function Main({user, travelGroup}:Props) {
                     </Grid>
                     <Grid item display={{xs: 'none', md: 'initial'}} flexBasis={{xs: 0, md: "clamp(400px, 600px, 40%)"}}>
                         <Box>
-                            <SendInvite invites={invites} user={user} travelGroup={travelGroup} />
+                            <SendInvite invites={invites} user={user} travelGroup={travelGroup} friends={friendUsernames}
+                            travellers={travellers} />
                         </Box>
                     </Grid>
                 </Grid>
