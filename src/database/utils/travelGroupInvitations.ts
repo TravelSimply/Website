@@ -1,6 +1,6 @@
 import {query as q} from 'faunadb'
 import client from '../fauna'
-import { TravelGroupInvitation, TravelGroupInvitationWithToPopulated } from '../interfaces'
+import { TravelGroupInvitation, TravelGroupInvitationWithSenderInfo, TravelGroupInvitationWithToPopulated } from '../interfaces'
 import { addTravelGroupNotificationQuery, getTravelGroupNotificationsInnerQuery } from './travelGroupNotifications'
 import { addBasicNotificationQuery } from './userNotifications'
 
@@ -34,6 +34,43 @@ export async function getTravelGroupInvitationsWithToPopulated(travelGroupId:str
                 }
             )
         ))
+    )
+}
+
+export async function getUserTravelGroupInvitationsWithSenderInfo(to:string):Promise<{data: TravelGroupInvitationWithSenderInfo[]}> {
+
+    return await client.query(
+        q.Map(
+            q.Paginate(q.Match(q.Index('travelGroupInvitations_by_to'), to)),
+            q.Lambda('ref',
+                q.Let(
+                    {
+                        invite: q.Get(q.Var('ref'))
+                    },
+                    {
+                        ref: q.Select('ref', q.Var('invite')),
+                        data: {
+                            timeSent: q.Select(['data', 'timeSent'], q.Var('invite')),
+                            to: q.Select(['data', 'to'], q.Var('invite')),
+                            from: {
+                                id: q.Select(['data', 'from'], q.Var('invite')),
+                                username: q.Select(['data', 0], q.Paginate(q.Match(
+                                    q.Index('users_by_id_w_username'),
+                                    q.Select(['data', 'from'], q.Var('invite'))
+                                )))
+                            },
+                            travelGroup: {
+                                id: q.Select(['data', 'travelGroup'], q.Var('invite')),
+                                info: q.Select(['data', 0], q.Paginate(q.Match(
+                                    q.Index('travelGroups_by_id_w_name_and_imageSrc'),
+                                    q.Select(['data', 'travelGroup'], q.Var('invite'))
+                                )))
+                            }
+                        }
+                    }
+                ) 
+            )
+        )
     )
 }
 

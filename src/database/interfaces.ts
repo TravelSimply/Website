@@ -331,6 +331,21 @@ export interface TravelGroupInvitationWithToPopulated extends Omit<TravelGroupIn
     }
 }
 
+export interface TravelGroupInvitationWithSenderInfo extends Omit<TravelGroupInvitation, 'data'> {
+    data: {
+        timeSent: Expr;
+        to: string;
+        travelGroup: {
+            id: string;
+            info: string[];
+        };
+        from: {
+            id: string;
+            username: string;
+        }
+    }
+}
+
 export interface ClientTravelGroupInvitation {
     ref: {'@ref': Ref};
     data: {
@@ -347,6 +362,15 @@ export interface ClientTravelGroupInvitationWithToPopulated extends Omit<ClientT
         travelGroup: string;
         from: string;
         to: ClientFilteredUser;
+    }
+}
+
+export interface ClientTravelGroupInvitationWithSenderInfo extends Omit<ClientTravelGroupInvitation, 'data'> {
+    data: {
+        timeSent: {'@ts': string};
+        to: string;
+        from: TravelGroupInvitationWithSenderInfo['data']['from'];
+        travelGroup: TravelGroupInvitationWithSenderInfo['data']['travelGroup'];
     }
 }
 
