@@ -36,6 +36,11 @@ export default function Main({user, travelGroup}:Props) {
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
     )
 
+    const {data: friendUsernames} = useSWR<string[]>(
+        `/api/users/${user.ref['@ref'].id}/friends/usernames`,
+        {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
+    )
+
     const [search, setSearch] = useState('')
 
     return (

@@ -257,6 +257,28 @@ export async function getTravellersWithContactInfo(travellers:string[]):Promise<
     )
 }
 
+export async function getFriendUsernames(id:string) {
+
+    return await client.query(
+        q.Let(
+            {
+                user: q.Get(q.Ref(q.Collection('users'), id))
+            },
+            q.If(
+                q.ContainsField('friends', q.Select('data', q.Var('user'))),
+                q.Map(
+                    q.Select(['data', 'friends'], q.Var('user')),
+                    q.Lambda(
+                        'id',
+                        q.Select(['data', 0], q.Paginate(q.Match(q.Index('users_by_id_w_username'), q.Var('id'))))
+                    )
+                ),
+                []
+            )
+        )
+    )
+}
+
 export function filterUser(user:User) {
 
     return {...user, data: {...user.data, password: null}}
