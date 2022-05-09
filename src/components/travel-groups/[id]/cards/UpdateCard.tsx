@@ -39,6 +39,7 @@ export default function UpdateCard({update}:Props) {
                                                 update.type === 'rejectJoinRequest' ? `@${update.users?.at(0)}'s join request was rejected` :
                                                 update.type === 'rescindInvitation' ? `@${update.users?.at(0)}'s invitation was rescinded` :
                                                 update.type === 'rejectInvitation' ? `@${update.users?.at(0)} rejected an invite` :
+                                                update.type === 'acceptInvitation' ? `@${update.users?.at(0)} accepted an invite` :
                                                 update.type === 'leave' ? `@${update.users?.at(0)} left the Travel Group` :
                                                 ''
                                             }

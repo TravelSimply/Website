@@ -46,6 +46,27 @@ export default function InviteCard({user, invite, accept, reject}:Props) {
         }
     }
 
+    const acceptInvite = async () => {
+        setLoading(true)
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${invite.data.travelGroup.id}/invitations/accept`,
+                data: {
+                    toUsername: user.data.username,
+                    inviteId: invite.ref['@ref'].id
+                }
+            })
+
+            accept()
+        } catch (e) {
+            setSnackbarMsg({type: 'error', content: 'Error Accepting Invite'})
+            setLoading(false)
+        }
+    }
+
     return (
         <Box maxWidth={400} height="100%">
             <Paper sx={{height: '100%'}}>
@@ -91,7 +112,8 @@ export default function InviteCard({user, invite, accept, reject}:Props) {
                                 <Box bgcolor="orangeBg.light">
                                     <Grid container>
                                         <Grid item ml={3} my={2}>
-                                            <OrangeDensePrimaryButton disabled={loading}>
+                                            <OrangeDensePrimaryButton disabled={loading}
+                                            onClick={() => acceptInvite()}>
                                                 Accept
                                             </OrangeDensePrimaryButton>
                                         </Grid>

@@ -135,3 +135,31 @@ export async function rejectInvitation(inviteId:string, toUsername:string,
         )
     )
 }
+
+export async function acceptInvitation(inviteId:string, toId:string, toUsername:string, 
+    travelGroupId:string) {
+
+    const update = {
+        time: q.Now(),
+        type: 'acceptInvitation',
+        users: [toUsername]
+    }
+
+    return await client.query(
+        q.Do(
+            q.Delete(q.Ref(q.Collection('travelGroupInvitations'), inviteId)),
+            addTravelGroupNotificationQuery(travelGroupId, update),
+            q.Let(
+                {
+                    travelGroup: q.Get(q.Ref(q.Collection('travelGroups'), travelGroupId))
+                },
+                q.Update(
+                    q.Select('ref', q.Var('travelGroup')),
+                    {data: {
+                        members: q.Append(toId, q.Select(['data', 'members'], q.Var('travelGroup')))
+                    }}
+                )
+            )
+        )
+    )
+}
