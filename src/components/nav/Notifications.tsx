@@ -43,7 +43,7 @@ export default function Notifications({notifications}:Props) {
                     msg: `New Activity in ${not.data[2]}`,
                     time: findSentDiff(not.time) + ' ago'
                 }
-            } else if (not.data.collection === 'travelGroupInvitations' && not.data.content.travelGroupName.length > 0) {
+            } else if (not.data.collection === 'travelGroupInvitations' && not.data.content?.travelGroupName.length > 0) {
                 return {
                     href: '/travel-groups/invitations',
                     icon: <GroupAddIcon color="primary" fontSize="large" />,

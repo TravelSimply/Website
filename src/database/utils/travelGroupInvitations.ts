@@ -118,3 +118,20 @@ export async function rescindInvitation(inviteId:string, toUsername:string,
         )
     )
 }
+
+export async function rejectInvitation(inviteId:string, toUsername:string, 
+    travelGroupId:string) {
+
+    const update = {
+        time: q.Now(),
+        type: 'rejectInvitation',
+        users: [toUsername]
+    }
+
+    return await client.query(
+        q.Do(
+            q.Delete(q.Ref(q.Collection('travelGroupInvitations'), inviteId)),
+            addTravelGroupNotificationQuery(travelGroupId, update)
+        )
+    )
+}

@@ -1,25 +1,50 @@
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
-import { ClientTravelGroupInvitationWithSenderInfo } from "../../../database/interfaces";
+import { ClientTravelGroupInvitationWithSenderInfo, ClientUser } from "../../../database/interfaces";
 import { findSentDiff } from "../../../utils/dates";
 import {Avatar, Box, Grid, ListItemText, Paper, Typography} from '@mui/material'
 import { OrangeDensePrimaryButton, OrangeDenseSecondaryButton } from "../../mui-customizations/buttons";
 import Link from 'next/link'
 import { PrimaryLink } from "../../misc/links";
+import Snackbar from '../../misc/snackbars'
+import axios from "axios";
 
 interface Props {
+    user: ClientUser;
     invite: ClientTravelGroupInvitationWithSenderInfo;
-    remove: () => void;
+    accept: () => void;
+    reject: () => void;
 }
 
-export default function InviteCard({invite, remove}:Props) {
+export default function InviteCard({user, invite, accept, reject}:Props) {
 
     const [loading, setLoading] = useState(false)
-
+    const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
 
     const sentDiff = useMemo(() => {
         return findSentDiff(dayjs(invite.data.timeSent['@ts']))
     }, [invite])
+
+    const rejectInvite = async () => {
+        setLoading(true)
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${invite.data.travelGroup.id}/invitations/reject`,
+                data: {
+                    toUsername: user.data.username,
+                    inviteId: invite.ref['@ref'].id
+                }
+            })
+
+            reject()
+        } catch (e) {
+            setSnackbarMsg({type: 'error', content: 'Error Rejecting Invite'})
+            setLoading(false)
+        }
+    }
 
     return (
         <Box maxWidth={400} height="100%">
@@ -71,8 +96,9 @@ export default function InviteCard({invite, remove}:Props) {
                                             </OrangeDensePrimaryButton>
                                         </Grid>
                                         <Grid item ml={3} my={2}>
-                                            <OrangeDenseSecondaryButton disabled={loading}>
-                                                Rescind
+                                            <OrangeDenseSecondaryButton disabled={loading}
+                                            onClick={() => rejectInvite()}>
+                                                Reject
                                             </OrangeDenseSecondaryButton>
                                         </Grid>
                                     </Grid>
@@ -82,6 +108,7 @@ export default function InviteCard({invite, remove}:Props) {
                     </Grid>
                 </Grid>
             </Paper>
+            <Snackbar msg={snackbarMsg} setMsg={setSnackbarMsg} />
         </Box>
     )
 }
