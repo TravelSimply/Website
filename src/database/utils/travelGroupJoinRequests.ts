@@ -35,6 +35,26 @@ export async function getTravelGroupJoinRequestsWithFromPopulated(travelGroupId:
     )
 }
 
+export async function sendJoinRequest(travelGroupId:string, fromId:string) {
+
+    await client.query(
+        q.Do(
+            q.Create(
+                q.Collection('travelGroupJoinRequests'),
+                {data: {
+                    travelGroup: travelGroupId,
+                    from: fromId,
+                    timeSent: q.Now()
+                }}
+            ),
+            q.Update(
+                q.Ref(q.Collection('travelGroups'), travelGroupId),
+                {data: {lastUpdated: q.Now()}}
+            ),
+        )
+    )
+}
+
 export async function acceptJoinRequestAndGetTravellerContactInfo(requestId:string, travellerId:string, 
     travelGroupId:string, travellerUsername:string):Promise<ContactInfo> {
 
