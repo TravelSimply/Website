@@ -1,6 +1,6 @@
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { useUserNotifications } from "../../../../components/hooks/userNotifications";
-import { ClientTravelGroup, ClientUser } from "../../../../database/interfaces";
+import { ClientTravelGroup, ClientUser, Ref } from "../../../../database/interfaces";
 import { getTravelGroupPreview } from "../../../../database/utils/travelGroups";
 import { getAuthUser } from "../../../../utils/auth";
 import styles from '../../../../styles/pages/HeaderFooter.module.css'
@@ -11,9 +11,12 @@ import Main from '../../../../components/travel-groups/[id]/preview/Main'
 interface Props {
     user: ClientUser;
     travelGroup: 0 | ClientTravelGroup;
+    invites: {'@ref': {id: string}}[];
 }
 
-export default function TravelGroupPreview({user, travelGroup}:Props) {
+export default function TravelGroupPreview({user, travelGroup, invites}:Props) {
+
+    console.log('invites', invites)
 
     if (travelGroup === 0) {
         return (
@@ -43,7 +46,7 @@ export default function TravelGroupPreview({user, travelGroup}:Props) {
             <div className={styles.root}>
                 <MainHeader user={user} notifications={notifications} />
                 <div>
-                    <Main user={user} travelGroup={travelGroup} />
+                    <Main user={user} travelGroup={travelGroup} invites={invites} />
                 </div>
                 <div>
                     Footer
@@ -63,11 +66,12 @@ export const getServerSideProps:GetServerSideProps = async (ctx:GetServerSidePro
             return redirect
         }
 
-        const travelGroup = await getTravelGroupPreview(ctx.params.id as string, user.ref.id)
+        const {travelGroup, invites} = await getTravelGroupPreview(ctx.params.id as string, user.ref.id)
 
         return {props: {
             user: JSON.parse(JSON.stringify(user)),
-            travelGroup: JSON.parse(JSON.stringify(travelGroup))
+            travelGroup: JSON.parse(JSON.stringify(travelGroup)),
+            invites: JSON.parse(JSON.stringify(invites))
         }}
     } catch (e) {
         console.log(e)

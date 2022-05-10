@@ -1,6 +1,6 @@
 import {query as q} from 'faunadb'
 import client from '../fauna'
-import { ClientTravelGroupData, TravelGroup, TravelGroupNotifications, TravelGroupProposal, TravelGroupStringDates, TravelGroupWithPopulatedTravellersAndContactInfo, User, UserWithContactInfo } from '../interfaces'
+import { ClientTravelGroupData, Ref, TravelGroup, TravelGroupNotifications, TravelGroupProposal, TravelGroupStringDates, TravelGroupWithPopulatedTravellersAndContactInfo, User, UserWithContactInfo } from '../interfaces'
 import { addTravelGroupNotificationQuery } from './travelGroupNotifications'
 import { populateUserWithContactInfo } from './users'
 
@@ -177,7 +177,10 @@ export async function getTravelGroupOwner(id:string):Promise<{data: string[]}> {
     )
 }
 
-export async function getTravelGroupPreview(travelGroupId:string, userId:string) {
+export async function getTravelGroupPreview(travelGroupId:string, userId:string):Promise<{
+    travelGroup: 0 | TravelGroup;
+    invites: Ref[];
+}> {
 
     return await client.query(
         q.If(
@@ -194,21 +197,39 @@ export async function getTravelGroupPreview(travelGroupId:string, userId:string)
                         }
                     },
                     q.If(
-                        q.Or(
-                            q.Equals('public', q.Select(['data', 'settings', 'mode'], q.Var('travelGroup'))),
-                            q.ContainsValue(userId, q.Select(['data', 'members'], q.Var('travelGroup')))
-                        ),
-                        q.Var('travelGroup'),
-                        q.If(
-                            q.ContainsValue(travelGroupId, q.Select('data', 
-                            q.Paginate(q.Match(q.Index('travelGroupInvitations_by_to_w_travelGroup'), userId)))),
-                            q.Var('travelGroup'),
-                            0
+                        q.ContainsValue(userId, q.Select(['data', 'members'], q.Var('travelGroup'))),
+                        {
+                            travelGroup: q.Var('travelGroup'),
+                            invites: []
+                        },
+                        q.Let(
+                            {
+                                travelGroup: q.Var('travelGroup'),
+                                invites: q.Select('data', q.Paginate(q.Match(q.Index('travelGroupInvitations_by_to_and_travelGroup'), 
+                                [userId, travelGroupId])))
+                            },
+                            q.If(
+                                q.Or(
+                                    q.Equals('public', q.Select(['data', 'settings', 'mode'], q.Var('travelGroup'))),
+                                    q.GT(q.Count(q.Var('invites')), 0)
+                                ),
+                                {
+                                    travelGroup: q.Var('travelGroup'),
+                                    invites: q.Var('invites')
+                                },
+                                {
+                                    travelGroup: 0,
+                                    invites: []
+                                }
+                            )
                         )
                     )
                 )
             ),
-            null
+            {
+                travelGroup: null,
+                invites: []
+            }
         )
     )
 }
