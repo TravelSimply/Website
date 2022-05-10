@@ -31,7 +31,6 @@ export default function Notifications({notifications}:Props) {
     const [notContent, setNotContent] = useState<INotContent[]>(null)
 
     useMemo(() => {
-        console.log(notifications.filtered)
 
         if (!notifications?.filtered) return
 
