@@ -186,17 +186,25 @@ export async function getTravelGroupPreview(travelGroupId:string, userId:string)
                 {
                     travelGroup: q.Get(q.Ref(q.Collection('travelGroups'), travelGroupId))
                 },
-                q.If(
-                    q.Or(
-                        q.Equals('public', q.Select(['data', 'settings', 'mode'], q.Var('travelGroup'))),
-                        q.ContainsValue(userId, q.Select(['data', 'members'], q.Var('travelGroup')))
-                    ),
-                    q.Var('travelGroup'),
+                q.Let(
+                    {
+                        travelGroup: {
+                            ref: q.Select('ref', q.Var('travelGroup')),
+                            data: dataWithStringDates()
+                        }
+                    },
                     q.If(
-                        q.ContainsValue(travelGroupId, q.Select('data', 
-                        q.Paginate(q.Match(q.Index('travelGroupInvitations_by_to_w_travelGroup'), userId)))),
+                        q.Or(
+                            q.Equals('public', q.Select(['data', 'settings', 'mode'], q.Var('travelGroup'))),
+                            q.ContainsValue(userId, q.Select(['data', 'members'], q.Var('travelGroup')))
+                        ),
                         q.Var('travelGroup'),
-                        0
+                        q.If(
+                            q.ContainsValue(travelGroupId, q.Select('data', 
+                            q.Paginate(q.Match(q.Index('travelGroupInvitations_by_to_w_travelGroup'), userId)))),
+                            q.Var('travelGroup'),
+                            0
+                        )
                     )
                 )
             ),

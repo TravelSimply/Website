@@ -160,11 +160,15 @@ export async function acceptInvitation(inviteId:string, toId:string, toUsername:
                 {
                     travelGroup: q.Get(q.Ref(q.Collection('travelGroups'), travelGroupId))
                 },
-                q.Update(
-                    q.Select('ref', q.Var('travelGroup')),
-                    {data: {
-                        members: q.Append(toId, q.Select(['data', 'members'], q.Var('travelGroup')))
-                    }}
+                q.If(
+                    q.IsNonEmpty(q.Intersection([toId], q.Select(['data', 'members'], q.Var('travelGroup')))),
+                    null,
+                    q.Update(
+                        q.Select('ref', q.Var('travelGroup')),
+                        {data: {
+                            members: q.Append(toId, q.Select(['data', 'members'], q.Var('travelGroup')))
+                        }}
+                    )
                 )
             )
         )
