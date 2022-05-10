@@ -8,9 +8,10 @@ interface Props {
     user: ClientUser;
     travelGroup: ClientTravelGroup;
     invites: {'@ref': {id: string}}[];
+    joinRequests: {'@ref': {id: string}}[];
 }
 
-export default function PreviewAction({user, travelGroup, invites}:Props) {
+export default function PreviewAction({user, travelGroup, invites, joinRequests}:Props) {
 
     const [isMember, setIsMember] = useState(false)
 
@@ -43,7 +44,9 @@ export default function PreviewAction({user, travelGroup, invites}:Props) {
                             </OrangeDensePrimaryButton>
                         </Box>
                     </Alert>
-                </Box> : ''
+                </Box> : <Box>
+
+                </Box>
             }
         </Box>
     )

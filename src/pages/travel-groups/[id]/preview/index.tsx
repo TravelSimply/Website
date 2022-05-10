@@ -12,11 +12,10 @@ interface Props {
     user: ClientUser;
     travelGroup: 0 | ClientTravelGroup;
     invites: {'@ref': {id: string}}[];
+    joinRequests: {'@ref': {id: string}}[];
 }
 
-export default function TravelGroupPreview({user, travelGroup, invites}:Props) {
-
-    console.log('invites', invites)
+export default function TravelGroupPreview({user, travelGroup, invites, joinRequests}:Props) {
 
     if (travelGroup === 0) {
         return (
@@ -46,7 +45,8 @@ export default function TravelGroupPreview({user, travelGroup, invites}:Props) {
             <div className={styles.root}>
                 <MainHeader user={user} notifications={notifications} />
                 <div>
-                    <Main user={user} travelGroup={travelGroup} invites={invites} />
+                    <Main user={user} travelGroup={travelGroup} invites={invites} 
+                    joinRequests={joinRequests} />
                 </div>
                 <div>
                     Footer
@@ -66,12 +66,13 @@ export const getServerSideProps:GetServerSideProps = async (ctx:GetServerSidePro
             return redirect
         }
 
-        const {travelGroup, invites} = await getTravelGroupPreview(ctx.params.id as string, user.ref.id)
+        const {travelGroup, invites, joinRequests} = await getTravelGroupPreview(ctx.params.id as string, user.ref.id)
 
         return {props: {
             user: JSON.parse(JSON.stringify(user)),
             travelGroup: JSON.parse(JSON.stringify(travelGroup)),
-            invites: JSON.parse(JSON.stringify(invites))
+            invites: JSON.parse(JSON.stringify(invites)),
+            joinRequests: JSON.parse(JSON.stringify(joinRequests))
         }}
     } catch (e) {
         console.log(e)

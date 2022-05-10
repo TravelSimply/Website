@@ -180,6 +180,7 @@ export async function getTravelGroupOwner(id:string):Promise<{data: string[]}> {
 export async function getTravelGroupPreview(travelGroupId:string, userId:string):Promise<{
     travelGroup: 0 | TravelGroup;
     invites: Ref[];
+    joinRequests: Ref[];
 }> {
 
     return await client.query(
@@ -200,7 +201,8 @@ export async function getTravelGroupPreview(travelGroupId:string, userId:string)
                         q.ContainsValue(userId, q.Select(['data', 'members'], q.Var('travelGroup'))),
                         {
                             travelGroup: q.Var('travelGroup'),
-                            invites: []
+                            invites: [],
+                            joinRequests: []
                         },
                         q.Let(
                             {
@@ -209,18 +211,34 @@ export async function getTravelGroupPreview(travelGroupId:string, userId:string)
                                 [userId, travelGroupId])))
                             },
                             q.If(
-                                q.Or(
-                                    q.Equals('public', q.Select(['data', 'settings', 'mode'], q.Var('travelGroup'))),
-                                    q.GT(q.Count(q.Var('invites')), 0)
-                                ),
+                                q.GT(q.Count(q.Var('invites')), 0),
                                 {
                                     travelGroup: q.Var('travelGroup'),
-                                    invites: q.Var('invites')
+                                    invites: q.Var('invites'),
+                                    joinRequests: []
                                 },
-                                {
-                                    travelGroup: 0,
-                                    invites: []
-                                }
+                                q.If(
+                                    q.Equals('public', q.Select(['data', 'settings', 'mode'], q.Var('travelGroup'))),
+                                    q.Let(
+                                        {
+                                            travelGroup: q.Var('travelGroup'),
+                                            joinRequests: q.Select('data', q.Paginate(q.Match(
+                                                q.Index('travelGroupJoinRequests_by_from_and_travelGroup'),
+                                                [userId, travelGroupId]
+                                            )))
+                                        },
+                                        {
+                                            travelGroup: q.Var('travelGroup'),
+                                            invites: [],
+                                            joinRequests: q.Var('joinRequests')
+                                        }
+                                    ),
+                                    {
+                                        travelGroup: 0,
+                                        invites: [],
+                                        joinRequests: []
+                                    }
+                                )
                             )
                         )
                     )
@@ -228,7 +246,8 @@ export async function getTravelGroupPreview(travelGroupId:string, userId:string)
             ),
             {
                 travelGroup: null,
-                invites: []
+                invites: [],
+                joinRequests: []
             }
         )
     )
