@@ -86,7 +86,7 @@ export default function SendInvite({user, travelGroup, invites, friends, travell
                         <Grid item>
                             <Box mb={2} textAlign="center">
                                 <Typography variant="h6">
-                                    Invite new Travellers!
+                                    Invite new Travelers!
                                 </Typography>
                             </Box>
                             <RestrictedUserAdder startingAddList={startingAddList} setAddedUsers={setAddedTravellers}
