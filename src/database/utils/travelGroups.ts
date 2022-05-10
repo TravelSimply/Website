@@ -177,6 +177,34 @@ export async function getTravelGroupOwner(id:string):Promise<{data: string[]}> {
     )
 }
 
+export async function getTravelGroupPreview(travelGroupId:string, userId:string) {
+
+    return await client.query(
+        q.If(
+            q.Exists(q.Ref(q.Collection('travelGroups'), travelGroupId)),
+            q.Let(
+                {
+                    travelGroup: q.Get(q.Ref(q.Collection('travelGroups'), travelGroupId))
+                },
+                q.If(
+                    q.Or(
+                        q.Equals('public', q.Select(['data', 'settings', 'mode'], q.Var('travelGroup'))),
+                        q.ContainsValue(userId, q.Select(['data', 'members'], q.Var('travelGroup')))
+                    ),
+                    q.Var('travelGroup'),
+                    q.If(
+                        q.ContainsValue(travelGroupId, q.Select('data', 
+                        q.Paginate(q.Match(q.Index('travelGroupInvitations_by_to_w_travelGroup'), userId)))),
+                        q.Var('travelGroup'),
+                        0
+                    )
+                )
+            ),
+            null
+        )
+    )
+}
+
 export async function updateTravelGroupWithOwnerCheck(id:string, userId:string, 
     data:TravelGroupProposal['data']['data'], userJunkIds?:string[]) {
 
