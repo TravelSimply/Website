@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import { ClientTravelGroupInvitationWithSenderInfo, ClientUser } from "../../../database/interfaces";
 import { findSentDiff } from "../../../utils/dates";
-import {Avatar, Box, Grid, ListItemText, Paper, Typography} from '@mui/material'
+import {Avatar, Box, Grid, ListItemText, NoSsr, Paper, Typography} from '@mui/material'
 import { OrangeDensePrimaryButton, OrangeDenseSecondaryButton } from "../../mui-customizations/buttons";
 import Link from 'next/link'
 import { PrimaryLink } from "../../misc/links";
@@ -77,10 +77,12 @@ export default function InviteCard({user, invite, accept, reject}:Props) {
                                 <Grid container wrap="nowrap" spacing={2} alignItems="center">
                                     <Grid item>
                                         <Box m={1}>
+                                            <NoSsr>
                                             <Avatar variant="square" sx={{width: {xs: 50, sm: 100}, height: {xs: 50, sm: 100}, 
                                             borderRadius: 1}}
-                                            src={invite.data.travelGroup.info[1] || '/default_travelgroup.png'} 
+                                            src={(invite.data.travelGroup.info[0] &&  invite.data.travelGroup.info[0][1]) || '/default_travelgroup.png'} 
                                             imgProps={{referrerPolicy: 'no-referrer'}} />
+                                            </NoSsr>
                                         </Box>
                                     </Grid>
                                     <Grid item>
@@ -89,7 +91,7 @@ export default function InviteCard({user, invite, accept, reject}:Props) {
                                             as={`/travel-groups/${invite.data.travelGroup.id}/preview`}>
                                                 <a>
                                                     <Typography variant="h6">
-                                                        {invite.data.travelGroup.info[0]}
+                                                        {invite.data.travelGroup.info[0] && invite.data.travelGroup.info[0][0]}
                                                     </Typography>
                                                 </a>
                                             </PrimaryLink>} />

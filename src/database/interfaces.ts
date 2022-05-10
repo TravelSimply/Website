@@ -337,7 +337,7 @@ export interface TravelGroupInvitationWithSenderInfo extends Omit<TravelGroupInv
         to: string;
         travelGroup: {
             id: string;
-            info: string[];
+            info: [string[]] | [];
         };
         from: {
             id: string;

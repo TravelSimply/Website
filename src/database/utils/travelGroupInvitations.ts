@@ -61,7 +61,7 @@ export async function getUserTravelGroupInvitationsWithSenderInfo(to:string):Pro
                             },
                             travelGroup: {
                                 id: q.Select(['data', 'travelGroup'], q.Var('invite')),
-                                info: q.Select(['data', 0], q.Paginate(q.Match(
+                                info: q.Select(['data'], q.Paginate(q.Match(
                                     q.Index('travelGroups_by_id_w_name_and_imageSrc'),
                                     q.Select(['data', 'travelGroup'], q.Var('invite'))
                                 )))

@@ -62,6 +62,7 @@ export const getServerSideProps:GetServerSideProps = async (ctx:GetServerSidePro
         }}
 
     } catch (e) {
+        console.log(e)
         return {props: {}, redirect: {destination: '/'}}
     }
 }

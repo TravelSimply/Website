@@ -6,6 +6,7 @@ import { PrimarySearchBar } from "../../misc/searchBars";
 import InviteCard from "./InviteCard";
 import NoInvites from "./NoInvites";
 import Snackbar from '../../misc/snackbars'
+import dayjs from "dayjs";
 
 interface Props {
     user: ClientUser;
@@ -18,7 +19,7 @@ export default function Main({user, invites:dbInvites}:Props) {
         return <NoInvites />
     }
 
-    const [invites, setInvites] = useState(dbInvites)
+    const [invites, setInvites] = useState(dbInvites.sort((a, b) => dayjs(b.data.timeSent['@ts']).diff(dayjs(a.data.timeSent['@ts']))))
     const [search, setSearch] = useState('')
     const [searchedInvites, setSearchedInvites] = useState(invites)
     const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
