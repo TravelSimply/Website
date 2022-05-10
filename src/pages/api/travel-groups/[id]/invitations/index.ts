@@ -5,12 +5,6 @@ export default async function TravelGroupInvitations(req:NextApiRequest, res:Nex
 
     try {
 
-        const {userId} = req.query
-
-        if (userId) {
-
-        }
-
         const {data: invites} = await getTravelGroupInvitationsWithToPopulated(req.query.id as string)
 
         return res.status(200).json(invites)
