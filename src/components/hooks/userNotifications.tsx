@@ -78,7 +78,7 @@ export function useUserNotifications(user:string, travelGroups:string[]):UserNot
             const groupUpdate = data.travelGroups.find(g => g[0] === group.id)
             if (!groupUpdate) return null
             return {
-                time: groupUpdate[1] ? dayjs(groupUpdate[1]['@ts']) : dayjs(group.lastUpdated['@ts']),
+                time: groupUpdate[1] ? dayjs(groupUpdate[1]['@ts']) : null,
                 type: 'travelGroup',
                 data: groupUpdate,
                 new: groupUpdate[1] && dayjs(group.lastUpdated['@ts']).isBefore(dayjs(groupUpdate[1]['@ts']))

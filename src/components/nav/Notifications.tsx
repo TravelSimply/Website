@@ -31,11 +31,15 @@ export default function Notifications({notifications}:Props) {
     const [notContent, setNotContent] = useState<INotContent[]>(null)
 
     useMemo(() => {
+        console.log(notifications.filtered)
 
         if (!notifications?.filtered) return
 
         setNewNotifications(Boolean(notifications.filtered.find(n => n.new)))
         setNotContent(notifications.filtered.map(not => {
+            if (!not.time) {
+                return null
+            }
             if (not.type === 'travelGroup') {
                 return {
                     href: '/travel-groups/[id]/activity',
