@@ -21,6 +21,8 @@ export default function InviteCard({user, invite, accept, reject}:Props) {
     const [loading, setLoading] = useState(false)
     const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
 
+    const toDiscard = useMemo(() => !invite.data.travelGroup.info[0] || !invite.data.travelGroup.info[0][0], [invite])
+
     const sentDiff = useMemo(() => {
         return findSentDiff(dayjs(invite.data.timeSent['@ts']))
     }, [invite])
@@ -67,6 +69,26 @@ export default function InviteCard({user, invite, accept, reject}:Props) {
         }
     }
 
+    const discardInvite = async () => {
+        setLoading(true)
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${invite.data.travelGroup.id}/invitations/discard`,
+                data: {
+                    inviteId: invite.ref['@ref'].id
+                }
+            })
+
+            reject()
+        } catch (e) {
+            setSnackbarMsg({type: 'error', content: 'Error Discarding Invite'})
+            setLoading(false)
+        }
+    }
+
     return (
         <Box maxWidth={400} height="100%">
             <Paper sx={{height: '100%'}}>
@@ -77,24 +99,24 @@ export default function InviteCard({user, invite, accept, reject}:Props) {
                                 <Grid container wrap="nowrap" spacing={2} alignItems="center">
                                     <Grid item>
                                         <Box m={1}>
-                                            <NoSsr>
                                             <Avatar variant="square" sx={{width: {xs: 50, sm: 100}, height: {xs: 50, sm: 100}, 
                                             borderRadius: 1}}
                                             src={(invite.data.travelGroup.info[0] &&  invite.data.travelGroup.info[0][1]) || '/default_travelgroup.png'} 
                                             imgProps={{referrerPolicy: 'no-referrer'}} />
-                                            </NoSsr>
                                         </Box>
                                     </Grid>
                                     <Grid item>
                                         <Box mx={1}>
-                                            <ListItemText primary={<PrimaryLink href="/travel-groups/[id]/preview"
+                                            <ListItemText primary={!toDiscard ? <PrimaryLink href="/travel-groups/[id]/preview"
                                             as={`/travel-groups/${invite.data.travelGroup.id}/preview`}>
                                                 <a>
                                                     <Typography variant="h6">
-                                                        {invite.data.travelGroup.info[0] && invite.data.travelGroup.info[0][0]}
+                                                        {invite.data.travelGroup.info[0][0]}
                                                     </Typography>
                                                 </a>
-                                            </PrimaryLink>} />
+                                            </PrimaryLink> : <Typography variant="h6">
+                                                Disbanded Travel Group
+                                            </Typography>} />
                                         </Box>
                                     </Grid>
                                 </Grid>
@@ -112,6 +134,14 @@ export default function InviteCard({user, invite, accept, reject}:Props) {
                             </Grid>
                             <Grid item>
                                 <Box bgcolor="orangeBg.light">
+                                    {toDiscard ? <Grid container>
+                                        <Grid item ml={3} my={2}>
+                                            <OrangeDensePrimaryButton disabled={loading}
+                                            onClick={() => discardInvite()}>
+                                                Discard
+                                            </OrangeDensePrimaryButton>
+                                        </Grid>
+                                    </Grid> : 
                                     <Grid container>
                                         <Grid item ml={3} my={2}>
                                             <OrangeDensePrimaryButton disabled={loading}
@@ -125,7 +155,7 @@ export default function InviteCard({user, invite, accept, reject}:Props) {
                                                 Reject
                                             </OrangeDenseSecondaryButton>
                                         </Grid>
-                                    </Grid>
+                                    </Grid>}
                                 </Box>
                             </Grid>
                         </Grid>

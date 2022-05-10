@@ -136,6 +136,13 @@ export async function rejectInvitation(inviteId:string, toUsername:string,
     )
 }
 
+export async function discardInvitation(inviteId:string) {
+
+    return await client.query(
+        q.Delete(q.Ref(q.Collection('travelGroupInvitations'), inviteId))
+    )
+}
+
 export async function acceptInvitation(inviteId:string, toId:string, toUsername:string, 
     travelGroupId:string) {
 
