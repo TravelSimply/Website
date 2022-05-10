@@ -24,7 +24,6 @@ export default function PreviewAction({user, travelGroup, invites, joinRequests}
     useMemo(() => setHasRequested(joinRequests.length > 0), [])
 
     const inviteId = useMemo(() => invites[0] ? invites[0]['@ref'].id : null, [invites])
-    const requestId = useMemo(() => joinRequests[0] ? joinRequests[0]['@ref'].id : null, [joinRequests])
 
     const [closeAlert, setCloseAlert] = useState(false)
 
@@ -47,6 +46,28 @@ export default function PreviewAction({user, travelGroup, invites, joinRequests}
         setLoading(false)
     }
 
+    const acceptInvite = async () => {
+        setLoading(true)
+
+        try {
+
+            await axios({
+                method: 'POST',
+                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/invitations/accept`,
+                data: {
+                    toUsername: user.data.username,
+                    inviteId
+                }
+            })
+
+            setIsMember(true)
+            setSnackbarMsg({type: 'success', content: 'Accepted the Invitation'})
+        } catch (e) {
+            setSnackbarMsg({type: 'error', content: 'Error Accepting Invitation'})
+        }
+        setLoading(false)
+    }
+
     return (
         <Box>
             {
@@ -65,7 +86,8 @@ export default function PreviewAction({user, travelGroup, invites, joinRequests}
                             <Typography variant="body1" gutterBottom>
                                 You've been invited to join this Travel Group!
                             </Typography>
-                            <OrangeDensePrimaryButton disabled={loading}>
+                            <OrangeDensePrimaryButton disabled={loading}
+                            onClick={() => acceptInvite()}>
                                 Accept Invitation
                             </OrangeDensePrimaryButton>
                         </Box>
