@@ -10,6 +10,7 @@ import Main from '../../../../components/travel-groups/[id]/travellers/Main'
 import {getDrawerItems} from '../index'
 import {Box} from '@mui/material'
 import { useUserNotifications } from "../../../../components/hooks/userNotifications";
+import { FullGroupNotFound } from "../../../../components/travel-groups/[id]/index/GroupNotFound";
 
 interface Props {
     user: ClientUser;
@@ -20,9 +21,7 @@ export default function Travelers({user, travelGroup}:Props) {
 
     if (!travelGroup) {
         return (
-            <div>
-                Hmm... we couldn't find that travel group!
-            </div>
+            <FullGroupNotFound />
         )
     }
 
@@ -64,7 +63,7 @@ export const getServerSideProps:GetServerSideProps = async (ctx:GetServerSidePro
 
         const travelGroup = await getTravelGroup(id)
 
-        if (!travelGroup.data.members.includes(user.ref.id)) {
+        if (travelGroup && !travelGroup.data.members.includes(user.ref.id)) {
             throw 'User not in travel group'
         }
 

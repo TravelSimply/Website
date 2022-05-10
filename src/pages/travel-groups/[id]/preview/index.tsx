@@ -7,6 +7,8 @@ import styles from '../../../../styles/pages/HeaderFooter.module.css'
 import Head from 'next/head'
 import MainHeader from "../../../../components/nav/MainHeader";
 import Main from '../../../../components/travel-groups/[id]/preview/Main'
+import Private from "../../../../components/travel-groups/[id]/preview/Private";
+import GroupNotFound from "../../../../components/travel-groups/[id]/index/GroupNotFound";
 
 interface Props {
     user: ClientUser;
@@ -17,36 +19,23 @@ interface Props {
 
 export default function TravelGroupPreview({user, travelGroup, invites, joinRequests}:Props) {
 
-    if (travelGroup === 0) {
-        return (
-            <div>
-                This travel group is private. To preview it, you need to be invited first.
-            </div>
-        )
-    }
-
-    if (!travelGroup) {
-        return (
-            <div>
-                Hmm... we couldn't find that travel group!
-            </div>
-        )
-    }
-
     const notifications = useUserNotifications(user.ref['@ref'].id, [])
 
     return (
         <>
             <Head>
                 <title>
-                    Preview {travelGroup.data.name} | Travel Simply
+                    Preview {travelGroup ? travelGroup.data.name : 'Travel Group'} | Travel Simply
                 </title>     
             </Head> 
             <div className={styles.root}>
                 <MainHeader user={user} notifications={notifications} />
                 <div>
+                    {travelGroup === 0 ? <Private /> :
+                    !travelGroup ? <GroupNotFound /> :
                     <Main user={user} travelGroup={travelGroup} invites={invites} 
                     joinRequests={joinRequests} />
+                    }
                 </div>
                 <div>
                     Footer
