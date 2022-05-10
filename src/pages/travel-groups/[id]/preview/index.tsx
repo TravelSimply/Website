@@ -6,6 +6,7 @@ import { getAuthUser } from "../../../../utils/auth";
 import styles from '../../../../styles/pages/HeaderFooter.module.css'
 import Head from 'next/head'
 import MainHeader from "../../../../components/nav/MainHeader";
+import Main from '../../../../components/travel-groups/[id]/preview/Main'
 
 interface Props {
     user: ClientUser;
@@ -42,7 +43,7 @@ export default function TravelGroupPreview({user, travelGroup}:Props) {
             <div className={styles.root}>
                 <MainHeader user={user} notifications={notifications} />
                 <div>
-                    main section
+                    <Main user={user} travelGroup={travelGroup} />
                 </div>
                 <div>
                     Footer
