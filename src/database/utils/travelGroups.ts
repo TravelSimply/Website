@@ -253,6 +253,25 @@ export async function getTravelGroupPreview(travelGroupId:string, userId:string)
     )
 }
 
+export async function getFriendsTravelGroupsBareInfo(userId:string) {
+
+    return await client.query(
+        q.Let(
+            {
+                friends: q.Select(['data', 'friends'], q.Get(q.Ref(q.Collection('users'), userId)))
+            },
+            q.Union(
+                q.Map(q.Var('friends'), q.Lambda('friend',
+                    q.Select('data', q.Paginate(
+                        q.Match(q.Index('travelGroups_by_members_w_startDate_and_unknown_and_id'), q.Var('friend'))),
+                        {size: 20}
+                    )
+                ))
+            ),
+        )
+    )
+}
+
 export async function updateTravelGroupWithOwnerCheck(id:string, userId:string, 
     data:TravelGroupProposal['data']['data'], userJunkIds?:string[]) {
 
