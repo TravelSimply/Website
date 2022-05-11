@@ -85,7 +85,7 @@ export function useUserNotifications(user:string, travelGroups:string[]):UserNot
             }
         }).filter(g => g)
 
-        setFormattedData([...basic, ...groups].sort((a, b) => b.time.diff(a.time)))
+        setFormattedData([...basic, ...groups].sort((a, b) => (b.time || dayjs()).diff(a.time || dayjs())))
     }, [data])
 
     return {
