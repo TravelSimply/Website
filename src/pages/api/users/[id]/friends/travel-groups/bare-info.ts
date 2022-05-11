@@ -8,8 +8,6 @@ export default verifyUser(async function BareInfo(req:NextApiRequest, res:NextAp
 
         const groupInfo = await getFriendsTravelGroupsBareInfo(req.query.id as string)
 
-        console.log('groupInfo', groupInfo)
-
         return res.status(200).json(groupInfo)
     } catch (e) {
         console.log(e)
