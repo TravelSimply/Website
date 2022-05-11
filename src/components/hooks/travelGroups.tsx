@@ -94,7 +94,5 @@ export function useSearchedTravelGroups(bareInfo:ClientBareTravelGroupInfo[]) {
 
     }, [query, bareInfo])
 
-    console.log('filteredTravelGroups', filteredTravelGroups)
-
     return loading ? undefined : filteredTravelGroups 
 }

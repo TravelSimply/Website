@@ -323,11 +323,17 @@ function constainsSearchQuery(userId:string, filters:Filters, travelGroupIds:str
                     ),
                     {
                         count: q.Add(q.Select('count', q.Var('total')), 1),
-                        items: appendMatchingTravelGroupToTotal(q.Var('travelGroup'), q.Var('total'))
+                        items: appendMatchingTravelGroupToTotal({
+                            ref: q.Select('ref', q.Var('travelGroup')),
+                            data: dataWithStringDates()
+                        } as any, q.Var('total'))
                     },
                     {
                         count: q.Select('count', q.Var('total')),
-                        items: appendNotMatchingTravelGroupToTotal(q.Var('travelGroup'), q.Var('total'))
+                        items: appendNotMatchingTravelGroupToTotal({
+                            ref: q.Select('ref', q.Var('travelGroup')),
+                            data: dataWithStringDates()
+                        } as any, q.Var('total'))
                     }
                 )
             ),

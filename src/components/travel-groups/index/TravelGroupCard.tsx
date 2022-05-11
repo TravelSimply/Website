@@ -45,7 +45,7 @@ export default function TravelGroupCard({user, travelGroup}:Props) {
                                 <Grid item>
                                     <Box>
                                         <Avatar sx={{width: {md: 200, sm: 150, xs: 150}, height: {md: 200, sm: 150, xs: 150}, 
-                                        }}
+                                        }} imgProps={{loading: 'lazy'}}
                                         src={travelGroup.data.image?.src || '/default_travelgroup.png'}
                                         variant="square" />
                                     </Box>
