@@ -22,7 +22,7 @@ export default function Search() {
     const setSearch = (search:string) => {
         router.push({
             pathname: '/travel-groups/find',
-            query: {...router.query, search}
+            query: {...router.query, search: search.toLowerCase()}
         }, undefined, {shallow: true})
     }
 

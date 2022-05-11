@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
-import {query as q} from 'faunadb'
+import {Expr, query as q} from 'faunadb'
+import { Filters } from '../../components/travel-groups/find/Search'
 import client from '../fauna'
 import { ClientTravelGroupData, Ref, TravelGroup, TravelGroupNotifications, TravelGroupProposal, TravelGroupStringDates, TravelGroupWithPopulatedTravellersAndContactInfo, User, UserWithContactInfo } from '../interfaces'
 import { addTravelGroupNotificationQuery } from './travelGroupNotifications'
@@ -279,6 +280,90 @@ export async function getFriendsTravelGroupsBareInfo(userId:string) {
                     ),
                 )
             )
+        )
+    )
+}
+
+// const MAX_NUM_FINDS = 2
+
+function travelGroupPassesSearch(travelGroup:Expr, search:string) {
+
+    if (!search) return true
+
+    return q.Or(
+        q.ContainsStr(q.LowerCase(q.Select(['data', 'name'], travelGroup)), search),
+        q.ContainsStr(q.LowerCase(q.Select(['data', 'destination', 'combo'], travelGroup)), search)
+    )
+}
+
+function travelGroupPassesFilters(travelGroup:Expr, filters:Filters) {
+
+    return q.And(
+        travelGroupPassesSearch(travelGroup, filters.search)
+    )
+}
+
+function constainsSearchQuery(userId:string, filters:Filters, travelGroupIds:string[], maxFinds:number) {
+
+    return q.Reduce(q.Lambda(['total', 'id'],
+        q.If(
+            q.And(
+                q.LT(q.Select('count', q.Var('total')), maxFinds),
+                q.Exists(q.Ref(q.Collection('travelGroups'), q.Var('id'))),
+            ),
+            q.Let(
+                {
+                    total: q.Var('total'),
+                    travelGroup: q.Get(q.Ref(q.Collection('travelGroups'), q.Var('id')))
+                },
+                q.If(
+                    q.And(
+                        q.Not(q.ContainsValue(userId, q.Select(['data', 'members'], q.Var('travelGroup')))),
+                        travelGroupPassesFilters(q.Var('travelGroup'), filters),
+                    ),
+                    {
+                        count: q.Add(q.Select('count', q.Var('total')), 1),
+                        items: appendMatchingTravelGroupToTotal(q.Var('travelGroup'), q.Var('total'))
+                    },
+                    {
+                        count: q.Select('count', q.Var('total')),
+                        items: appendNotMatchingTravelGroupToTotal(q.Var('travelGroup'), q.Var('total'))
+                    }
+                )
+            ),
+            q.Var('total')
+        )
+    ),
+    {
+        items: [],
+        count: 0
+    },
+    travelGroupIds
+    )
+}
+
+function appendMatchingTravelGroupToTotal(travelGroup:Expr, total:Expr) {
+    return q.Append({
+        match: true,
+        travelGroup
+    }, q.Select('items', total))
+}
+
+function appendNotMatchingTravelGroupToTotal(travelGroup:Expr, total:Expr) {
+    return q.Append({
+        match: false,
+        travelGroup
+    }, q.Select('items', total))
+}
+
+export async function searchForTravelGroup(userId:string, filters:Filters, travelGroupIds:string[],
+    maxFinds:number) {
+
+    return await client.query(
+        q.If(
+            Boolean(filters.search),
+            constainsSearchQuery(userId, filters, travelGroupIds, maxFinds),
+            null
         )
     )
 }
