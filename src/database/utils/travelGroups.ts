@@ -264,17 +264,20 @@ export async function getFriendsTravelGroupsBareInfo(userId:string) {
             q.Filter(q.Union(
                 q.Map(q.Var('friends'), q.Lambda('friend',
                     q.Select('data', q.Paginate(
-                        q.Match(q.Index('travelGroups_by_members_w_startDate_and_unknown_and_id'), q.Var('friend'))),
+                        q.Match(q.Index('travelGroups_by_members_w_privacy_and_startDate_and_unknown_and_id'), q.Var('friend'))),
                         {size: 20}
                     )
                 ))
             ), q.Lambda('info', 
-                q.Or(
-                    q.Select(1, q.Var('info')),
-                    q.GT(
-                        q.TimeDiff(q.Date(dayjs().format('YYYY-MM-DD')), q.Select(0, q.Var('info')) , 'day'),
-                    0))
-                ),
+                q.And(
+                    q.Equals('public', q.Select(0, q.Var('info'))),
+                    q.Or(
+                        q.Select(2, q.Var('info')),
+                        q.GT(
+                            q.TimeDiff(q.Date(dayjs().format('YYYY-MM-DD')), q.Select(1, q.Var('info')) , 'day'),
+                        0))
+                    ),
+                )
             )
         )
     )

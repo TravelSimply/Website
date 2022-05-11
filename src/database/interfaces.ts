@@ -312,8 +312,8 @@ export interface ClientTravelGroupWithPopulatedTravellersAndContactInfo extends 
 }
 
 
-export type BareTravelGroupInfo = [Expr, boolean, string]
-export type ClientBareTravelGroupInfo = [{'@date': string}, boolean, string]
+export type BareTravelGroupInfo = [string, Expr, boolean, string]
+export type ClientBareTravelGroupInfo = [string, {'@date': string}, boolean, string]
 
 export interface TravelGroupInvitation {
     ref: Ref;
