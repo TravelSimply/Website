@@ -3,8 +3,10 @@ import dayjs, { Dayjs } from "dayjs";
 import { ClientTravelGroup, ClientUser } from "../../../database/interfaces";
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import GroupIcon from '@mui/icons-material/Group';
 import Link from 'next/link'
 import { enlargeOnHover } from "../../misc/animations";
+import { useMemo } from "react";
 
 interface Props {
     travelGroup: ClientTravelGroup;
@@ -30,10 +32,12 @@ export default function TravelGroupCard({user, travelGroup}:Props) {
         return day.format('MMMM D')
     }
 
+    const isTraveller = useMemo(() => travelGroup.data.members.includes(user.ref['@ref'].id), [travelGroup])
 
     return (
         <Box py={3}>
-            <Link href="/travel-groups/[id]" as={`/travel-groups/${travelGroup.ref['@ref'].id}`}>
+            <Link href={`/travel-groups/[id]${isTraveller ? '' : '/preview'}`}
+            as={`/travel-groups/${travelGroup.ref['@ref'].id}${isTraveller ? '' : '/preview'}`}>
                 <a>
                     <Paper sx={{...enlargeOnHover}}>
                         <Box>
@@ -58,7 +62,8 @@ export default function TravelGroupCard({user, travelGroup}:Props) {
                                                 </Grid>
                                                 <Grid item>
                                                     <Typography variant="body1" color="primary.dark">
-                                                        {travelGroup.data.owner === user.ref['@ref'].id ? 'owner' : 'traveler'}
+                                                        {travelGroup.data.owner === user.ref['@ref'].id ? 'owner' : 
+                                                        isTraveller ? 'traveler' : ''}
                                                     </Typography>
                                                 </Grid>
                                             </Grid>
@@ -82,7 +87,7 @@ export default function TravelGroupCard({user, travelGroup}:Props) {
                                                 </Grid>
                                             </Grid>
                                         </Box>
-                                        <Box ml={2}>
+                                        <Box ml={2} mb={2}>
                                             <Grid container wrap="nowrap" alignItems="center">
                                                 <Grid item>
                                                     <LocationOnIcon sx={{mt: 0.5, color: 'secondary.main'}} />
@@ -91,6 +96,20 @@ export default function TravelGroupCard({user, travelGroup}:Props) {
                                                     <Box ml={1}>
                                                         <Typography variant="h6">
                                                             {getDestination(travelGroup.data.destination)}
+                                                        </Typography>
+                                                    </Box>
+                                                </Grid>
+                                            </Grid>
+                                        </Box>
+                                        <Box ml={2}>
+                                            <Grid container wrap="nowrap" alignItems="center">
+                                                <Grid item>
+                                                    <GroupIcon sx={{mt: 0.5, color: 'secondary.main'}} />
+                                                </Grid>
+                                                <Grid item>
+                                                    <Box ml={1}>
+                                                        <Typography variant="h6">
+                                                            {travelGroup.data.members.length} travelers
                                                         </Typography>
                                                     </Box>
                                                 </Grid>
