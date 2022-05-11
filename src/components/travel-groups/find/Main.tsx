@@ -1,6 +1,8 @@
 import { Box, Container } from "@mui/material";
 import useSWR from "swr";
-import { ClientUser } from "../../../database/interfaces";
+import { ClientBareTravelGroupInfo, ClientUser } from "../../../database/interfaces";
+import {useRouter} from 'next/router'
+import { useSearchedTravelGroups } from "../../hooks/travelGroups";
 
 interface Props {
     user: ClientUser;
@@ -8,12 +10,12 @@ interface Props {
 
 export default function Main({user}:Props) {
 
-    const {data:bareGroupInfo} = useSWR(
+    const {data:bareGroupInfo} = useSWR<ClientBareTravelGroupInfo[]>(
         `/api/users/${user.ref['@ref'].id}/friends/travel-groups/bare-info`,
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
     )
 
-    console.log('bareGroupInfo', bareGroupInfo)
+    const filteredGroups = useSearchedTravelGroups(bareGroupInfo)
 
     return (
         <Box mt={3}>
