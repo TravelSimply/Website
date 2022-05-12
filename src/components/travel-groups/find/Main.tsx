@@ -25,9 +25,7 @@ export default function Main({user}:Props) {
         <Box mt={3}>
             <Container maxWidth="md">
                 <Box mb={3}>
-                    <Container maxWidth="sm">
-                        <Search />
-                    </Container>
+                    <Search />
                 </Box>
                 {typeof filteredGroups === 'undefined' ? <Box>
                     <Box textAlign="center">
