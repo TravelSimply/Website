@@ -12,12 +12,13 @@ import axios from 'axios';
 import dayjs, { Dayjs } from 'dayjs';
 import { findSentDiff } from '../../utils/dates';
 import { mutate } from 'swr';
+import { getNotificationContents } from '../../utils/userNotifications';
 
 interface Props {
     notifications: UserNotifications;
 }
 
-interface INotContent {
+export interface INotContent {
     href: string;
     as?: string;
     icon: React.ReactChild;
@@ -36,36 +37,7 @@ export default function Notifications({notifications}:Props) {
         if (!notifications?.filtered) return
 
         setNewNotifications(Boolean(notifications.filtered.find(n => n.new)))
-        setNotContent(notifications.filtered.map(not => {
-            if (!not.time) {
-                return null
-            }
-            if (not.type === 'travelGroup') {
-                return {
-                    href: '/travel-groups/[id]/activity',
-                    as: `/travel-groups/${not.data[0]}/activity`,
-                    icon: <BackpackIcon color="primary" fontSize="large" />,
-                    msg: `New Activity in ${not.data[2]}`,
-                    time: findSentDiff(not.time) + ' ago'
-                }
-            } else if (not.data.collection === 'travelGroupInvitations' && not.data.content?.travelGroupName.length > 0) {
-                return {
-                    href: '/travel-groups/invitations',
-                    icon: <GroupAddIcon color="primary" fontSize="large" />,
-                    msg: `You\'ve been invited to join ${not.data.content.travelGroupName[0]}`,
-                    time: findSentDiff(not.time) + ' ago'
-                }
-            } else if (not.data.collection === 'friendRequests' && not.data.content?.username.length > 0) {
-                return {
-                    href: '/profile/friends/invites-received',
-                    icon: <PersonAddIcon color="primary" fontSize="large" />,
-                    msg: `${not.data.content.username[0]} sent you a Friend Invite`,
-                    time: findSentDiff(not.time) + ' ago'
-                }
-            } else {
-                return null
-            }
-        }).filter(a => a))
+        setNotContent(getNotificationContents(notifications))
     }, [notifications])
 
     const markNewNotificationsAsSeen = async () => {

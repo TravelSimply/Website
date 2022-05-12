@@ -1,16 +1,22 @@
 import { GetServerSideProps, GetServerSidePropsContext } from 'next';
 import React from 'react'
-import { ClientUser, User } from '../database/interfaces'
+import { ClientTravelGroup, ClientUser, User } from '../database/interfaces'
 import { getAuthUser } from '../utils/auth';
 import styles from '../styles/pages/HeaderFooter.module.css'
 import Head from 'next/head'
 import MainHeader from '../components/nav/MainHeader'
+import Main from '../components/dashboard/Main'
+import { getUserTravelGroups } from '../database/utils/travelGroups';
+import { useUserNotifications } from '../components/hooks/userNotifications';
 
 interface Props {
     user: ClientUser;
+    travelGroups: ClientTravelGroup[];
 }
 
-export default function Dashboard({user}:Props) {
+export default function Dashboard({user, travelGroups}:Props) {
+
+    const notifications = useUserNotifications(user.ref['@ref'].id, travelGroups.map(g => g.ref['@ref'].id))
 
     return (
         <>
@@ -18,9 +24,9 @@ export default function Dashboard({user}:Props) {
                 <title>Dashboard | Spanish Bites</title>     
             </Head> 
             <div className={styles.root}>
-                <MainHeader user={user} />
+                <MainHeader user={user} notifications={notifications} />
                 <div>
-                    main section
+                    <Main user={user} travelGroups={travelGroups} notifications={notifications} />
                 </div>
                 <div>
                     Footer
@@ -38,5 +44,16 @@ export const getServerSideProps:GetServerSideProps = async (ctx:GetServerSidePro
         return redirect
     }
 
-    return {props: {user: JSON.parse(JSON.stringify(user))}}
+    try {
+
+        const travelGroups = await getUserTravelGroups(user.ref.id)
+
+        return {props: {
+            user: JSON.parse(JSON.stringify(user)),
+            travelGroups: JSON.parse(JSON.stringify(travelGroups.data))
+        }}
+
+    } catch (e) {
+        return {props: {}, redirect: {destination: '/'}}
+    }
 }
