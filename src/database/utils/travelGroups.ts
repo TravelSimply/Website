@@ -284,8 +284,6 @@ export async function getFriendsTravelGroupsBareInfo(userId:string) {
     )
 }
 
-// const MAX_NUM_FINDS = 2
-
 function travelGroupPassesSearch(travelGroup:Expr, search:string) {
 
     if (!search) return true
@@ -348,6 +346,75 @@ function constainsSearchQuery(userId:string, filters:Filters, travelGroupIds:str
     )
 }
 
+function comboMatches(combo:Expr, filters:Filters) {
+    if (filters.destinationCity) {
+        return q.ContainsStr(combo, filters.destinationCity)
+    }
+    if (filters.destinationState) {
+        return q.ContainsStr(combo, filters.destinationState)
+    }
+    if (filters.destinationCountry) {
+        return q.ContainsStr(combo, filters.destinationCountry)
+    }
+    return q.ContainsStr(combo, filters.destinationRegion || '')
+}
+
+function containsDestinationQuery(userId:string, filters:Filters, travelGroupIds:string[], maxFinds:number) {
+
+    return q.Reduce(q.Lambda(['total', 'id'], 
+        q.If(
+            q.And(
+                q.LT(q.Select('count', q.Var('total')), maxFinds),
+                q.Exists(q.Ref(q.Collection('travelGroups'), q.Var('id'))),
+            ),
+            q.Let(
+                {
+                    id: q.Var('id'),
+                    total: q.Var('total'),
+                    combo: q.LowerCase(q.Select(['data', 0], q.Paginate(q.Match(q.Index('travelGroups_by_id_w_destinationCombo'), q.Var('id')))))
+                },
+                q.If(
+                    comboMatches(q.Var('combo'), filters),
+                    q.Let(
+                        {
+                            total: q.Var('total'),
+                            travelGroup: q.Get(q.Ref(q.Collection('travelGroups'), q.Var('id')))
+                        },
+                        q.If(
+                            q.And(
+                                q.Not(q.ContainsValue(userId, q.Select(['data', 'members'], q.Var('travelGroup')))),
+                                travelGroupPassesFilters(q.Var('travelGroup'), filters),
+                            ),
+                            {
+                                count: q.Add(q.Select('count', q.Var('total')), 1),
+                                items: appendMatchingTravelGroupToTotal({
+                                    ref: q.Select('ref', q.Var('travelGroup')),
+                                    data: dataWithStringDates()
+                                } as any, q.Var('total'))
+                            },
+                            {
+                                count: q.Select('count', q.Var('total')),
+                                items: appendNotMatchingTravelGroupToTotal({
+                                    ref: q.Select('ref', q.Var('travelGroup')),
+                                    data: dataWithStringDates()
+                                } as any, q.Var('total'))
+                            }
+                        )
+                    ),
+                    q.Var('total')
+                )
+            ),
+            q.Var('total')
+        )
+    ),
+    {
+        items: [],
+        count: 0
+    },
+    travelGroupIds
+    )
+}
+
 function appendMatchingTravelGroupToTotal(travelGroup:Expr, total:Expr) {
     return q.Append({
         match: true,
@@ -367,9 +434,10 @@ export async function searchForTravelGroup(userId:string, filters:Filters, trave
 
     return await client.query(
         q.If(
-            Boolean(filters.search),
+            Boolean(filters.destinationCity) || Boolean(filters.destinationCountry) ||
+            Boolean(filters.destinationRegion) || Boolean(filters.destinationState),
+            containsDestinationQuery(userId, filters, travelGroupIds, maxFinds),
             constainsSearchQuery(userId, filters, travelGroupIds, maxFinds),
-            null
         )
     )
 }
