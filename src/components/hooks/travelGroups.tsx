@@ -107,9 +107,16 @@ function passesFilters(travelGroup:ClientTravelGroup, filters:Filters) {
 export function useSearchedTravelGroups(bareInfo:ClientBareTravelGroupInfo[]) {
 
     const [loading, setLoading] = useState(false)
+    const [loadingMore, setLoadingMore] = useState(false)
+    const [moreToLoad, setMoreToLoad] = useState(false)
     const [skipList, setSkipList] = useState<string[]>([])
     const [travelGroupBank, setTravelGroupBank] = useState<ClientTravelGroup[]>([])
     const [filteredTravelGroups, setFilteredTravelGroups] = useState<0 | ClientTravelGroup[]>([])
+
+    const loadMore = () => {
+        setLoadingMore(true)
+        findMoreGroups(filteredTravelGroups || [], MAX_FIND)
+    }
 
     const {query} = useRouter()
 
@@ -142,15 +149,22 @@ export function useSearchedTravelGroups(bareInfo:ClientBareTravelGroupInfo[]) {
                 const i = copy.indexOf(group.travelGroup.ref['@ref'].id)
                 copy.splice(i, 1)
             }
+            const foundGroups = data.items.filter(item => item.match).map(item => item.travelGroup)
             setSkipList(copy)
             setTravelGroupBank([...travelGroupBank, ...data.items.map(item => item.travelGroup)])
-            setFilteredTravelGroups([...matches, ...data.items.filter(item => item.match).map(item => item.travelGroup)])
+            setFilteredTravelGroups([...matches, ...foundGroups])
+            if (foundGroups.length === MAX_FIND) {
+                setMoreToLoad(true)
+            } else {
+                setMoreToLoad(false)
+            }
 
         } catch (e) {
             setFilteredTravelGroups(0)
         }
 
         setLoading(false)
+        setLoadingMore(false)
     }
 
     useEffect(() => {
@@ -166,6 +180,7 @@ export function useSearchedTravelGroups(bareInfo:ClientBareTravelGroupInfo[]) {
         if (numToFind <= 0) {
             setFilteredTravelGroups(matchingTravelGroups)
             setLoading(false)
+            setMoreToLoad(true)
             return
         }
 
@@ -173,5 +188,12 @@ export function useSearchedTravelGroups(bareInfo:ClientBareTravelGroupInfo[]) {
 
     }, [query, bareInfo])
 
-    return loading ? undefined : filteredTravelGroups 
+    return {
+        filteredTravelGroups,
+        loadingNewSearch: loading,
+        loadingMore,
+        moreToLoad,
+        loadMore
+    }
+    // return returnState
 }
