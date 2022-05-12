@@ -294,10 +294,114 @@ function travelGroupPassesSearch(travelGroup:Expr, search:string) {
     )
 }
 
+function travelGroupPassesDateFlexibility(travelGroup:Expr, unknown:string='', roughly:string='true', known:string='true') {
+    return q.If(
+        q.And(
+            Boolean(unknown),
+            q.Select(['data', 'date', 'unknown'], travelGroup)
+        ),
+        true,
+        q.If(
+            q.And(
+                Boolean(roughly),
+                q.Select(['data', 'date', 'roughly'], travelGroup)
+            ),
+            true,
+            q.And(
+                Boolean(known),
+                q.And(
+                    q.Not(q.Select(['data', 'date', 'roughly'], travelGroup)),
+                    q.Not(q.Select(['data', 'date', 'unknown'], travelGroup))
+                )
+            )
+        )
+    )
+}
+
+function travelGroupPassesTripLength(travelGroup:Expr, queryDays:string, queryType:string) {
+    const type = queryType ? queryType : 'days'
+
+    return q.Let(
+        {
+            groupDays: q.If(
+                q.Or(
+                    q.Select(['data', 'date', 'unknown'], travelGroup),
+                    q.Select(['data', 'date', 'roughly'], travelGroup)
+                ),
+                q.Multiply(
+                    q.Select(['data', 'date', 'estLength', 0], travelGroup),
+                    q.If(
+                        q.Equals('days', q.Select(['data', 'date', 'estLength', 1], travelGroup)),
+                        1,
+                        q.If(
+                            q.Equals('weeks', q.Select(['data', 'date', 'estLength', 1], travelGroup)),
+                            7,
+                            30
+                        )
+                    )
+                ),
+                q.Add(
+                    q.TimeDiff(q.Select(['data', 'date', 'end'], travelGroup), q.Select(['data', 'date', 'start'], travelGroup), 'days'),
+                    1
+                )
+            )
+        },
+        q.If(
+            type === 'exactly',
+            q.Equals(q.Var('groupDays'), parseInt(queryDays)),
+            q.If(
+                type === 'at-least',
+                q.GTE(q.Var('groupDays'), parseInt(queryDays)),
+                q.LTE(q.Var('groupDays'), parseInt(queryDays))
+            )
+        )
+    )
+}
+
+function travelGroupPassesDateRange(travelGroup:Expr, start:string, end:string, queryType:string) {
+    const type = queryType ? queryType : 'between'
+    if (!start || !end) return true
+    if (!dayjs(start).isValid() || !dayjs(end).isValid()) return true
+    return q.Let(
+        {
+            groupStart: q.Select(['data', 'date', 'start'], travelGroup),
+            groupEnd: q.Select(['data', 'date', 'end'], travelGroup)
+        },
+        q.If(
+            type === 'between',
+            q.And(
+                q.GTE(q.Date(start), q.Var('groupStart')),
+                q.LTE(q.Date(end), q.Var('groupEnd'))
+            ),
+            q.And(
+                q.Equals(q.Date(start), q.Var('groupStart')),
+                q.Equals(q.Date(end), q.Var('groupEnd'))
+            )
+        )
+    )
+}
+
+function travelGroupPassesDate(travelGroup:Expr, filters:Filters) {
+    return q.And(
+        travelGroupPassesDateFlexibility(travelGroup, filters.dateUnknown, filters.dateRougly, filters.dateKnown),
+        q.Or(
+            !Boolean(filters.lengthDays),
+            Boolean(filters.dateUnknown),
+            travelGroupPassesTripLength(travelGroup, filters.lengthDays, filters.lengthType)
+        ),
+        q.Or(
+            !Boolean(filters.startDate),
+            !Boolean(filters.endDate),
+            travelGroupPassesDateRange(travelGroup, filters.startDate, filters.endDate, filters.dateSearchType)
+        )
+    )
+}
+
 function travelGroupPassesFilters(travelGroup:Expr, filters:Filters) {
 
     return q.And(
         travelGroupPassesSearch(travelGroup, filters.search),
+        travelGroupPassesDate(travelGroup, filters)
     )
 }
 

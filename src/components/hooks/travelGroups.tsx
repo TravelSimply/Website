@@ -36,7 +36,9 @@ function passesDateRange(travelGroup:ClientTravelGroup, queryStart:string, query
 function passesTripLength(travelGroup:ClientTravelGroup, queryDays:string, queryType:string) {
 
     const mag = travelGroup.data.date.estLength[1]
-    const groupDays = travelGroup.data.date.estLength[0] * (mag === 'days' ? 1 : mag === 'weeks' ? 7 : 30)
+    const groupDays = (travelGroup.data.date.roughly || travelGroup.data.date.unknown) ?
+     travelGroup.data.date.estLength[0] * (mag === 'days' ? 1 : mag === 'weeks' ? 7 : 30) :
+     dayjs(travelGroup.data.date.end).diff(dayjs(travelGroup.data.date.start), 'days') + 1
 
     const type = queryType ? queryType : 'exactly'
 
@@ -63,7 +65,7 @@ function passesDate(travelGroup:ClientTravelGroup, filters:Filters) {
     if (!passesDateFlexibility(travelGroup, filters.dateUnknown, filters.dateRougly, filters.dateKnown)) {
         return false
     }
-    if (filters.lengthDays && !passesTripLength(travelGroup, filters.lengthDays, filters.lengthType)) {
+    if (filters.lengthDays && !filters.dateUnknown && !passesTripLength(travelGroup, filters.lengthDays, filters.lengthType)) {
         return false
     }
     if (filters.startDate && filters.endDate && 

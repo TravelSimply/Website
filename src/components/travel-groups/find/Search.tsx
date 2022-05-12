@@ -184,7 +184,7 @@ function DropDown({cancel, updateFilters, initialFilters}:DropDownProps) {
                             <Grid container spacing={3} alignItems="center" wrap="nowrap">
                                 <Grid item>
                                     <Typography variant="body1" color="text.secondary">
-                                        Flexibility
+                                        Date Flexibility
                                     </Typography>
                                 </Grid>
                                 <Grid item>
