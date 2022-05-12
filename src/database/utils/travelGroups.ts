@@ -297,7 +297,7 @@ function travelGroupPassesSearch(travelGroup:Expr, search:string) {
 function travelGroupPassesFilters(travelGroup:Expr, filters:Filters) {
 
     return q.And(
-        travelGroupPassesSearch(travelGroup, filters.search)
+        travelGroupPassesSearch(travelGroup, filters.search),
     )
 }
 
@@ -347,14 +347,22 @@ function constainsSearchQuery(userId:string, filters:Filters, travelGroupIds:str
 }
 
 function comboMatches(combo:Expr, filters:Filters) {
-    if (filters.destinationCity) {
-        return q.ContainsStr(combo, filters.destinationCity)
+    if (filters.destinationCity && filters.destinationCountry) {
+        return q.And(
+            q.ContainsStr(combo, filters.destinationCity.toLowerCase()),
+            q.ContainsStr(combo, filters.destinationCountry.toLowerCase())
+        )
     }
-    if (filters.destinationState) {
-        return q.ContainsStr(combo, filters.destinationState)
+    if (filters.destinationState && filters.destinationCountry) {
+        return q.And(
+            q.ContainsStr(combo, filters.destinationState.toLowerCase()),
+            q.ContainsStr(combo, filters.destinationCountry.toLowerCase())
+        )
     }
     if (filters.destinationCountry) {
-        return q.ContainsStr(combo, filters.destinationCountry)
+        return (
+            q.ContainsStr(combo, filters.destinationCountry.toLowerCase())
+        )
     }
     return q.ContainsStr(combo, filters.destinationRegion || '')
 }

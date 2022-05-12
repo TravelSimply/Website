@@ -5,6 +5,7 @@ import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 import { OrangeDensePrimaryButton, OrangeDenseSecondaryButton, OrangePrimaryIconButton } from "../../mui-customizations/buttons";
 import { useMemo, useState } from "react";
 import { getCountries, getCountry, getStates } from "country-state-picker";
+import dayjs from 'dayjs'
 
 export interface Filters {
     search?: string;
@@ -49,6 +50,7 @@ export default function Search() {
             pathname: '/travel-groups/find',
             query: {...router.query, ...update}
         }, undefined, {shallow: true})
+        setViewFilters(false)
     }
 
     return (
@@ -85,8 +87,8 @@ function DropDown({cancel, updateFilters, initialFilters}:DropDownProps) {
     const states = useMemo(() => getStates(countryCode) || getStates(getCountry(filters.destinationCountry || '')?.code) || [], [countryCode])
 
     const changeDateDays = (num:number, mag:string) => {
-        if (!num && num !== 0) return
-        if (num < 0) return
+        if (!num) return
+        if (num < 1) return
         let totalDays = 0
         if (!mag || mag === 'days') {
             totalDays = num
@@ -249,7 +251,7 @@ function DropDown({cancel, updateFilters, initialFilters}:DropDownProps) {
                                 <Select label="Region" value={filters.destinationRegion || 'interregional'}
                                 onChange={(e) => setFilters({...filters, destinationRegion: e.target.value})}>
                                     {possibleRegions.map(region => (
-                                        <MenuItem value={region.toLowerCase()}>{region}</MenuItem>
+                                        <MenuItem key={region} value={region.toLowerCase()}>{region}</MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
@@ -278,12 +280,14 @@ function DropDown({cancel, updateFilters, initialFilters}:DropDownProps) {
                     <Box>
                         <Grid container spacing={3}>
                             <Grid item>
-                                <OrangeDensePrimaryButton sx={{minWidth: 100}}>
+                                <OrangeDensePrimaryButton sx={{minWidth: 100}}
+                                onClick={() => updateFilters(filters)}>
                                     Save
                                 </OrangeDensePrimaryButton>
                             </Grid>
                             <Grid item>
-                                <OrangeDenseSecondaryButton sx={{minWidth: 100}}>
+                                <OrangeDenseSecondaryButton sx={{minWidth: 100}} 
+                                onClick={() => cancel()}>
                                     Cancel
                                 </OrangeDenseSecondaryButton>
                             </Grid>

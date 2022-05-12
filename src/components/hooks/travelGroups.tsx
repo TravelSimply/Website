@@ -1,4 +1,5 @@
 import axios from "axios";
+import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import { ClientBareTravelGroupInfo, ClientTravelGroup } from "../../database/interfaces";
@@ -14,6 +15,79 @@ interface SearchGroupData {
     count: number;
 }
 
+function passesDateRange(travelGroup:ClientTravelGroup, queryStart:string, queryEnd:string, queryType:string) {
+    const type = queryType ? queryType : 'between'
+    const start = dayjs(queryStart)
+    const end = dayjs(queryEnd)
+    if (!start.isValid() || !end.isValid()) {
+        return true
+    }
+    const groupStart = dayjs(travelGroup.data.date.start)
+    const groupEnd = dayjs(travelGroup.data.date.end)
+    if (type === 'between') {
+        return (
+            (groupStart.isAfter(start) || groupStart.isSame(start, 'day')) &&
+            (groupEnd.isBefore(end) || groupEnd.isSame(end, 'day'))
+        )
+    }
+    return groupStart.isSame(start, 'day') && groupEnd.isSame(end, 'day')
+}
+
+function passesTripLength(travelGroup:ClientTravelGroup, queryDays:string, queryType:string) {
+
+    const mag = travelGroup.data.date.estLength[1]
+    const groupDays = travelGroup.data.date.estLength[0] * (mag === 'days' ? 1 : mag === 'weeks' ? 7 : 30)
+
+    const type = queryType ? queryType : 'exactly'
+
+    if (type === 'exactly') {
+        return groupDays === parseInt(queryDays)
+    }
+    if (type === 'at-least') {
+        return groupDays >= parseInt(queryDays)
+    }
+    return groupDays <= parseInt(queryDays)
+}
+
+function passesDateFlexibility(travelGroup:ClientTravelGroup, unknown:string='', roughly:string='true', known:string='true') {
+    if (unknown && travelGroup.data.date.unknown) {
+        return true
+    }
+    if (roughly && travelGroup.data.date.roughly) {
+        return true
+    }
+    return known && !travelGroup.data.date.unknown && !travelGroup.data.date.roughly
+}
+
+function passesDate(travelGroup:ClientTravelGroup, filters:Filters) {
+    if (!passesDateFlexibility(travelGroup, filters.dateUnknown, filters.dateRougly, filters.dateKnown)) {
+        return false
+    }
+    if (filters.lengthDays && !passesTripLength(travelGroup, filters.lengthDays, filters.lengthType)) {
+        return false
+    }
+    if (filters.startDate && filters.endDate && 
+        !passesDateRange(travelGroup, filters.startDate, filters.endDate, filters.dateSearchType)) {
+        return false
+    }
+    return true
+}
+
+function passesDestination(travelGroup:ClientTravelGroup, city:string='', state:string='', country:string='', region:string='') {
+    if (city && country) {
+        return travelGroup.data.destination.combo.toLowerCase().includes(city.toLowerCase()) && 
+        travelGroup.data.destination.combo.includes(country)
+    }
+    if (state && country) {
+        return travelGroup.data.destination.combo.includes(state) && 
+        travelGroup.data.destination.combo.includes(country)
+    }
+    if (country) {
+        return travelGroup.data.destination.combo.includes(country)
+    }
+    return travelGroup.data.destination.combo.toLowerCase().includes(region)
+}
+
 function passesSearch(travelGroup:ClientTravelGroup, search:string) {
     if (!search) return true
 
@@ -22,7 +96,10 @@ function passesSearch(travelGroup:ClientTravelGroup, search:string) {
 
 function passesFilters(travelGroup:ClientTravelGroup, filters:Filters) {
 
-    return passesSearch(travelGroup, filters.search)
+    return passesSearch(travelGroup, filters.search) && 
+    passesDestination(travelGroup, filters.destinationCity, filters.destinationState, filters.destinationCountry, 
+        filters.destinationRegion) &&
+     passesDate(travelGroup, filters)
 }
 
 export function useSearchedTravelGroups(bareInfo:ClientBareTravelGroupInfo[]) {
