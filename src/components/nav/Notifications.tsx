@@ -7,6 +7,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications'
 import Link from 'next/link'
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import BackpackIcon from '@mui/icons-material/Backpack';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import axios from 'axios';
 import dayjs, { Dayjs } from 'dayjs';
 import { findSentDiff } from '../../utils/dates';
@@ -52,6 +53,13 @@ export default function Notifications({notifications}:Props) {
                     href: '/travel-groups/invitations',
                     icon: <GroupAddIcon color="primary" fontSize="large" />,
                     msg: `You\'ve been invited to join ${not.data.content.travelGroupName[0]}`,
+                    time: findSentDiff(not.time) + ' ago'
+                }
+            } else if (not.data.collection === 'friendRequests' && not.data.content?.username.length > 0) {
+                return {
+                    href: '/profile/friends/invites-received',
+                    icon: <PersonAddIcon color="primary" fontSize="large" />,
+                    msg: `${not.data.content.username[0]} sent you a Friend Invite`,
                     time: findSentDiff(not.time) + ' ago'
                 }
             } else {

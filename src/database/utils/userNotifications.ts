@@ -2,7 +2,7 @@ import {query as q, Expr} from 'faunadb'
 import client from '../fauna'
 import { ClientUserNotifications, UserNotifications } from '../interfaces'
 
-export function addBasicNotificationQuery(collection:string, id:Expr, user:Expr) {
+export function addBasicNotificationQuery(collection:string, id:Expr, user:Expr|string) {
 
     return q.If(
         q.Exists(q.Match(q.Index('userNotifications_by_userId'), user)),
@@ -92,7 +92,21 @@ export async function getPopulatedUserNotificationsWithTravelGroupLastUpdated(us
                                                     )))
                                                 }
                                             },
-                                            q.Var('info')
+                                            q.If(
+                                                q.ContainsField('from', q.Select(['content', 'data'], q.Var('info'))),
+                                                {
+                                                    ...insertBasicInfo(q.Var('info')),
+                                                    content: {
+                                                        ref: q.Select(['content', 'ref'], q.Var('info')),
+                                                        data: q.Select(['content', 'data'], q.Var('info')),
+                                                        username: q.Select('data', q.Paginate(
+                                                            q.Match(q.Index('users_by_id_w_username'),
+                                                            q.Select(['content', 'data', 'from'], q.Var('info')))
+                                                        ))
+                                                    },
+                                                },
+                                                q.Var('info')
+                                            )
                                         )
                                     ),
                                     q.Var('item')

@@ -1,11 +1,18 @@
 import {query as q} from 'faunadb'
 import client from '../fauna'
 import { FriendRequest, PopulatedFromFriendRequest, PopulatedToFriendRequest, User } from '../interfaces'
+import {addBasicNotificationQuery} from './userNotifications'
 
 export async function createFriendRequests(to:string[], from:string) {
 
     await client.query(
-        q.Map(to, q.Lambda('id', q.Create(q.Collection('friendRequests'), {data: {from, to: q.Var('id'), timeSent: q.Now()}})))
+        q.Map(to, q.Lambda('id', q.Let(
+            {
+                request: q.Create(q.Collection('friendRequests'), {data: {from, to: q.Var('id'), timeSent: q.Now()}}),
+                id: q.Var('id')
+            },
+            addBasicNotificationQuery('friendRequests', q.Select(['ref', 'id'], q.Var('request')), q.Var('id'))
+        )))
     ) 
 }
 

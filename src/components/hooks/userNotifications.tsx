@@ -71,7 +71,9 @@ export function useUserNotifications(user:string, travelGroups:string[]):UserNot
             time: dayjs(item.time['@ts']),
             type: 'basic',
             data: item,
-            new: !item.seen && item.content?.travelGroupName.length > 0
+            new: !item.seen && 
+                (item.content?.travelGroupName?.length > 0 || 
+                item.content?.username?.length > 0)
         }))
 
         const groups = data.notifications.data.travelGroups.map(group => {

@@ -90,6 +90,7 @@ export interface ClientPopulatedUserNotifications {
                 content?: {
                     ref: {'@ref': Ref};
                     travelGroupName: [string] | [];
+                    username: [string] | [];
                     data: any;
                 };
             }[];
