@@ -28,7 +28,7 @@ export default function TitleBanner() {
                         </Box>
                     </Box>
                 </Grid>
-                <Grid item xs={12} lg={7} xl={6} minWidth={800} height="100%">
+                <Grid item xs={12} lg={7} xl={6} minWidth={{xs: 0, md: 800}} height="100%">
                     <Box height="100%" position="relative" overflow="hidden">
                         <Box zIndex={2} position="absolute" left="80%" top="85%" width="21%" height="16%" sx={{
                             backgroundImage: 'url(/home/beach-transition.svg)',
@@ -55,7 +55,7 @@ export default function TitleBanner() {
                         
                         <Box height="80%" display="grid" justifyContent="center" alignItems="center">
                             <Box>
-                                <Box mb={3}>
+                                <Box mb={3} textAlign="center">
                                     <Typography variant="h1" fontFamily="Lemon"
                                     color="primary">
                                         Travel Simply
