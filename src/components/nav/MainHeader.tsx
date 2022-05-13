@@ -12,6 +12,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import PeopleIcon from '@mui/icons-material/People';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import BackpackIcon from '@mui/icons-material/Backpack';
+import MapIcon from '@mui/icons-material/Map';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import { signOut } from '../../utils/auth';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -147,6 +148,18 @@ export default function MainHeader({user, notifications, drawer}:Props) {
                                     </ListItemIcon>
                                     <ListItemText>
                                         My Travel Groups
+                                    </ListItemText>
+                                </MenuItem>
+                            </a>
+                        </Link>
+                        <Link href="/dashboard">
+                            <a>
+                                <MenuItem sx={{...darkPrimaryOnHover}}>
+                                    <ListItemIcon>
+                                        <MapIcon />
+                                    </ListItemIcon>
+                                    <ListItemText>
+                                        Dashboard
                                     </ListItemText>
                                 </MenuItem>
                             </a>
