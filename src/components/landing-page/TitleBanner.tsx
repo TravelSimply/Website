@@ -10,7 +10,21 @@ export default function TitleBanner() {
             <Grid container height="100%" wrap="nowrap">
                 <Grid item xs={0} xl={3} height="100%">
                     <Box height="100%" overflow="hidden">
+                        <Box height="100%" width="100%" sx={{
+                            backgroundImage: 'url(/home/sidewalk.svg)',
+                            backgroundSize: 'auto 14.4%',
+                            backgroundPosition: '0 100%',
+                            backgroundRepeat: 'repeat-x'
+                        }}>
+                            <Box height="100%" width="100%" sx={{
+                                backgroundImage: 'url(/home/walkers.svg)',
+                                backgroundSize: 'auto 15%',
+                                backgroundPosition: 'calc(100% - 50px) 90%',
+                                backgroundRepeat: 'no-repeat'
+                            }}>
 
+                            </Box>
+                        </Box>
                     </Box>
                 </Grid>
                 <Grid item xs={12} lg={7} xl={6} minWidth={800} height="100%">
@@ -39,7 +53,7 @@ export default function TitleBanner() {
                         }} />
                     </Box>
                 </Grid>
-                <Grid item xs={0} lg={5} height="100%">
+                <Grid item xs={0} lg={5} xl={3} height="100%">
                     <Box height="100%" overflow="hidden">
                         <Box height="100%" width="100%" sx={{
                             backgroundImage: 'url(/home/mountain.svg)',
