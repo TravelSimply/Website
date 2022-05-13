@@ -8,6 +8,7 @@ import { GetServerSideProps, GetServerSidePropsContext } from 'next'
 import { ClientUser } from '../database/interfaces'
 import styles from '../styles/pages/HeaderFooter.module.css'
 import MainHeader from '../components/nav/MainHeader'
+import Main from '../components/landing-page/Main'
 import { useUserNotifications } from '../components/hooks/userNotifications'
 
 interface Props {
@@ -26,7 +27,7 @@ export default function Home({user}:Props) {
             <div className={styles.root}>
                 <MainHeader user={user} notifications={notifications} />
                 <div>
-                    Main section
+                    <Main />
                 </div>
                 <div>
                     Footer
