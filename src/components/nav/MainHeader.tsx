@@ -16,7 +16,7 @@ import MapIcon from '@mui/icons-material/Map';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import { signOut } from '../../utils/auth';
 import MenuIcon from '@mui/icons-material/Menu';
-import { OrangePrimaryIconButton } from '../mui-customizations/buttons';
+import { OrangeDensePrimaryButton, OrangePrimaryIconButton } from '../mui-customizations/buttons';
 import { UserNotifications } from '../hooks/userNotifications';
 import CircleIcon from '@mui/icons-material/Circle';
 import Notifications from './Notifications';
@@ -35,12 +35,6 @@ interface Props {
 }
 
 export default function MainHeader({user, notifications, drawer}:Props) {
-
-    if (!user) {
-        return (
-            <div>app bar for people not signed in</div>
-        )
-    }
 
     const theme = useTheme()
     const smUp = useMediaQuery(theme.breakpoints.up('sm'))
@@ -80,7 +74,7 @@ export default function MainHeader({user, notifications, drawer}:Props) {
                             </Grid>
                         </Grid>
                         <Grid item>
-                            <Grid container spacing={2} alignItems="center" wrap="nowrap">
+                            {user ? <Grid container spacing={2} alignItems="center" wrap="nowrap">
                                 <Grid item>
                                     <Notifications notifications={notifications} />
                                 </Grid>
@@ -101,10 +95,16 @@ export default function MainHeader({user, notifications, drawer}:Props) {
                                         </Grid>
                                     </>}
                                 </Grid>
-                            </Grid>
+                            </Grid> : <Link href="/auth/signin">
+                                <a>
+                                    <OrangeDensePrimaryButton>
+                                        Sign In
+                                    </OrangeDensePrimaryButton>
+                                </a>
+                            </Link>}
                         </Grid>
                     </Grid>
-                    <Menu anchorEl={profileAnchor} anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+                    {user && <Menu anchorEl={profileAnchor} anchorOrigin={{vertical: 'top', horizontal: 'right'}}
                     transformOrigin={{vertical: 'top', horizontal: 'right'}} open={Boolean(profileAnchor)}
                     onClose={() => closeProfileMenu()} sx={{mt: 5.22}} PaperProps={{sx: {backgroundColor: "orangeBg.light"}}}>
                         <Link href="/profile">
@@ -164,7 +164,7 @@ export default function MainHeader({user, notifications, drawer}:Props) {
                                 </MenuItem>
                             </a>
                         </Link>
-                    </Menu>
+                    </Menu>}
                 </Box>
             </Box>
             {drawer && displayDrawer && <Drawer anchor="left" open={openDrawer} onClose={() => setOpenDrawer(false)} >

@@ -1,25 +1,46 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import styles from '../styles/Home.module.css'
 import {signIn} from 'next-auth/react'
 import {Button, Box} from '@mui/material'
-import {signOut} from '../utils/auth'
+import {getAuthUser, signOut} from '../utils/auth'
 import Link from 'next/link'
+import { GetServerSideProps, GetServerSidePropsContext } from 'next'
+import { ClientUser } from '../database/interfaces'
+import styles from '../styles/pages/HeaderFooter.module.css'
+import MainHeader from '../components/nav/MainHeader'
+import { useUserNotifications } from '../components/hooks/userNotifications'
 
-export default function Home() {
-  return (
-    <div>
-      The First Page!
-      <Link href="/auth/signin">
-        <a>
-          <button>
-            sign in
-          </button>
-        </a>
-      </Link>
-      <button onClick={() => signOut()}>
-        sign out
-      </button>
-    </div>
-  )
+interface Props {
+  user: ClientUser;
+}
+
+export default function Home({user}:Props) {
+
+    const notifications = user ? useUserNotifications(user.ref['@ref'].id, []) : {raw: null, filtered: null}
+
+    return (
+        <>
+            <Head>
+                <title>Travel Simply</title>
+            </Head> 
+            <div className={styles.root}>
+                <MainHeader user={user} notifications={notifications} />
+                <div>
+                    Main section
+                </div>
+                <div>
+                    Footer
+                </div>
+            </div>
+        </>
+    )
+}
+
+export const getServerSideProps:GetServerSideProps = async (ctx:GetServerSidePropsContext) => {
+
+    const {user, redirect} = await getAuthUser(ctx)
+
+      return {props: {
+          user: JSON.parse(JSON.stringify(user)),
+      }}
 }
