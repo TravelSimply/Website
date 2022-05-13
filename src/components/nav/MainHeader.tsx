@@ -1,9 +1,9 @@
 import { AppBar, Avatar, Container, Grid, IconButton, Toolbar, Typography, Menu, MenuItem,
-    ListItemText, ListItemIcon, Divider, useTheme, useMediaQuery, Breakpoint, Drawer, List, ListItemButton } from '@mui/material';
+    ListItemText, ListItemIcon, Divider, useTheme, useMediaQuery, Breakpoint, Drawer, List, ListItemButton, ListItem, Badge, CircularProgress } from '@mui/material';
 import { Box } from '@mui/system';
 import Link from 'next/link';
-import React, {useState, MouseEvent} from 'react'
-import { ClientUser } from '../../database/interfaces'
+import React, {useState, MouseEvent, useMemo} from 'react'
+import { ClientPopulatedUserNotifications, ClientUser } from '../../database/interfaces'
 import { PrimaryLink } from '../misc/links';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -12,9 +12,14 @@ import PersonIcon from '@mui/icons-material/Person';
 import PeopleIcon from '@mui/icons-material/People';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import BackpackIcon from '@mui/icons-material/Backpack';
+import MapIcon from '@mui/icons-material/Map';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import { signOut } from '../../utils/auth';
 import MenuIcon from '@mui/icons-material/Menu';
 import { OrangePrimaryIconButton } from '../mui-customizations/buttons';
+import { UserNotifications } from '../hooks/userNotifications';
+import CircleIcon from '@mui/icons-material/Circle';
+import Notifications from './Notifications';
 
 export interface DrawerItem {
     href: string;
@@ -25,10 +30,11 @@ export interface DrawerItem {
 
 interface Props {
     user: ClientUser;
+    notifications: UserNotifications;
     drawer?: {items: DrawerItem[]; breakpoint: Breakpoint;};
 }
 
-export default function MainHeader({user, drawer}:Props) {
+export default function MainHeader({user, notifications, drawer}:Props) {
 
     if (!user) {
         return (
@@ -53,9 +59,10 @@ export default function MainHeader({user, drawer}:Props) {
         setProfileAnchor(null)
     }
 
+
     return (
         <AppBar position="sticky" sx={{backgroundColor: "orangeBg.light"}}>
-            <Box maxWidth="xl" mx={1} >
+            <Box mx={1}>
                 <Box my={1}>
                     <Grid container alignItems="center" justifyContent="space-between">
                         <Grid item>
@@ -75,11 +82,7 @@ export default function MainHeader({user, drawer}:Props) {
                         <Grid item>
                             <Grid container spacing={2} alignItems="center" wrap="nowrap">
                                 <Grid item>
-                                    <Box>
-                                        <IconButton sx={{...darkPrimaryOnHover}}>
-                                            <NotificationsIcon />
-                                        </IconButton>
-                                    </Box>
+                                    <Notifications notifications={notifications} />
                                 </Grid>
                                 <Grid item container alignItems="center" spacing={0} sx={{
                                     ...darkPrimaryOnHover
@@ -149,11 +152,23 @@ export default function MainHeader({user, drawer}:Props) {
                                 </MenuItem>
                             </a>
                         </Link>
+                        <Link href="/dashboard">
+                            <a>
+                                <MenuItem sx={{...darkPrimaryOnHover}}>
+                                    <ListItemIcon>
+                                        <MapIcon />
+                                    </ListItemIcon>
+                                    <ListItemText>
+                                        Dashboard
+                                    </ListItemText>
+                                </MenuItem>
+                            </a>
+                        </Link>
                     </Menu>
                 </Box>
             </Box>
             {drawer && displayDrawer && <Drawer anchor="left" open={openDrawer} onClose={() => setOpenDrawer(false)} >
-                <Box height="100%" bgcolor="orangeBg.light">
+                <Box height="100%" bgcolor="orangeBg.light" minWidth={200}>
                     <List>
                         {drawer.items.map((item, i) => (
                             <Link key={i} href={item.href} as={item.as}>

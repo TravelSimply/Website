@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import {Box, Alert, AlertTitle, Collapse, IconButton} from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close';
 import {OrangeDensePrimaryButton, OrangePrimaryButton, OrangeSecondaryButton} from '../../mui-customizations/buttons'
-import FriendAdder from '../profile/FriendAdder'
+import FriendAdder from '../profile/UserAdder'
 import { ClientUser } from '../../../database/interfaces'
 import axios from 'axios'
 import Router from 'next/router'
@@ -75,7 +75,7 @@ export default function Friends({user}:Props) {
                 </Box>}
                 <Box mb={3}>
                     <Box maxWidth={400} mx="auto">
-                        <FriendAdder startingAddList={startingAddList} setAddedFriends={setFriends} />
+                        <FriendAdder startingAddList={startingAddList} setAddedUsers={setFriends} />
                     </Box>
                 </Box>
             </Box>

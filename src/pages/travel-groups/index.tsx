@@ -8,19 +8,28 @@ import MainSidebar from '../../components/nav/MainSidebar'
 import { Box } from '@mui/material'
 import { getUserTravelGroups } from '../../database/utils/travelGroups'
 import Main from '../../components/travel-groups/index/Main'
+import useSWR from 'swr'
+import { useUserNotifications } from '../../components/hooks/userNotifications'
 
 interface Props {
     user: ClientUser;
     travelGroups: ClientTravelGroup[]
 }
 
+export function getDrawerItems(i:number) {
+    return [
+        {href: '/travel-groups', name: 'My Travel Groups', selected: i === 0},
+        {href: '/travel-groups/create', name: 'Create Travel Group', selected: i === 1},
+        {href: '/travel-groups/find', name: 'Find Travel Groups', selected: i === 2},
+        {href: '/travel-groups/invitations', name: 'Invites', selected: i === 3}
+    ]
+}
+
 export default function TravelGroups({user, travelGroups}:Props) {
 
-    const drawerItems = [
-        {href: '/travel-groups', name: 'My Travel Groups', selected: true},
-        {href: '/travel-groups/create', name: 'Create Travel Group', selected: false},
-        {href: '/travel-groups/find', name: 'Find Travel Groups', selected: false}
-    ]
+    const drawerItems = getDrawerItems(0)
+
+    const notifications = useUserNotifications(user.ref['@ref'].id, travelGroups.map(g => g.ref['@ref'].id))
 
     return (
         <>
@@ -28,7 +37,8 @@ export default function TravelGroups({user, travelGroups}:Props) {
                 <title>My Travel Groups | Travel Simply</title>
             </Head> 
             <div className={styles.root}>
-                <MainHeader user={user} drawer={{breakpoint: 'md', items: drawerItems}} />
+                <MainHeader user={user} drawer={{breakpoint: 'md', items: drawerItems}}
+                notifications={notifications} />
                 <MainSidebar items={drawerItems} breakpoint="md" />
                 <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
                     <Main user={user} travelGroups={travelGroups} />

@@ -1,5 +1,5 @@
 import { Box, Container, Paper, Step, StepLabel, Stepper, useMediaQuery, Grid, Alert, AlertTitle, Collapse, IconButton } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ClientPopulatedAvailability, ClientUser } from "../../../database/interfaces";
 import {FormikContextType, FormikHelpers} from 'formik'
 import { OrangePrimaryButton, OrangeSecondaryButton } from "../../mui-customizations/buttons";
@@ -98,23 +98,33 @@ export default function Main({user, availability}:Props) {
         setTotalInfo({...totalInfo, date})
     }
 
-    const createGroup = async () => {
-        await next()
-        setCreatingGroup(true)
+    useEffect(() => {
 
-        try {
+        if (!creatingGroup) return
 
-            const {data: {id}} = await axios({
-                method: 'POST',
-                url: '/api/travel-groups/create',
-                data: {data: totalInfo}
-            })
+        const submit = async () => {
+            try {
 
-            Router.push({pathname: `/travel-groups/${id}`})
-        } catch (e) {
-            setSnackbarMsg({type: 'error', content: 'Failed to create Travel Group'})
+                const {data: {id}} = await axios({
+                    method: 'POST',
+                    url: '/api/travel-groups/create',
+                    data: {data: totalInfo}
+                })
+
+                Router.push({pathname: `/travel-groups/${id}`})
+            } catch (e) {
+                setSnackbarMsg({type: 'error', content: 'Failed to create Travel Group'})
+            }
             setCreatingGroup(false)
         }
+        submit()
+
+    }, [creatingGroup])
+
+    const createGroup = async () => {
+        await next()
+
+        setCreatingGroup(true)
     }
 
     return (

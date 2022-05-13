@@ -6,6 +6,7 @@ import Head from 'next/head'
 import styles from '../../../styles/pages/HeaderFooter.module.css'
 import MainHeader from "../../../components/nav/MainHeader";
 import Main from '../../../components/account/profile/availability/index/Main'
+import { useUserNotifications } from "../../../components/hooks/userNotifications";
 
 interface Props {
     user: ClientUser;
@@ -14,13 +15,15 @@ interface Props {
 
 export default function Availability({user, availability}:Props) {
 
+    const notifications = useUserNotifications(user.ref['@ref'].id, [])
+
     return (
         <>
             <Head>
                 <title>My Availability | Travel Simply</title>
             </Head>
             <div className={styles.root}>
-                <MainHeader user={user} />
+                <MainHeader user={user} notifications={notifications} />
                 <div>
                     <Main availability={availability} />
                 </div>

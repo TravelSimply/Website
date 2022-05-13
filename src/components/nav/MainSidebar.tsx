@@ -21,7 +21,8 @@ export default function MainSidebar({breakpoint, items}:Props) {
     }
 
     return (
-        <Box height="100%" bgcolor="orangeBg.light" borderRight="1px solid rgba(0,0,0,0.34)">
+        <Box height="100%" bgcolor="orangeBg.light" borderRight="1px solid rgba(0,0,0,0.34)"
+        minWidth={200}>
             <Box mt={1}>
                 <List>
                     {items.map((item, i) => (

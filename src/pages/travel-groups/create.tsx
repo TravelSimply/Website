@@ -9,6 +9,8 @@ import Main from '../../components/travel-groups/create/Main'
 import { getAvailabilityAndTravelGroupsOfUser, populateAvailability } from "../../database/utils/availabilities";
 import MainSidebar from "../../components/nav/MainSidebar";
 import { Box } from "@mui/material";
+import {useUserNotifications} from '../../components/hooks/userNotifications'
+import { getDrawerItems } from ".";
 
 interface Props {
     user: ClientUser;
@@ -17,11 +19,9 @@ interface Props {
 
 export default function CreateTravelGroup({user, availability}:Props) {
 
-    const drawerItems = [
-        {href: '/travel-groups', name: 'My Travel Groups', selected: false},
-        {href: '/travel-groups/create', name: 'Create Travel Group', selected: true},
-        {href: '/travel-groups/find', name: 'Find Travel Groups', selected: false}
-    ]
+    const drawerItems = getDrawerItems(1)
+
+    const notifications = useUserNotifications(user.ref['@ref'].id, [])
 
     return (
         <>
@@ -29,7 +29,8 @@ export default function CreateTravelGroup({user, availability}:Props) {
                 <title>Create Travel Group | Travel Simply</title>     
             </Head> 
             <div className={styles.root}>
-                <MainHeader user={user} drawer={{breakpoint: 'md', items: drawerItems}} />
+                <MainHeader user={user} drawer={{breakpoint: 'md', items: drawerItems}} 
+                notifications={notifications} />
                 <MainSidebar items={drawerItems} breakpoint="md" />
                 <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
                     <Main user={user} availability={availability} />

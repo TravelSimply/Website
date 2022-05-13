@@ -7,6 +7,7 @@ import FriendCard from './FriendCard';
 import { OrangePrimaryButton } from '../../../../mui-customizations/buttons';
 import Link from 'next/link';
 import Snackbar from '../../../../misc/snackbars'
+import { matchesAtLeastOneTerm } from '../../../../../utils/search';
 
 interface Props {
     user: ClientUser;
@@ -33,13 +34,8 @@ export default function Main({user}:Props) {
             return setSearchFriends(friends?.map((_, i) => i) || [])
         }
         setSearchFriends(friends?.map((friend, i) => {
-            if (friend.data.caseInsensitiveUsername?.includes(lcSearch)) {
-                return i 
-            }
-            if (friend.data.firstName?.toLowerCase().includes(lcSearch)) {
-                return i
-            }
-            if (friend.data.lastName?.toLowerCase().includes(lcSearch)) {
+            if (matchesAtLeastOneTerm(lcSearch, [friend.data.caseInsensitiveUsername, 
+            friend.data.firstName, friend.data.lastName])) {
                 return i
             }
             return null

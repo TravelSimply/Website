@@ -7,7 +7,7 @@ import dayjs from 'dayjs'
 
 interface Props {
     children: React.ReactNode;
-    user: ClientUser;
+    user: ClientUser | ClientFilteredUser;
     timeSent: string;
 }
 

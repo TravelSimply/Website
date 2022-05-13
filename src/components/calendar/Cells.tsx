@@ -49,7 +49,6 @@ export default function Cells({currentDate, tempRange, dateRange, onMouseDown, o
         const year = day.format('YYYY')
         const monthDay = day.format('MMDD')
         if (!availability.data.dates[year]) {
-            console.log('no year found')
             return ''
         }
         if (availability.data.dates[year].travelling?.includes(monthDay)) {
@@ -102,7 +101,7 @@ export default function Cells({currentDate, tempRange, dateRange, onMouseDown, o
                             onMouseDown={() => onMouseDown(day.date)} onMouseUp={() => onMouseUp()}
                             onMouseMove={() => onMouseMove(day.date)} 
                             sx={{
-                            '&:hover': {background: (hoverColor || 'hsl(30, 96%, 45%)') + ' !important'},
+                            '&:hover': {background: displayOnly ? 'auto' : (hoverColor || 'hsl(30, 96%, 45%)') + ' !important'},
                             background: inTempRange || inDateRange ? (hoverColor || 'hsl(30, 96%, 45%)') + ' !important' : 'auto'
                             }} >
                                 {day.inMonth && <span className={styles.number}>{day.date.format('D')}</span>}

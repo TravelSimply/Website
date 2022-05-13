@@ -7,6 +7,7 @@ import MainSidebar from '../../../components/nav/MainSidebar'
 import {Box} from '@mui/material'
 import Head from 'next/head'
 import Main from '../../../components/account/profile/friends/invites-sent/Main'
+import { useUserNotifications } from "../../../components/hooks/userNotifications";
 
 interface Props {
     user: ClientUser;
@@ -21,13 +22,16 @@ export default function Friends({user}:Props) {
         {href: '/profile/friends/invites-sent', name: 'Invites Sent', selected: true}
     ]
 
+    const notifications = useUserNotifications(user.ref['@ref'].id, [])
+
     return (
         <>
             <Head>
                 <title>Friends Invites Sent | Travel Simply</title> 
             </Head> 
             <div className={styles.root}>
-                <MainHeader user={user} drawer={{items: drawerItems, breakpoint: 'sm'}} />
+                <MainHeader user={user} drawer={{items: drawerItems, breakpoint: 'sm'}}
+                notifications={notifications} />
                 <MainSidebar breakpoint="sm" items={drawerItems} />
                 <Box sx={{gridColumn: {xs: '1 / -1', sm: 'auto'}}} >
                     <Main user={user} />

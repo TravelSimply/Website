@@ -1,6 +1,6 @@
 import client from '../fauna'
-import {query as q} from 'faunadb'
-import { Ref, User, VerificationToken } from '../interfaces'
+import {Expr, query as q} from 'faunadb'
+import { Ref, User, UserWithContactInfo, VerificationToken } from '../interfaces'
 import {Profile} from 'next-auth'
 
 function filterName(name:string) {
@@ -177,6 +177,16 @@ export async function updateUserImage(id:string, image:{src:string; publicId:str
     )
 }
 
+export async function updateUserJunkImagePublicIds(id:string, publicIds:string[]) {
+
+    await client.query(
+        q.Update(
+            q.Ref(q.Collection('users'), id),
+            {data: {junkImagePublicIds: publicIds}}
+        )
+    )
+}
+
 export async function updateUserFromEmail(email:string, 
     properties:{username?:string;firstName?:string;lastName?:string;caseInsensitiveUsername?:any}) {
 
@@ -228,6 +238,47 @@ export async function getUsernamesAndRefs():Promise<{ref:Ref;username:string}[]>
     )
 }
 
+export async function getTravellersWithContactInfo(travellers:string[]):Promise<UserWithContactInfo[]> {
+
+    return await client.query(
+        q.Map(travellers, q.Lambda(
+            'member',
+            q.If(
+                q.Exists(q.Ref(q.Collection('users'), q.Var('member'))),
+                q.Let(
+                    {
+                        user: q.Get(q.Ref(q.Collection('users'), q.Var('member')))
+                    },
+                    populateUserWithContactInfo()
+                ),
+                null
+            )
+        ))
+    )
+}
+
+export async function getFriendUsernames(id:string) {
+
+    return await client.query(
+        q.Let(
+            {
+                user: q.Get(q.Ref(q.Collection('users'), id))
+            },
+            q.If(
+                q.ContainsField('friends', q.Select('data', q.Var('user'))),
+                q.Map(
+                    q.Select(['data', 'friends'], q.Var('user')),
+                    q.Lambda(
+                        'id',
+                        q.Select(['data', 0], q.Paginate(q.Match(q.Index('users_by_id_w_username'), q.Var('id'))))
+                    )
+                ),
+                []
+            )
+        )
+    )
+}
+
 export function filterUser(user:User) {
 
     return {...user, data: {...user.data, password: null}}
@@ -236,4 +287,42 @@ export function filterUser(user:User) {
 export function filterUsers(users:User[]) {
 
     return users.map(user => filterUser(user))
+}
+
+
+function insertData(d:string) {
+    return q.If(
+        q.ContainsField(d, q.Select('data', q.Var('user'))),
+        q.Select(['data', d], q.Var('user')),
+        null 
+    )
+}
+
+function selectAllUserData() {
+    return {
+        username: insertData('username'),
+        caseInsensitiveUsername: insertData('caseInsensitiveUsername'),
+        password: null,
+        firstName: insertData('firstName'),
+        lastName: insertData('lastName'),
+        email: insertData('email'),
+        image: insertData('image'),
+        friends: insertData('friends'),
+        oAuthIdentifier: insertData('oAuthIdentifier'),
+        notifications: insertData('notifications')
+    } 
+}
+
+export function populateUserWithContactInfo() {
+    return {
+        ref: q.Select('ref', q.Var('user')),
+        data: {
+            ...selectAllUserData(),
+            contactInfo: q.If(
+                q.Exists(q.Match(q.Index('contactInfo_by_userId'), q.Select(['ref', 'id'], q.Var('user')))),
+                q.Get(q.Match(q.Index('contactInfo_by_userId'), q.Select(['ref', 'id'], q.Var('user')))),
+                null
+            )
+        }
+    }
 }

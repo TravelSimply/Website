@@ -12,19 +12,24 @@ interface Props {
     availability: ClientPopulatedAvailability;
     hoverColor?: string;
     onMonthChange?: (day:Dayjs) => void;
+    startDate?: Dayjs;
+    displayOnly?: boolean;
 }
 
-export default function Calendar({dateRange, onDateRangeChange, availability, hoverColor, onMonthChange}:Props) {
+export default function Calendar({dateRange, onDateRangeChange, availability, hoverColor, onMonthChange,
+    startDate, displayOnly}:Props) {
 
-    const [currentDate, setCurrentDate] = useState(dayjs())
+    const [currentDate, setCurrentDate] = useState(startDate || dayjs())
 
     const [tempRange, setTempRange] = useState<Dayjs[]>([])
 
     const onMouseDown = (day:Dayjs) => {
+        if (displayOnly) return
         setTempRange([day, day, day])
     }
 
     const onMouseMove = (day:Dayjs) => {
+        if (displayOnly) return
         if (!tempRange[0]) return
 
         if (tempRange[0].isSame(day))  {
@@ -57,6 +62,7 @@ export default function Calendar({dateRange, onDateRangeChange, availability, ho
     }
 
     const onMouseUp = () => {
+        if (displayOnly) return
         if (tempRange.length === 0) return
 
         if (dateRange[0] && dateRange[0].isSame(dateRange[1]) && tempRange[0].isSame(tempRange[1])) {
@@ -86,7 +92,7 @@ export default function Calendar({dateRange, onDateRangeChange, availability, ho
             <WeekDays />
             <Cells dateRange={dateRange} tempRange={tempRange} onMouseDown={onMouseDown} onMouseMove={onMouseMove}
             onMouseUp={onMouseUp} currentDate={currentDate} availability={availability}
-            hoverColor={hoverColor} />
+            hoverColor={hoverColor} displayOnly={displayOnly} />
         </div>
     )
 }
