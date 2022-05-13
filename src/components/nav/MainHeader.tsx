@@ -67,9 +67,23 @@ export default function MainHeader({user, notifications, drawer}:Props) {
                                     </OrangePrimaryIconButton> 
                                 </Grid>}
                                 <Grid item>
-                                    <PrimaryLink href="/" variant="h4">
-                                        {smUp ? 'Travel Simply' : 'TS'}
-                                    </PrimaryLink>
+                                    <Link href="/">
+                                        <a>
+                                            <Grid container spacing={1} alignItems="center">
+                                                <Grid item>
+                                                    <Box display="flex" alignItems="center">
+                                                        <img src="/logo.svg" width={50} height={50} />
+                                                    </Box>
+                                                </Grid>
+                                                {smUp && <Grid item>
+                                                    <Typography variant="h4" color="primary" sx={{...darkPrimaryOnHover}}>
+                                                        Travel Simply
+                                                    </Typography>
+                                                </Grid>}
+                                            </Grid>
+                                        </a>
+                                    </Link>
+                                    {/* </PrimaryLink> */}
                                 </Grid>
                             </Grid>
                         </Grid>
