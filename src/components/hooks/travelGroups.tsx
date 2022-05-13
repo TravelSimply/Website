@@ -130,8 +130,6 @@ export function useSearchedTravelGroups(bareInfo:ClientBareTravelGroupInfo[]) {
 
         try {
 
-            console.log('skipList', skipList)
-
             const {data}:{data:SearchGroupData} = await axios({
                 method: 'POST',
                 url: `/api/users/friends/travel-groups/search`,
@@ -141,8 +139,6 @@ export function useSearchedTravelGroups(bareInfo:ClientBareTravelGroupInfo[]) {
                     maxFinds: numToFind
                 }
             })
-
-            console.log('data', data)
 
             const copy = [...skipList]
             for (const group of data.items) {
@@ -195,5 +191,4 @@ export function useSearchedTravelGroups(bareInfo:ClientBareTravelGroupInfo[]) {
         moreToLoad,
         loadMore
     }
-    // return returnState
 }

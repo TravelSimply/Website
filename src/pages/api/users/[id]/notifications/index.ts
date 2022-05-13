@@ -8,8 +8,6 @@ export default verifyUser(async function UserNotifications(req:NextApiRequest, r
 
         const info = await getPopulatedUserNotificationsWithTravelGroupLastUpdated(req.query.id as string)
 
-        console.log('info', info)
-
         return res.status(200).json(info)
     } catch (e) {
         console.log(e)

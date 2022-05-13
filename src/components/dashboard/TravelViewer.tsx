@@ -10,8 +10,6 @@ interface Props {
 
 export default function TravelViewer({travelGroups}:Props) {
 
-    console.log(travelGroups)
-
     const {startDate, availability} = useMemo(() => {
         const availability:ClientAvailability = {ref: {'@ref': {id: 'hello', ref: null}}, data: {userId: 'user', dates: {}}}
 
@@ -40,9 +38,6 @@ export default function TravelViewer({travelGroups}:Props) {
 
         return {startDate: earliestDate || dayjs(), availability}
     }, [travelGroups])
-
-    console.log(startDate)
-    console.log(availability)
 
     return (
         <Box>
