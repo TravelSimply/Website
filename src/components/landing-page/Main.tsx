@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import TitleBanner from "./TitleBanner";
 import FindGroups from './FindGroups'
+import CoordinateTravelling from "./Coordinate";
 
 export default function Main() {
 
@@ -9,8 +10,11 @@ export default function Main() {
             <Box>
                 <TitleBanner />
             </Box>
-            <Box mt={3}>
+            <Box mt={5}>
                 <FindGroups />
+            </Box>
+            <Box mt={5}>
+                <CoordinateTravelling />
             </Box>
         </Box>
     )
