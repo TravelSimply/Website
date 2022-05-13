@@ -1,4 +1,6 @@
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
+import {OrangePrimaryButton} from '../mui-customizations/buttons'
+import Link from 'next/link'
 
 export default function TitleBanner() {
 
@@ -22,7 +24,6 @@ export default function TitleBanner() {
                                 backgroundPosition: 'calc(100% - 50px) 90%',
                                 backgroundRepeat: 'no-repeat'
                             }}>
-
                             </Box>
                         </Box>
                     </Box>
@@ -51,6 +52,31 @@ export default function TitleBanner() {
                             backgroundRepeat: 'no-repeat',
                             transform: 'rotate(-10deg)'
                         }} />
+                        
+                        <Box height="80%" display="grid" justifyContent="center" alignItems="center">
+                            <Box>
+                                <Box mb={3}>
+                                    <Typography variant="h1" fontFamily="Lemon"
+                                    color="primary">
+                                        Travel Simply
+                                    </Typography>
+                                </Box>
+                                <Box mb={2} textAlign="center">
+                                    <Typography variant="h4" color="primary">
+                                        Find a Group. Start Traveling.
+                                    </Typography>
+                                </Box>
+                                <Box textAlign="center">
+                                    <Link href="/auth/signup">
+                                        <a>
+                                            <OrangePrimaryButton>
+                                                Create an Account
+                                            </OrangePrimaryButton>
+                                        </a>
+                                    </Link>
+                                </Box>
+                            </Box>
+                        </Box>
                     </Box>
                 </Grid>
                 <Grid item xs={0} lg={5} xl={3} height="100%">
