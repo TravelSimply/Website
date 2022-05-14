@@ -11,6 +11,7 @@ import { getAuthUser } from "../../../../utils/auth";
 import { getTravelGroup } from "../../../../database/utils/travelGroups";
 import {useUserNotifications} from '../../../../components/hooks/userNotifications'
 import { FullGroupNotFound } from "../../../../components/travel-groups/[id]/index/GroupNotFound";
+import MainFooter from "../../../../components/nav/MainFooter";
 
 interface Props {
     user: ClientUser;
@@ -43,9 +44,7 @@ export default function TravelGroupActivity({user, travelGroup}:Props) {
                 <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
                     <Main user={user} travelGroup={travelGroup} />
                 </Box>
-                <div>
-                    footer
-                </div>
+                <MainFooter />
             </div>
         </>
     )

@@ -10,6 +10,7 @@ import Head from 'next/head'
 import styles from '../../styles/pages/HeaderSidebarFooter.module.css'
 import { Box } from "@mui/material"
 import Main from '../../components/travel-groups/invites/Main'
+import MainFooter from "../../components/nav/MainFooter"
 
 interface Props {
     user: ClientUser;
@@ -34,9 +35,7 @@ export default function TravelGroupInvitations({user, invites}:Props) {
                 <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
                     <Main user={user} invites={invites} />
                 </Box>
-                <div>
-                    footer
-                </div>
+                <MainFooter />
             </div>
         </>
     )

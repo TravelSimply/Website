@@ -9,6 +9,7 @@ import MainHeader from "../../../../components/nav/MainHeader";
 import Main from '../../../../components/travel-groups/[id]/preview/Main'
 import Private from "../../../../components/travel-groups/[id]/preview/Private";
 import GroupNotFound from "../../../../components/travel-groups/[id]/index/GroupNotFound";
+import MainFooter from "../../../../components/nav/MainFooter";
 
 interface Props {
     user: ClientUser;
@@ -37,9 +38,7 @@ export default function TravelGroupPreview({user, travelGroup, invites, joinRequ
                     joinRequests={joinRequests} />
                     }
                 </div>
-                <div>
-                    Footer
-                </div>
+                <MainFooter />
             </div>
         </>
     )

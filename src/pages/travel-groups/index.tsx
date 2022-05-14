@@ -10,6 +10,7 @@ import { getUserTravelGroups } from '../../database/utils/travelGroups'
 import Main from '../../components/travel-groups/index/Main'
 import useSWR from 'swr'
 import { useUserNotifications } from '../../components/hooks/userNotifications'
+import MainFooter from '../../components/nav/MainFooter'
 
 interface Props {
     user: ClientUser;
@@ -43,9 +44,7 @@ export default function TravelGroups({user, travelGroups}:Props) {
                 <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
                     <Main user={user} travelGroups={travelGroups} />
                 </Box>
-                <div>
-                    footer
-                </div>
+                <MainFooter />
             </div>
         </>
     )

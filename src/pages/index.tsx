@@ -10,6 +10,7 @@ import styles from '../styles/pages/HeaderFooter.module.css'
 import MainHeader from '../components/nav/MainHeader'
 import Main from '../components/landing-page/Main'
 import { useUserNotifications } from '../components/hooks/userNotifications'
+import MainFooter from '../components/nav/MainFooter'
 
 interface Props {
   user: ClientUser;
@@ -29,9 +30,7 @@ export default function Home({user}:Props) {
                 <div>
                     <Main />
                 </div>
-                <div>
-                    Footer
-                </div>
+                <MainFooter />
             </div>
         </>
     )

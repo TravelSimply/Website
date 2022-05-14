@@ -7,6 +7,7 @@ import styles from '../../../styles/pages/HeaderFooter.module.css'
 import MainHeader from "../../../components/nav/MainHeader";
 import Main from '../../../components/account/profile/availability/index/Main'
 import { useUserNotifications } from "../../../components/hooks/userNotifications";
+import MainFooter from "../../../components/nav/MainFooter";
 
 interface Props {
     user: ClientUser;
@@ -27,9 +28,7 @@ export default function Availability({user, availability}:Props) {
                 <div>
                     <Main availability={availability} />
                 </div>
-                <div>
-                    footer
-                </div>
+                <MainFooter />
             </div>
         </>
     )
