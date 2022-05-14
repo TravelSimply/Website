@@ -6,8 +6,10 @@ export default function TitleBanner() {
 
     return (
         <Box height={700} sx={{
-            backgroundImage: 'url(/home2/map.png)',
-            backgroundSize: 'cover'
+            backgroundImage: 'url(/home2/map6.png)',
+            backgroundSize: 'max(1478px, 100%) 100%',
+            backgroundPosition: 'center top',
+            backgroundRepeat: 'no-repeat',
         }}>
             <Grid container height="100%" justifyContent="center" alignItems="center">
                 <Grid item>

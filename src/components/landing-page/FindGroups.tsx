@@ -6,7 +6,7 @@ export default function FindTravelGroups() {
         <Box mx={3}>
             <Box textAlign="center">
                 <Typography variant="h2" color="primary">
-                    Find Travel Groups
+                    Find A Travel Group
                 </Typography>
             </Box>
             <Box mt={1}>
