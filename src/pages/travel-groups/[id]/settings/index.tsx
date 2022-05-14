@@ -44,7 +44,9 @@ export default function TravelGroupSettings({travelGroup, user}:Props) {
                 <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
                     <Main travelGroup={travelGroup} user={user} />
                 </Box>
-                <MainFooter />
+                <Box sx={{gridColumn: '1 / -1'}}>
+                    <MainFooter />
+                </Box>
             </div>
         </>
     )

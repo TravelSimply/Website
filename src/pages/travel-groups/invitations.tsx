@@ -35,7 +35,9 @@ export default function TravelGroupInvitations({user, invites}:Props) {
                 <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
                     <Main user={user} invites={invites} />
                 </Box>
-                <MainFooter />
+                <Box sx={{gridColumn: '1 / -1'}}>
+                    <MainFooter />
+                </Box>
             </div>
         </>
     )

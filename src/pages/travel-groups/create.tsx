@@ -36,7 +36,9 @@ export default function CreateTravelGroup({user, availability}:Props) {
                 <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
                     <Main user={user} availability={availability} />
                 </Box>
-                <MainFooter />
+                <Box sx={{gridColumn: '1 / -1'}}>
+                    <MainFooter />
+                </Box>
             </div>
         </>
     )
