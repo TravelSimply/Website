@@ -10,6 +10,7 @@ import MainSidebar from '../../components/nav/MainSidebar'
 import Main from '../../components/travel-groups/find/Main'
 import { Box } from '@mui/material'
 import styles from '../../styles/pages/HeaderSidebarFooter.module.css'
+import MainFooter from "../../components/nav/MainFooter"
 
 interface Props {
     user: ClientUser;
@@ -33,9 +34,9 @@ export default function FindTravelGroup({user}:Props) {
                 <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
                     <Main user={user} />
                 </Box>
-                <div>
-                    footer
-                </div>
+                <Box sx={{gridColumn: '1 / -1'}}>
+                    <MainFooter />
+                </Box>
             </div>
         </>
     )

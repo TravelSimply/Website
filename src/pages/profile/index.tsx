@@ -8,6 +8,7 @@ import Main from '../../components/account/profile/index/Main'
 import { getAvailabilityAndTravelGroupsOfUser, getAvailabilityOfUser, populateAvailability } from "../../database/utils/availabilities";
 import { getUserContactInfo } from "../../database/utils/contactInfo";
 import { useUserNotifications } from "../../components/hooks/userNotifications";
+import MainFooter from "../../components/nav/MainFooter";
 
 interface Props {
     user: ClientUser;
@@ -29,9 +30,7 @@ export default function Profile({user, availability, contactInfo}:Props) {
                 <div className={styles.main}>
                     <Main user={user} availability={availability} contactInfo={contactInfo} />
                 </div>
-                <div>
-                    footer
-                </div>
+                <MainFooter />
             </div>
         </>
     )

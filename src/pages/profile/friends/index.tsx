@@ -8,6 +8,7 @@ import {Box} from '@mui/material'
 import Main from '../../../components/account/profile/friends/index/Main'
 import Head from 'next/head'
 import { useUserNotifications } from "../../../components/hooks/userNotifications";
+import MainFooter from "../../../components/nav/MainFooter";
 
 interface Props {
     user: ClientUser;
@@ -36,9 +37,7 @@ export default function Friends({user}:Props) {
                 <Box sx={{gridColumn: {xs: '1 / -1', sm: 'auto'}}} >
                     <Main user={user} />
                 </Box>
-                <div>
-                    footer
-                </div>
+                <MainFooter />
             </div>
         </>
     ) 

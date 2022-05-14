@@ -11,6 +11,7 @@ import MainSidebar from "../../components/nav/MainSidebar";
 import { Box } from "@mui/material";
 import {useUserNotifications} from '../../components/hooks/userNotifications'
 import { getDrawerItems } from ".";
+import MainFooter from "../../components/nav/MainFooter";
 
 interface Props {
     user: ClientUser;
@@ -35,9 +36,9 @@ export default function CreateTravelGroup({user, availability}:Props) {
                 <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
                     <Main user={user} availability={availability} />
                 </Box>
-                <div>
-                    footer
-                </div>
+                <Box sx={{gridColumn: '1 / -1'}}>
+                    <MainFooter />
+                </Box>
             </div>
         </>
     )

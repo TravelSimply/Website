@@ -8,6 +8,7 @@ import MainHeader from '../components/nav/MainHeader'
 import Main from '../components/dashboard/Main'
 import { getUserTravelGroups } from '../database/utils/travelGroups';
 import { useUserNotifications } from '../components/hooks/userNotifications';
+import MainFooter from '../components/nav/MainFooter';
 
 interface Props {
     user: ClientUser;
@@ -28,9 +29,7 @@ export default function Dashboard({user, travelGroups}:Props) {
                 <div>
                     <Main user={user} travelGroups={travelGroups} notifications={notifications} />
                 </div>
-                <div>
-                    Footer
-                </div>
+                <MainFooter />
             </div>
         </>
     )
