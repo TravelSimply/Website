@@ -12,6 +12,7 @@ import JoinRequests from "./JoinRequests";
 import SendInvite from "./SendInvite";
 import TravellerCard from "../cards/TravellerCard";
 import Travellers from "./Travellers";
+import Contact from "./Contact";
 
 interface Props {
     user: ClientUser;
@@ -126,6 +127,7 @@ export default function Main({user, travelGroup}:Props) {
                         <Box>
                             <SendInvite invites={invites} user={user} travelGroup={travelGroup} friends={friendUsernames}
                             travellers={travellers} />
+                            <Contact travellers={travellers} />
                         </Box>
                     </Grid>
                 </Grid>
