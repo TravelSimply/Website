@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Paper, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Checkbox, CircularProgress, Grid, Paper, Radio, RadioGroup, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { ClientUserWithContactInfo } from "../../../../database/interfaces";
 import {Bar} from 'react-chartjs-2'
@@ -106,7 +106,7 @@ export default function Contact({travellers}:Props) {
             responsive: true,
             title: {
                 display: true,
-                text: 'Contact Info'
+                text: 'Contact Methods'
             },
             legend: {
                 display: false
@@ -122,11 +122,34 @@ export default function Contact({travellers}:Props) {
             },
             tooltips: {
                 callbacks: {
-                    label: (item, data) => data.datasets[0].data[item.index] + '%'
+                    label: (item, data) => data.datasets[0].data[item.index] + '% Use'
                 }
             }
         }
     }, [])
+
+    const changeShowTopX = (val:boolean) => {
+        if (val) {
+            console.log(settings.defaultNum)
+            setSettings({
+                ...settings,
+                showing: rankings.slice(0, settings.defaultNum).map(ranking => ranking.method),
+                showTopX: true 
+            })
+        } else {
+            setSettings({...settings, showTopX: false})
+        }
+    }
+
+    const toggleMethodShowing = (method:string) => {
+        const copy = [...settings.showing]
+        if (copy.includes(method)) copy.splice(copy.indexOf(method), 1)
+        else copy.push(method)
+        setSettings({
+            ...settings,
+            showing: copy
+        })
+    }
 
     return (
         <Box>
@@ -137,7 +160,76 @@ export default function Contact({travellers}:Props) {
                             <Box>
                                 <Bar options={graphOptions} data={graphData} />
                             </Box>
-                            {JSON.stringify(rankings)}
+                            <Box>
+                                <Box>
+                                    <Grid container spacing={3} wrap="nowrap" alignItems="center">
+                                        <Grid item>
+                                            <Typography variant="body1">
+                                                Showing
+                                            </Typography>
+                                        </Grid>
+                                        <Grid item>
+                                            <RadioGroup name="show-type" value={settings.showTopX}
+                                            onChange={(e) => changeShowTopX(e.target.value === 'true')}>
+                                                <Grid container spacing={3}>
+                                                    <Grid item>
+                                                        <Grid container wrap="nowrap" alignItems="center">
+                                                            <Grid item>
+                                                                <Radio id="show-top-x" value={true} />
+                                                            </Grid>
+                                                            <Grid item>
+                                                                <label htmlFor="show-top-x">
+                                                                    <Box>
+                                                                        <Typography variant="body1">
+                                                                            Top {settings.defaultNum}
+                                                                        </Typography>
+                                                                    </Box>
+                                                                </label>
+                                                            </Grid>
+                                                        </Grid>
+                                                    </Grid>
+                                                    <Grid item>
+                                                        <Grid container wrap="nowrap" alignItems="center">
+                                                            <Grid item>
+                                                                <Radio id="show-custom" value={false} />
+                                                            </Grid>
+                                                            <Grid item>
+                                                                <label htmlFor="show-custom">
+                                                                    <Box>
+                                                                        <Typography variant="body1">
+                                                                            Custom
+                                                                        </Typography>
+                                                                    </Box>
+                                                                </label>
+                                                            </Grid>
+                                                        </Grid>
+                                                    </Grid>
+                                                </Grid>
+                                            </RadioGroup>
+                                        </Grid>
+                                    </Grid>
+                                </Box> 
+                                {!settings.showTopX && <Box>
+                                    {contactMethods.map(method => (
+                                        <Box key={method}>
+                                            <Grid container wrap="nowrap" alignItems="center">
+                                                <Grid item>
+                                                    <Checkbox checked={settings.showing.includes(method)} 
+                                                    onClick={() => toggleMethodShowing(method)} 
+                                                    id={`toggle-${method}`} />
+                                                </Grid>
+                                                <Grid item>
+                                                    <label htmlFor={`toggle-${method}`}>
+                                                        <Typography variant="body1">
+                                                            {labels[method]}
+                                                        </Typography>
+                                                    </label>
+                                                </Grid>
+                                            </Grid>
+                                        </Box>
+                                    ))} 
+                                </Box>}
+                            </Box>
                         </Box>: <Box minHeight={300} display="flex" alignItems="center" justifyContent="center">
                             <CircularProgress /> 
                         </Box>}
