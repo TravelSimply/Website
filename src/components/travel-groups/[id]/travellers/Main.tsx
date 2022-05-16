@@ -12,6 +12,7 @@ import JoinRequests from "./JoinRequests";
 import SendInvite from "./SendInvite";
 import TravellerCard from "../cards/TravellerCard";
 import Travellers from "./Travellers";
+import Contact from "./Contact";
 
 interface Props {
     user: ClientUser;
@@ -123,10 +124,20 @@ export default function Main({user, travelGroup}:Props) {
                         </Box>
                     </Grid>
                     <Grid item display={{xs: 'none', md: 'initial'}} flexBasis={{xs: 0, md: "clamp(400px, 600px, 40%)"}}>
-                        <Box>
-                            <SendInvite invites={invites} user={user} travelGroup={travelGroup} friends={friendUsernames}
-                            travellers={travellers} />
-                        </Box>
+                        <Grid container direction="column" spacing={3}>
+                            {invites && (travelGroup.data.settings.invitePriveleges === 'anyMember' || 
+                            travelGroup.data.owner === user.ref['@ref'].id) && <Grid item>
+                                <Box>
+                                    <SendInvite invites={invites} user={user} travelGroup={travelGroup} friends={friendUsernames}
+                                    travellers={travellers} />
+                                </Box>
+                            </Grid>}
+                            <Grid item>
+                                <Box>
+                                    <Contact travellers={travellers} />
+                                </Box>
+                            </Grid>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Box> :
