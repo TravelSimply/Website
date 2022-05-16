@@ -1,5 +1,5 @@
-import { Box, CircularProgress, Paper } from "@mui/material";
-import { useMemo, useState } from "react";
+import { Box, CircularProgress, Paper, useMediaQuery, useTheme } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
 import { ClientUserWithContactInfo } from "../../../../database/interfaces";
 import {Bar} from 'react-chartjs-2'
 import {Chart as ChartJS, CategoryScale, LinearScale, BarElement} from 'chart.js'
@@ -14,12 +14,37 @@ interface Ranking {
 }
 
 const contactMethods = ['home-phone', 'mobile-phone', 'email', 'discord', 'whatsapp', 'facebook', 'groupMe']
-const labels = ['Home Phone', 'Mobile Phone', 'Email', 'Discord', 'WhatsApp', 'Facebook', 'GroupMe']
+const labels = {
+    'home-phone': 'Home Phone',
+    'mobile-phone': 'Mobile Phone',
+    'email': 'Email',
+    'discord': 'Discord',
+    'whatsapp': 'WhatsApp',
+    'facebook': 'Facebook',
+    'groupMe': 'GroupMe'
+}
+const colors = {
+    'home-phone': 'hsl(30, 96%, 53%)',
+    'mobile-phone': 'hsl(30, 96%, 53%)',
+    'email': 'hsl(30, 96%, 53%)',
+    'discord': '#5865F2',
+    'whatsapp': '#25D366',
+    'facebook': '#4267B2',
+    'groupMe': '#29b6f6'
+}
 
 export default function Contact({travellers}:Props) {
 
     const [rankings, setRankings] = useState<Ranking[]>([])
     const [graphData, setGraphData] = useState(null)
+    const [settings, setSettings] = useState({
+        showing: [],
+        defaultNum: 0,
+        showTopX: true
+    })
+    const theme = useTheme()
+    const isLg = useMediaQuery(theme.breakpoints.up('lg'))
+    const isXl = useMediaQuery(theme.breakpoints.up('xl'))
 
     useMemo(() => {
         
@@ -48,21 +73,33 @@ export default function Contact({travellers}:Props) {
 
     }, [travellers])
 
-    useMemo(() => {
-        console.log('rankings', rankings)
+    useEffect(() => {
         if (rankings.length === 0) return
+
+        const defaultNum = isXl ? 7 : isLg ? 5 : 3
+
+        setSettings({
+            showing: rankings.slice(0, defaultNum).map(ranking => ranking.method),
+            defaultNum, 
+            showTopX: true
+        }) 
+
+    }, [rankings, isLg, isXl])
+
+    useMemo(() => {
+
+        if (settings.showTopX && settings.showing.length === 0) return
+
         setGraphData({
-            labels: labels.sort((a, b) => {
-                return rankings.find(ranking => ranking.method === contactMethods[labels.indexOf(b)]).percent - 
-                    rankings.find(ranking => ranking.method === contactMethods[labels.indexOf(a)]).percent
-            }),
+            labels: rankings.filter(ranking => settings.showing.includes(ranking.method)).map(ranking => labels[ranking.method]),
             datasets: [{
                 data: rankings.map(ranking => ranking.percent),
-                label: 'Contact Info',
-                backgroundColor: 'blue',
+                label: '',
+                backgroundColor: rankings.map(ranking => colors[ranking.method])
             }]
         })
-    }, [rankings])
+
+    }, [settings])
 
     const graphOptions = useMemo(() => {
         return {
@@ -77,9 +114,16 @@ export default function Contact({travellers}:Props) {
             scales: {
                 yAxes: [{
                     ticks: {
-                        callback: (value) => value + '%'
+                        callback: (value) => value + '%',
+                        beginAtZero: true,
+                        stepSize: 25
                     }
                 }]
+            },
+            tooltips: {
+                callbacks: {
+                    label: (item, data) => data.datasets[0].data[item.index] + '%'
+                }
             }
         }
     }, [])
