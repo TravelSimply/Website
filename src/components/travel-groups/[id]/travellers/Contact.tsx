@@ -71,6 +71,9 @@ export default function Contact({travellers}:Props) {
                 display: true,
                 text: 'Contact Info'
             },
+            legend: {
+                display: false
+            },
             scales: {
                 yAxes: [{
                     ticks: {
