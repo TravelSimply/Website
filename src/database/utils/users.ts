@@ -326,3 +326,40 @@ export function populateUserWithContactInfo() {
         }
     }
 }
+
+
+export async function deleteAccount(userId:string, notificationsId:string) {
+
+    await client.query(
+        q.Let(
+            {
+                contactInfoRef: q.Paginate(q.Match(q.Index('contactInfo_by_userId'), userId))
+            },
+            q.Do(
+                q.If(
+                    q.GT(q.Count(q.Select('data', q.Var('contactInfoRef'))), 0),
+                    q.Delete(q.Select(['data', 0], q.Var('contactInfoRef'))),
+                    null
+                ),
+                q.Delete(q.Ref(q.Collection('userNotifications'), notificationsId)),
+                q.Update(
+                    q.Ref(q.Collection('users'), userId),
+                    {data: {
+                        username: 'Deleted',
+                        caseInsensitiveUsername: 'Deleted',
+                        firstName: 'Deleted',
+                        lastName: 'Deleted',
+                        email: 'Deleted',
+                        image: {
+                            src: 'Deleted',
+                        },
+                        friends: [],
+                        oAuthIdentifier: {
+                            google: 'Deleted'
+                        }
+                    }}
+                )
+            )
+        )
+    )
+}
