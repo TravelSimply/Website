@@ -328,7 +328,7 @@ export function populateUserWithContactInfo() {
 }
 
 
-export async function deleteAccount(userId:string, notificationsId:string) {
+export async function deleteAccount(userId:string, userEmail:string, username:string, notificationsId:string) {
 
     await client.query(
         q.Let(
@@ -341,7 +341,11 @@ export async function deleteAccount(userId:string, notificationsId:string) {
                     q.Delete(q.Select(['data', 0], q.Var('contactInfoRef'))),
                     null
                 ),
-                q.Delete(q.Ref(q.Collection('userNotifications'), notificationsId)),
+                q.If(
+                    Boolean(notificationsId),
+                    q.Delete(q.Ref(q.Collection('userNotifications'), notificationsId)),
+                    null
+                ),
                 q.Update(
                     q.Ref(q.Collection('users'), userId),
                     {data: {
@@ -356,7 +360,8 @@ export async function deleteAccount(userId:string, notificationsId:string) {
                         friends: [],
                         oAuthIdentifier: {
                             google: 'Deleted'
-                        }
+                        },
+                        deleteInfo: [userEmail, username, q.Now()]
                     }}
                 )
             )
