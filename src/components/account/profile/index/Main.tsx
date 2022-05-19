@@ -11,9 +11,10 @@ interface Props {
     user: ClientUser;
     availability: ClientPopulatedAvailability;
     contactInfo: ClientContactInfo;
+    notificationsId?: string;
 }
 
-export default function Main({user, availability, contactInfo}:Props) {
+export default function Main({user, availability, contactInfo, notificationsId}:Props) {
 
     const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
 
@@ -36,7 +37,7 @@ export default function Main({user, availability, contactInfo}:Props) {
             </Box>
             <Box my={3}>
                 <Container maxWidth="lg">
-                    <Advanced user={user} />
+                    <Advanced user={user} setSnackbarMsg={setSnackbarMsg} notificationsId={notificationsId} />
                 </Container>
             </Box>
             <Snackbar msg={snackbarMsg} setMsg={setSnackbarMsg} />

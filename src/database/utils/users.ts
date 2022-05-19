@@ -148,6 +148,16 @@ export async function getUser(id:string) {
     return user
 }
 
+export async function getUserAndTravelGroupRefs(id:string):Promise<{user:User, travelGroups:{data:Ref[]}}> {
+
+    return await client.query(
+        {
+            user: q.Get(q.Ref(q.Collection('users'), id)),
+            travelGroups: q.Paginate(q.Match(q.Index('travelGroups_by_members'), id))
+        }
+    )
+}
+
 export async function updateUserPassword(id:string, password:string) {
 
     await client.query(
@@ -355,7 +365,7 @@ export async function deleteAccount(userId:string, userEmail:string, username:st
                         lastName: 'Deleted',
                         email: 'Deleted',
                         image: {
-                            src: 'Deleted',
+                            src: '',
                         },
                         friends: [],
                         oAuthIdentifier: {

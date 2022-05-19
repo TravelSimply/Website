@@ -1,7 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { verifyUser } from "../../../utils/auth";
 import {v2 as cloudinary, UploadApiResponse} from 'cloudinary'
-import { deleteAccount } from "../../../database/utils/users";
+import { deleteAccount, getUser, getUserAndTravelGroupRefs } from "../../../database/utils/users";
+import bcrypt from 'bcryptjs'
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_NAME,
@@ -18,24 +19,47 @@ export default verifyUser(async function DeleteAccount(req:NextApiRequest, res:N
 
     try {
 
-        const {jwtUser, username, junkPublicIds, notificationsId, password} = req.body
+        const {jwtUser, notificationsId, password} = req.body
+
+        // const user = await getUser(jwtUser.userId)
+        const {user, travelGroups} = await getUserAndTravelGroupRefs(jwtUser.userId)
+
+        if (!user) {
+            throw 'No user found somehow...!'
+        }
+
+        if (travelGroups.data.length > 0) {
+            return res.status(400).json({msg: 'You must not be in any Travel Groups before deleting your account!'})
+        }
 
         console.log('jwtUser', jwtUser)
-        console.log('username', username)
-        console.log('publicIds', junkPublicIds)
         console.log('notificationsId', notificationsId)
         console.log('password', password)
+        console.log('user', user)
+        console.log('travelGroups', travelGroups)
 
-        return res.status(200).json({msg: 'success'})
+        const isCorrectPassword = password ? await new Promise<boolean>((resolve, reject) => {
+            bcrypt.compare(password, user.data.password, (err, result) => {
+                if (err) reject(err)
+                resolve(result)
+            })
+        }) : true
 
-        await Promise.all(junkPublicIds.map(id => new Promise((resolve, reject) => {
+        if (!isCorrectPassword) {
+            return res.status(409).json({field: 'password', msg: 'Incorrect Password.'})
+        }
+
+        const publicIdsToRemove = user.data.image?.publicId ? [...(user.data.junkImagePublicIds || []), user.data.image.publicId] :
+            user.data.junkImagePublicIds || []
+
+        await Promise.all(publicIdsToRemove.map(id => new Promise((resolve, reject) => {
             cloudinary.uploader.destroy(id, {}, (err, result) => {
                 if (err) reject('Error deleting image')
                 resolve(result)
             })
         })))
 
-        await deleteAccount(jwtUser.userId, jwtUser.email, username, notificationsId)
+        await deleteAccount(jwtUser.userId, jwtUser.email, user.data.username, notificationsId)
 
         return res.status(200).json({msg: 'So it ends... for now'})
     } catch (e) {
