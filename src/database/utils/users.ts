@@ -350,7 +350,7 @@ export async function deleteAccount(userId:string, userEmail:string, username:st
                     q.Ref(q.Collection('users'), userId),
                     {data: {
                         username: 'Deleted',
-                        caseInsensitiveUsername: 'Deleted',
+                        caseInsensitiveUsername: 'deleted',
                         firstName: 'Deleted',
                         lastName: 'Deleted',
                         email: 'Deleted',
