@@ -21,6 +21,15 @@ export default function Advanced({user, setSnackbarMsg, notificationsId}:Props) 
     const [error, setError] = useState('')
 
     const onSubmit = async (vals:DeleteAccountFormProps['vals'], actions:FormikHelpers<DeleteAccountFormProps['vals']>) => {
+        deleteAccount(vals.password, actions)
+    }
+
+    const deleteAccountNoPassword = async () => {
+        setLoading(true)
+        deleteAccount()
+    }
+
+    const deleteAccount = async (password?:string, actions?:FormikHelpers<DeleteAccountFormProps['vals']>) => {
 
         try {
 
@@ -29,25 +38,22 @@ export default function Advanced({user, setSnackbarMsg, notificationsId}:Props) 
                 url: '/api/users/delete',
                 data: {
                     notificationsId,
-                    password: vals.password
+                    password: password
                 }
             })
 
             signOut()
         } catch (e) {
-            if ((e as AxiosError)?.response?.status === 409) {
+            if ((e as AxiosError)?.response?.status === 409 && actions) {
                 actions.setFieldError(e.response.data.field, e.response.data.msg)
             } else if ((e as AxiosError)?.response?.status === 400) {
                 setError(e.response.data.msg)
             } else {
                 setSnackbarMsg({type: 'error', content: 'Error Deleting Account'})
             }
-            actions.setSubmitting(false)
+            actions?.setSubmitting(false)
+            setLoading(false)
         }
-    }
-
-    const deleteAccountNoPassword = async () => {
-
     }
 
     return (
