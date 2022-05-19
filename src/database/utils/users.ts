@@ -148,6 +148,16 @@ export async function getUser(id:string) {
     return user
 }
 
+export async function getUserAndTravelGroupRefs(id:string):Promise<{user:User, travelGroups:{data:Ref[]}}> {
+
+    return await client.query(
+        {
+            user: q.Get(q.Ref(q.Collection('users'), id)),
+            travelGroups: q.Paginate(q.Match(q.Index('travelGroups_by_members'), id))
+        }
+    )
+}
+
 export async function updateUserPassword(id:string, password:string) {
 
     await client.query(
@@ -325,4 +335,46 @@ export function populateUserWithContactInfo() {
             )
         }
     }
+}
+
+
+export async function deleteAccount(userId:string, userEmail:string, username:string, notificationsId:string) {
+
+    await client.query(
+        q.Let(
+            {
+                contactInfoRef: q.Paginate(q.Match(q.Index('contactInfo_by_userId'), userId))
+            },
+            q.Do(
+                q.If(
+                    q.GT(q.Count(q.Select('data', q.Var('contactInfoRef'))), 0),
+                    q.Delete(q.Select(['data', 0], q.Var('contactInfoRef'))),
+                    null
+                ),
+                q.If(
+                    Boolean(notificationsId),
+                    q.Delete(q.Ref(q.Collection('userNotifications'), notificationsId)),
+                    null
+                ),
+                q.Update(
+                    q.Ref(q.Collection('users'), userId),
+                    {data: {
+                        username: 'Deleted',
+                        caseInsensitiveUsername: 'deleted',
+                        firstName: 'Deleted',
+                        lastName: 'Deleted',
+                        email: 'Deleted',
+                        image: {
+                            src: '',
+                        },
+                        friends: [],
+                        oAuthIdentifier: {
+                            google: 'Deleted'
+                        },
+                        deleteInfo: [userEmail, username, q.Now()]
+                    }}
+                )
+            )
+        )
+    )
 }

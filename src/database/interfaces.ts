@@ -21,6 +21,7 @@ interface UserData {
         google?: string;
     },
     junkImagePublicIds?: string[];
+    deleteInfo?: [string, string, Expr];
 }
 
 interface ClientUserData extends UserData { }

@@ -28,7 +28,8 @@ export default function Profile({user, availability, contactInfo}:Props) {
             <div className={styles.root}>
                 <MainHeader user={user} notifications={notifications} />
                 <div className={styles.main}>
-                    <Main user={user} availability={availability} contactInfo={contactInfo} />
+                    <Main user={user} availability={availability} contactInfo={contactInfo}
+                    notificationsId={notifications?.raw?.notifications?.ref['@ref'].id} />
                 </div>
                 <MainFooter />
             </div>

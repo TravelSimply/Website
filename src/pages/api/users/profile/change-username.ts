@@ -15,6 +15,10 @@ export default verifyUser(async function ChangeUsername(req:NextApiRequest, res:
         if (!((username).match(/^[a-zA-Z0-9_]*$/))) {
             return res.status(409).json({field: 'username', msg: 'Username can only include numbers, letters, and underscores.'})
         }
+        
+        if (username.toLowerCase() === 'deleted') {
+            return res.status(409).json({field: 'username', msg: 'This name is reserved.'})
+        }
 
         const userWithUsername = await isUserWithUsername(username)
 

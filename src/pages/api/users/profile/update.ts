@@ -33,6 +33,14 @@ export default verifyUser(async function UpdateProfile(req:NextApiRequest, res:N
             return res.status(200).json({msg: 'Success'})
         }
 
+        if (!((req.body.data.username).match(/^[a-zA-Z0-9_]*$/))) {
+            return res.status(409).json({field: 'username', msg: 'Username can only include numbers, letters, and underscores.'})
+        }
+
+        if (req.body.data.username.toLowerCase() === 'deleted') {
+            return res.status(409).json({field: 'username', msg: 'This name is reserved.'})
+        }
+
         if (await isUserWithUsername(req.body.data.username)) {
             return res.status(409).json({field: 'username', msg: 'This username is already in use.'})
         }
@@ -41,6 +49,7 @@ export default verifyUser(async function UpdateProfile(req:NextApiRequest, res:N
 
         return res.status(200).json({msg: 'Success'})
     } catch (e) {
+        console.log(e)
         return res.status(500).json({msg: 'Internal Server Error'})
     }
 }) 
