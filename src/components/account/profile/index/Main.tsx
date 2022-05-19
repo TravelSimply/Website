@@ -5,6 +5,7 @@ import Snackbar from '../../../misc/snackbars'
 import Profile from './Profile';
 import Availability from './Availability';
 import ContactInfo from './ContactInfo';
+import Advanced from './Advanced';
 
 interface Props {
     user: ClientUser;
@@ -31,6 +32,11 @@ export default function Main({user, availability, contactInfo}:Props) {
             <Box mt={3}>
                 <Container maxWidth="lg">
                     <ContactInfo contactInfo={contactInfo} setSnackbarMsg={setSnackbarMsg} />
+                </Container>
+            </Box>
+            <Box my={3}>
+                <Container maxWidth="lg">
+                    <Advanced user={user} />
                 </Container>
             </Box>
             <Snackbar msg={snackbarMsg} setMsg={setSnackbarMsg} />
