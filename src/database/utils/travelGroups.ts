@@ -51,12 +51,7 @@ export async function getUserTravelGroups(userId:string):Promise<{data: TravelGr
 
     return await client.query(
         q.Map(q.Paginate(q.Match(q.Index('travelGroups_by_members'), userId)), q.Lambda('ref',
-            q.Let(
-                {
-                    travelGroup: q.Get(q.Var('ref'))
-                },
-                q.Var('travelGroup') 
-            ) 
+            q.Get(q.Var('ref'))
         ))
     ) 
 }

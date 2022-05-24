@@ -13,24 +13,7 @@ interface Props {
     user: ClientUser;
 }
 
-export const getDestination = (dest:ClientTravelGroup['data']['destination']) => {
-    if (dest.city) {
-        return `${dest.city}, ${dest.country}`
-    }
-    if (dest.state) {
-        return `${dest.state}, ${dest.country}`
-    }
-    if (dest.country) {
-        return `${dest.country}`
-    }
-    return dest.region
-}
-
 export default function TravelGroupCard({user, travelGroup}:Props) {
-
-    const formatDate = (day:Dayjs) => {
-        return day.format('MMMM D')
-    }
 
     const isTraveller = useMemo(() => travelGroup.data.members.includes(user.ref['@ref'].id), [travelGroup])
 
@@ -65,39 +48,6 @@ export default function TravelGroupCard({user, travelGroup}:Props) {
                                                         {travelGroup.data.owner === user.ref['@ref'].id ? 'owner' : 
                                                         isTraveller ? 'traveler' : ''}
                                                     </Typography>
-                                                </Grid>
-                                            </Grid>
-                                        </Box>
-                                        <Box ml={2} my={2}>
-                                            <Grid container wrap="nowrap" alignItems="center">
-                                                <Grid item>
-                                                    <DateRangeIcon sx={{mt: 0.5, color: 'secondary.main'}} />
-                                                </Grid>
-                                                <Grid item>
-                                                    <Box ml={1}>
-                                                        <Typography variant="h6">
-                                                            {travelGroup.data.date.unknown ? 'Undecided days of travel.' : 
-                                                            travelGroup.data.date.roughly ? 
-                                                            `Traveling sometime between ${formatDate(dayjs(travelGroup.data.date.start))}
-                                                            and ${formatDate(dayjs(travelGroup.data.date.end))}.` : 
-                                                            `Traveling from ${formatDate(dayjs(travelGroup.data.date.start))} to 
-                                                            ${formatDate(dayjs(travelGroup.data.date.end))}.`}
-                                                        </Typography>
-                                                    </Box>
-                                                </Grid>
-                                            </Grid>
-                                        </Box>
-                                        <Box ml={2} mb={2}>
-                                            <Grid container wrap="nowrap" alignItems="center">
-                                                <Grid item>
-                                                    <LocationOnIcon sx={{mt: 0.5, color: 'secondary.main'}} />
-                                                </Grid>
-                                                <Grid item>
-                                                    <Box ml={1}>
-                                                        <Typography variant="h6">
-                                                            {getDestination(travelGroup.data.destination)}
-                                                        </Typography>
-                                                    </Box>
                                                 </Grid>
                                             </Grid>
                                         </Box>
