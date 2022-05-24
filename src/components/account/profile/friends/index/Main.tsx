@@ -73,7 +73,7 @@ export default function Main({user}:Props) {
             </Box> : <Box>
                 <Grid container justifyContent="center" spacing={3}>
                     {searchFriends.map((friendIndex) => (
-                        <Grid item key={friendIndex}>
+                        <Grid item key={friends[friendIndex]?.ref['@ref'].id || friendIndex}>
                             <FriendCard users={friends} friendIndex={friendIndex} setSnackbarMsg={setSnackbarMsg} />
                         </Grid>
                     ))}

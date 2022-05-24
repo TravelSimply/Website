@@ -20,6 +20,8 @@ export default function Main({user}:Props) {
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
     )
 
+    console.log(bareGroupInfo)
+
     const {filteredTravelGroups:filteredGroups, loadingNewSearch, loadingMore, loadMore, moreToLoad}
      = useSearchedTravelGroups(bareGroupInfo)
 
