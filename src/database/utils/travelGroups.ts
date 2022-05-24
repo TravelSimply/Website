@@ -26,22 +26,14 @@ function insertData(d:string) {
     return q.Select(['data', d], q.Var('travelGroup'))
 }
 
-function dataWithStringDates() {
+function data() {
 
     return {
         owner: insertData('owner'),
         members: insertData('members'),
         name: insertData('name'),
         desc: insertData('desc'),
-        destination: insertData('destination'),
         settings: insertData('settings'),
-        date: {
-            unknown: q.Select(['data', 'date', 'unknown'], q.Var('travelGroup')),
-            roughly: q.Select(['data', 'date', 'roughly'], q.Var('travelGroup')),
-            estLength: q.Select(['data', 'date', 'estLength'], q.Var('travelGroup')),
-            start: q.ToString(q.Select(['data', 'date', 'start'], q.Var('travelGroup'))),
-            end: q.ToString(q.Select(['data', 'date', 'end'], q.Var('travelGroup')))
-        },
         image: q.If(
             q.ContainsField('image', q.Select('data', q.Var('travelGroup'))),
             insertData('image'),
@@ -63,10 +55,7 @@ export async function getUserTravelGroups(userId:string):Promise<{data: TravelGr
                 {
                     travelGroup: q.Get(q.Var('ref'))
                 },
-                {
-                    ref: q.Select('ref', q.Var('travelGroup')),
-                    data: dataWithStringDates()
-                }
+                q.Var('travelGroup') 
             ) 
         ))
     ) 
@@ -81,10 +70,7 @@ export async function getTravelGroup(id:string):Promise<TravelGroupStringDates> 
                 {
                     travelGroup: q.Get(q.Ref(q.Collection('travelGroups'), id))
                 },
-                {
-                    ref: q.Select('ref', q.Var('travelGroup')),
-                    data: dataWithStringDates()
-                }    
+                q.Var('travelGroup')    
             ),
             null
         )
@@ -108,7 +94,7 @@ export async function getTravelGroupWithPopulatedTravellersAndContactInfo(id:str
                     {
                         ref: q.Select('ref', q.Var('travelGroup')),
                         data: {
-                            ...dataWithStringDates(),
+                            ...data(),
                             members: q.Map(q.Select(['data', 'members'], q.Var('travelGroup')), q.Lambda(
                                 'member',
                                 q.If(
@@ -188,55 +174,47 @@ export async function getTravelGroupPreview(travelGroupId:string, userId:string)
                 {
                     travelGroup: q.Get(q.Ref(q.Collection('travelGroups'), travelGroupId))
                 },
-                q.Let(
+                q.If(
+                    q.ContainsValue(userId, q.Select(['data', 'members'], q.Var('travelGroup'))),
                     {
-                        travelGroup: {
-                            ref: q.Select('ref', q.Var('travelGroup')),
-                            data: dataWithStringDates()
-                        }
+                        travelGroup: q.Var('travelGroup'),
+                        invites: [],
+                        joinRequests: []
                     },
-                    q.If(
-                        q.ContainsValue(userId, q.Select(['data', 'members'], q.Var('travelGroup'))),
+                    q.Let(
                         {
                             travelGroup: q.Var('travelGroup'),
-                            invites: [],
-                            joinRequests: []
+                            invites: q.Select('data', q.Paginate(q.Match(q.Index('travelGroupInvitations_by_to_and_travelGroup'), 
+                            [userId, travelGroupId])))
                         },
-                        q.Let(
+                        q.If(
+                            q.GT(q.Count(q.Var('invites')), 0),
                             {
                                 travelGroup: q.Var('travelGroup'),
-                                invites: q.Select('data', q.Paginate(q.Match(q.Index('travelGroupInvitations_by_to_and_travelGroup'), 
-                                [userId, travelGroupId])))
+                                invites: q.Var('invites'),
+                                joinRequests: []
                             },
                             q.If(
-                                q.GT(q.Count(q.Var('invites')), 0),
-                                {
-                                    travelGroup: q.Var('travelGroup'),
-                                    invites: q.Var('invites'),
-                                    joinRequests: []
-                                },
-                                q.If(
-                                    q.Equals('public', q.Select(['data', 'settings', 'mode'], q.Var('travelGroup'))),
-                                    q.Let(
-                                        {
-                                            travelGroup: q.Var('travelGroup'),
-                                            joinRequests: q.Select('data', q.Paginate(q.Match(
-                                                q.Index('travelGroupJoinRequests_by_from_and_travelGroup'),
-                                                [userId, travelGroupId]
-                                            )))
-                                        },
-                                        {
-                                            travelGroup: q.Var('travelGroup'),
-                                            invites: [],
-                                            joinRequests: q.Var('joinRequests')
-                                        }
-                                    ),
+                                q.Equals('public', q.Select(['data', 'settings', 'mode'], q.Var('travelGroup'))),
+                                q.Let(
                                     {
-                                        travelGroup: 0,
+                                        travelGroup: q.Var('travelGroup'),
+                                        joinRequests: q.Select('data', q.Paginate(q.Match(
+                                            q.Index('travelGroupJoinRequests_by_from_and_travelGroup'),
+                                            [userId, travelGroupId]
+                                        )))
+                                    },
+                                    {
+                                        travelGroup: q.Var('travelGroup'),
                                         invites: [],
-                                        joinRequests: []
+                                        joinRequests: q.Var('joinRequests')
                                     }
-                                )
+                                ),
+                                {
+                                    travelGroup: 0,
+                                    invites: [],
+                                    joinRequests: []
+                                }
                             )
                         )
                     )
@@ -421,17 +399,11 @@ function constainsSearchQuery(userId:string, filters:Filters, travelGroupIds:str
                     ),
                     {
                         count: q.Add(q.Select('count', q.Var('total')), 1),
-                        items: appendMatchingTravelGroupToTotal({
-                            ref: q.Select('ref', q.Var('travelGroup')),
-                            data: dataWithStringDates()
-                        } as any, q.Var('total'))
+                        items: appendMatchingTravelGroupToTotal(q.Var('travelGroup') as any, q.Var('total'))
                     },
                     {
                         count: q.Select('count', q.Var('total')),
-                        items: appendNotMatchingTravelGroupToTotal({
-                            ref: q.Select('ref', q.Var('travelGroup')),
-                            data: dataWithStringDates()
-                        } as any, q.Var('total'))
+                        items: appendNotMatchingTravelGroupToTotal(q.Var('travelGroup') as any, q.Var('total'))
                     }
                 )
             ),
@@ -495,17 +467,11 @@ function containsDestinationQuery(userId:string, filters:Filters, travelGroupIds
                             ),
                             {
                                 count: q.Add(q.Select('count', q.Var('total')), 1),
-                                items: appendMatchingTravelGroupToTotal({
-                                    ref: q.Select('ref', q.Var('travelGroup')),
-                                    data: dataWithStringDates()
-                                } as any, q.Var('total'))
+                                items: appendMatchingTravelGroupToTotal(q.Var('travelGroup') as any, q.Var('total'))
                             },
                             {
                                 count: q.Select('count', q.Var('total')),
-                                items: appendNotMatchingTravelGroupToTotal({
-                                    ref: q.Select('ref', q.Var('travelGroup')),
-                                    data: dataWithStringDates()
-                                } as any, q.Var('total'))
+                                items: appendNotMatchingTravelGroupToTotal(q.Var('travelGroup') as any, q.Var('total'))
                             }
                         )
                     ),
