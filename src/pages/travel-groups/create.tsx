@@ -18,7 +18,7 @@ interface Props {
     availability: ClientPopulatedAvailability;
 }
 
-export default function CreateTravelGroup({user, availability}:Props) {
+export default function CreateTravelGroup({user}:Props) {
 
     const drawerItems = getDrawerItems(1)
 
@@ -34,7 +34,7 @@ export default function CreateTravelGroup({user, availability}:Props) {
                 notifications={notifications} />
                 <MainSidebar items={drawerItems} breakpoint="md" />
                 <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
-                    <Main user={user} availability={availability} />
+                    <Main user={user} />
                 </Box>
                 <Box sx={{gridColumn: '1 / -1'}}>
                     <MainFooter />
@@ -53,11 +53,8 @@ export const getServerSideProps:GetServerSideProps = async (ctx:GetServerSidePro
     }
 
     try {
-        const availability = populateAvailability(await getAvailabilityAndTravelGroupsOfUser(user.ref.id))
-
         return {props: {
             user: JSON.parse(JSON.stringify(user)),
-            availability: JSON.parse(JSON.stringify(availability)),
         }}
     } catch (e) {
         return {props: {}, redirect: {destination: '/'}}

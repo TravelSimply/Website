@@ -237,21 +237,6 @@ export interface TravelGroupData {
     members: string[];
     name: string;
     desc: string;
-    destination: {
-        combo: string;
-        region: 'Interregional' | 'U.S. & Canada' | 'Central America' | 'South America' | 'Europe' | 'Asia' | 'Africa' | 'Oceania' | 'Antarctica',
-        country?: string;
-        state?: string;
-        city?: string;
-        address?: string;
-    };
-    date: {
-        unknown: boolean;
-        roughly: boolean;
-        estLength: [number, string];
-        start: Expr; // Time
-        end: Expr; // Time
-    };
     settings: {
         mode: 'public' | 'private';
         invitePriveleges: 'ownerOnly' | 'anyMember';
@@ -269,14 +254,6 @@ export interface ClientTravelGroupData {
     members: TravelGroupData['members'];
     name: TravelGroupData['name'];
     desc: TravelGroupData['desc'];
-    destination: TravelGroupData['destination'];
-    date: {
-        unknown: boolean;
-        roughly: boolean;
-        estLength: [number, string];
-        start: string;
-        end: string;
-    };
     settings: TravelGroupData['settings'];
     image?: TravelGroupData['image'];
     lastUpdated?: {'@ts': string};
@@ -432,7 +409,7 @@ interface TravelGroupProposalData {
     data: {
         name?: string;
         desc?: string;
-        destination?: TravelGroupData['destination'];
+        // destination?: TravelGroupData['destination'];
         image?: TravelGroupData['image'];
         date?: {
             start: Expr; // Date
@@ -451,7 +428,7 @@ interface ClientTravelGroupProposalData {
     data: {
         name?: string;
         desc?: string;
-        destination?: TravelGroupData['destination'];
+        // destination?: TravelGroupData['destination'];
         image?: TravelGroupData['image'];
         date?: {
             start: string;

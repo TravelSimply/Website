@@ -4,11 +4,7 @@ import {createTravelGroup as dbCreateTravelGroup} from '../../../database/utils/
 import dayjs from "dayjs";
 
 const acceptedProperties = [{name: 'owner', type: 'string'}, {name: 'members', type: 'object'},
- {name: 'name', type: 'string'}, {name: 'desc', type: 'string'}, {name: 'destination', type: 'object'},
- {name: 'date', type: 'object'}, {name: 'settings', type: 'object'}]
-const destinationProperties = ['combo', 'region', 'country', 'state', 'city', 'address']
-const dateProperties = [{name: 'unknown', type: 'boolean'}, {name: 'roughly', type: 'boolean'}, 
-{name: 'start', type: 'string'}, {name: 'end', type: 'string'}, {name: 'estLength', type: 'object'}]
+ {name: 'name', type: 'string'}, {name: 'desc', type: 'string'}, {name: 'settings', type: 'object'}]
 const settingsProperties = ['mode', 'invitePriveleges', 'joinRequestPriveleges']
 
 function checkProperties(properties:Object) {
@@ -24,30 +20,6 @@ function checkProperties(properties:Object) {
         }
         if (key === 'members' && !Array.isArray(value)) {
             throw 'This is not an accepted property'
-        }
-        if (key === 'destination') {
-            const found = []
-            for (const [destKey, destValue] of Object.entries(value)) {
-                found.push(destKey)
-                if (!destinationProperties.find(prop => prop === destKey && (typeof destValue === 'string'))) {
-                    throw 'This is not an accepted property'
-                }
-            }
-            if (!found.includes('combo') || !found.includes('region')) {
-                throw 'Did not include all necessary properties'
-            }
-        }
-        if (key === 'date') {
-            let count = 0
-            for (const [dateKey, dateValue] of Object.entries(value)) {
-                count++
-                if (!dateProperties.find(prop => prop.name === dateKey && prop.type === typeof dateValue)) {
-                    throw 'This is not an accepted property'
-                }
-            }
-            if (count !== dateProperties.length) {
-                throw 'Did not include all necessary properties'
-            }
         }
         if (key === 'settings') {
             let count = 0
@@ -77,11 +49,6 @@ export default verifyUser(async function createTravelGroup(req:NextApiRequest, r
     try {
 
         checkProperties(req.body.data)
-
-        if (!req.body.data.date.start) {
-            req.body.data.date.start = dayjs().add(1, 'week').format('YYYY-MM-DD')
-            req.body.data.date.end = dayjs().add(1, 'week').format('YYYY-MM-DD')
-        }
 
         const group = await dbCreateTravelGroup(req.body.data)
 
