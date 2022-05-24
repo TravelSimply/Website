@@ -106,6 +106,14 @@ function passesFilters(travelGroup:ClientTravelGroup, filters:Filters) {
 
 export function useSearchedTravelGroups(bareInfo:ClientBareTravelGroupInfo[]) {
 
+    return {
+        filteredTravelGroups: null,
+        loadingNewSearch: null,
+        loadingMore: null,
+        moreToLoad: null,
+        loadMore: null
+    }
+
     const [loading, setLoading] = useState(false)
     const [loadingMore, setLoadingMore] = useState(false)
     const [moreToLoad, setMoreToLoad] = useState(false)
