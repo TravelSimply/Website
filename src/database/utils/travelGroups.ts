@@ -61,12 +61,7 @@ export async function getTravelGroup(id:string):Promise<TravelGroupStringDates> 
     return await client.query(
         q.If(
             q.Exists(q.Ref(q.Collection('travelGroups'), id)),
-            q.Let(
-                {
-                    travelGroup: q.Get(q.Ref(q.Collection('travelGroups'), id))
-                },
-                q.Var('travelGroup')    
-            ),
+            q.Get(q.Ref(q.Collection('travelGroups'), id)),
             null
         )
     )

@@ -34,7 +34,6 @@ export default function EditOverview({travelGroup, isAdmin, junkIds, onEditCompl
     const [formVals, setFormVals] = useState({
         name: travelGroup.data.name,
         desc: travelGroup.data.desc,
-        destination: travelGroup.data.destination
     })
 
     const [formContext, setFormContext] = useState<FormikContextType<OverviewFormProps['vals']>>(null)
@@ -61,12 +60,7 @@ export default function EditOverview({travelGroup, isAdmin, junkIds, onEditCompl
         setLoading(true)
 
         const filledVals = {
-            ...values,
-            destination: {
-                ...values.destination,
-                combo: [values.destination.region, values.destination.country, values.destination.state,
-                     values.destination.city, values.destination.address].join('$$')
-            }
+            ...values
         }
         const filteredVals:any = {}
         if (filledVals.name !== formVals.name) {
@@ -74,9 +68,6 @@ export default function EditOverview({travelGroup, isAdmin, junkIds, onEditCompl
         }
         if (filledVals.desc !== formVals.desc) {
             filteredVals.desc = filledVals.desc
-        }
-        if (filledVals.destination.combo !== formVals.destination.combo) {
-            filteredVals.destination = filledVals.destination
         }
         if (img.src && img.src !== travelGroup.data.image?.src) {
             filteredVals.image = img
