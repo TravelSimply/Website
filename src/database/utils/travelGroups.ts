@@ -15,7 +15,7 @@ export async function getUserTravelGroupDates(userId:string):Promise<{data: [str
 
 export async function createTravelGroup(data:ClientTravelGroupData):Promise<TravelGroup> {
 
-    const dbData = {...data}
+    const dbData = {...data, dateCreated: q.Now()}
 
     return await client.query(
         q.Create(q.Collection('travelGroups'), {data: dbData})

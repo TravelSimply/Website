@@ -242,6 +242,7 @@ export interface TravelGroupData {
         invitePriveleges: 'ownerOnly' | 'anyMember';
         joinRequestPriveleges: 'ownerOnly' | 'anyMember';
     };
+    dateCreated: Expr;
     image?: {
         src: string;
         publicId: string;
@@ -255,6 +256,7 @@ export interface ClientTravelGroupData {
     name: TravelGroupData['name'];
     desc: TravelGroupData['desc'];
     settings: TravelGroupData['settings'];
+    dateCreated: {'@ts': string};
     image?: TravelGroupData['image'];
     lastUpdated?: {'@ts': string};
 }
