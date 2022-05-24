@@ -3,7 +3,6 @@ import { ClientTravelGroup, ClientUser } from "../../database/interfaces";
 import { UserNotifications } from "../hooks/userNotifications";
 import { PrimaryLink } from "../misc/links";
 import Notifications from "./Notifications";
-import TravelViewer from "./TravelViewer";
 
 interface Props {
     user: ClientUser;
@@ -24,9 +23,6 @@ export default function Main({user, travelGroups, notifications}:Props) {
                                     <PrimaryLink href="/travel-groups" variant="h6">
                                         {travelGroups.length} Travel Groups
                                     </PrimaryLink>
-                                </Box>
-                                <Box>
-                                    <TravelViewer travelGroups={travelGroups} />
                                 </Box>
                             </Box>
                         </Paper>
