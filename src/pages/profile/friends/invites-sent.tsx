@@ -37,7 +37,9 @@ export default function Friends({user}:Props) {
                 <Box sx={{gridColumn: {xs: '1 / -1', sm: 'auto'}}} >
                     <Main user={user} />
                 </Box>
-                <MainFooter />
+                <Box sx={{gridColumn: '1 / -1'}}>
+                    <MainFooter />
+                </Box>
             </div>
         </>
     ) 
