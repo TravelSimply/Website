@@ -4,12 +4,12 @@ import {Form, Formik, FormikHelpers} from 'formik'
 import {FormikSelectField, FormikTextField} from '../../FormikFields'
 import {object, string} from 'yup'
 import FormObserver from '../../FormObserver'
-import { TravelGroup } from '../../../../database/interfaces'
+import { TravelGroup, Trip } from '../../../../database/interfaces'
 import {MenuItem, Autocomplete, TextField} from '@mui/material'
 import { getCountries, getStates, getCountry } from 'country-state-picker'
 
 export interface Props {
-    vals: TravelGroup['data']['destination'];
+    vals: Trip['data']['destination'];
     onSubmit: (vals:Props['vals'], actions:FormikHelpers<Props['vals']>) => void;
     setFormContext?: Dispatch<SetStateAction<any>>;
 }
@@ -34,7 +34,8 @@ export default function Destination({vals, onSubmit, setFormContext}:Props) {
                     country: string(),
                     state: string().max(50),
                     city: string().max(50),
-                    address: string().max(100)
+                    address: string().max(100),
+                    extraInfo: string().max(500)
                 })}
                 initialValues={initialVals} onSubmit={(values, actions) => onSubmit(values, actions)}>
                 {({values, errors, isSubmitting, isValidating, setFieldValue, touched}) => (
@@ -66,24 +67,33 @@ export default function Destination({vals, onSubmit, setFormContext}:Props) {
                                 }} isOptionEqualToValue={(option, value) => option?.name === value || option === value} />
                             </FormGroup>
                         </Box>}
-                        {values.country && <Box my={3}>
+                        {values.country && 
+                        <>
+                            <Box my={3}>
+                                <FormGroup>
+                                    <Autocomplete value={values.state} renderInput={(params) => (
+                                        <TextField {...params} label="State/Province" error={touched.state && Boolean(errors.state)}
+                                        helperText={touched.state && errors.state ? errors.state : ''} />
+                                    )} options={[...states, ""]} onChange={(e, value) => setFieldValue('state', value || '')} />
+                                </FormGroup>
+                            </Box>
+                            <Box my={3}>
+                                <FormGroup>
+                                    <FormikTextField name="city" label="City" value={values.city} />
+                                </FormGroup>
+                            </Box>
+                            <Box my={3}>
+                                <FormGroup>
+                                    <FormikTextField name="address" label="Address" value={values.address} />
+                                </FormGroup> 
+                            </Box>
+                        </>}
+                        <Box my={3}>
                             <FormGroup>
-                                <Autocomplete value={values.state} renderInput={(params) => (
-                                    <TextField {...params} label="State/Province" error={touched.state && Boolean(errors.state)}
-                                    helperText={touched.state && errors.state ? errors.state : ''} />
-                                )} options={[...states, ""]} onChange={(e, value) => setFieldValue('state', value || '')} />
+                                <FormikTextField name="extraInfo" label="Note" value={values.extraInfo}
+                                multiline minRows={3} />
                             </FormGroup>
-                       </Box>}
-                        {values.state && <Box my={3}>
-                            <FormGroup>
-                                <FormikTextField name="city" label="City" value={values.city} />
-                            </FormGroup>
-                        </Box>}
-                        {values.city && <Box my={3}>
-                            <FormGroup>
-                                <FormikTextField name="address" label="Address" value={values.address} />
-                            </FormGroup> 
-                        </Box>}
+                        </Box>
                     </Form>
                 )}
             </Formik>
