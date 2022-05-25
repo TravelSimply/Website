@@ -6,22 +6,6 @@ import { ClientTravelGroupData, Ref, TravelGroup, TravelGroupNotifications, Trav
 import { addTravelGroupNotificationQuery } from './travelGroupNotifications'
 import { populateUserWithContactInfo } from './users'
 
-export async function getUserTravelGroupDates(userId:string):Promise<{data: [string, string][]}> {
-
-    return await client.query(
-        q.Paginate(q.Match(q.Index('travelGroups_by_members_w_date'), userId))
-    )
-}
-
-export async function createTravelGroup(data:ClientTravelGroupData):Promise<TravelGroup> {
-
-    const dbData = {...data, dateCreated: q.Now()}
-
-    return await client.query(
-        q.Create(q.Collection('travelGroups'), {data: dbData})
-    )
-}
-
 function insertData(d:string) {
     return q.Select(['data', d], q.Var('travelGroup'))
 }
