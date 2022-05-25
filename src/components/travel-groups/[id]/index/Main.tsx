@@ -12,6 +12,7 @@ import Snackbar from '../../../misc/snackbars'
 import Overview from "./Overview";
 import useSWR from "swr";
 import TripCard from "../trips/cards/TripCard";
+import CreateTripCard from "../trips/cards/CreateTripCard";
 
 interface Props {
     user: ClientUser;
@@ -75,6 +76,9 @@ export default function Main({user, travelGroup:dbTravelGroup}:Props) {
                             <CircularProgress /> 
                         </Box>
                     </Box> : <Box>
+                        <Box>
+                            <CreateTripCard travelGroupId={travelGroup.ref['@ref'].id} />
+                        </Box>
                         {trips.map(trip => (
                             <Box key={trip.ref['@ref'].id}>
                                 <TripCard trip={trip} user={user} />
