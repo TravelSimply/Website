@@ -8,6 +8,9 @@ import { PrimaryLink } from "../../../../misc/links";
 import {OrangePrimaryButton, OrangeSecondaryButton} from '../../../../mui-customizations/buttons'
 import dayjs from "dayjs";
 import CloseIcon from '@mui/icons-material/Close'
+import Router from 'next/router'
+import Snackbar from '../../../../misc/snackbars'
+import axios from "axios";
 
 interface Props {
     user: ClientUser;
@@ -24,6 +27,7 @@ export default function Main({user, travelGroup}:Props) {
     const [formContexts, setFormContexts] = useState<FormikContextType<any>[]>(Array(NUM_STEPS).fill(null))
     const [destAlert, setDestAlert] = useState(true)
     const [creatingTrip, setCreatingTrip] = useState(false)
+    const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
 
     const labels = useMemo(() => ['General', 'Destination'], [])
 
@@ -49,7 +53,22 @@ export default function Main({user, travelGroup}:Props) {
         if (!creatingTrip) return
 
         const createTrip = async () => {
-            console.log(totalInfo)
+
+            try {
+
+                const {data: {id}} = await axios({
+                    method: 'POST',
+                    url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/trips/create`,
+                    data: {
+                        tripData: totalInfo
+                    }
+                })
+
+                Router.push({pathname: `/travel-groups/${travelGroup.ref['@ref'].id}/trips/${id}`})
+            } catch (e) {
+                setSnackbarMsg({type: 'error', content: 'Failed to create Trip'}) 
+                setCreatingTrip(false)
+            }
         }
 
         createTrip()
@@ -170,6 +189,7 @@ export default function Main({user, travelGroup}:Props) {
                     </Paper>
                 </Container>
             </Box>
+            <Snackbar msg={snackbarMsg} setMsg={setSnackbarMsg} />
         </Box>
     )
 }
