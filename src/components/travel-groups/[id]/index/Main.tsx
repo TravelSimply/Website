@@ -1,5 +1,5 @@
-import { Avatar, Box, Container, Grid, Paper, Typography } from "@mui/material";
-import { ClientTravelGroup, ClientUser } from "../../../../database/interfaces";
+import { Avatar, Box, CircularProgress, Container, Grid, Paper, Typography } from "@mui/material";
+import { ClientTravelGroup, ClientTrip, ClientUser } from "../../../../database/interfaces";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import dayjs from "dayjs";
 import Calendar from "../../../calendar/Calendar";
@@ -10,6 +10,8 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import EditOverview from './EditOverview'
 import Snackbar from '../../../misc/snackbars'
 import Overview from "./Overview";
+import useSWR from "swr";
+import TripCard from "../trips/cards/TripCard";
 
 interface Props {
     user: ClientUser;
@@ -22,6 +24,9 @@ export default function Main({user, travelGroup:dbTravelGroup}:Props) {
     const [snackbarMsg, setSnackbarMsg] = useState({type: '', content: ''})
 
     const [travelGroup, setTravelGroup] = useState(dbTravelGroup)
+
+    const {data:trips} = useSWR<ClientTrip[]>(`/api/travel-groups/${dbTravelGroup.ref['@ref'].id}/trips`,
+    {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000})
 
     const onEditComplete = (type:string, changes?) => {
         if (type === 'proposal') {
@@ -58,6 +63,24 @@ export default function Main({user, travelGroup:dbTravelGroup}:Props) {
                             </Box>
                         </Box>
                     </Paper>
+                </Box>
+                <Box mb={3}>
+                    {!trips ? <Box>
+                        <Box textAlign="center">
+                            <Typography variant="body1">
+                                Loading Trips
+                            </Typography>
+                        </Box> 
+                        <Box textAlign="center">
+                            <CircularProgress /> 
+                        </Box>
+                    </Box> : <Box>
+                        {trips.map(trip => (
+                            <Box key={trip.ref['@ref'].id}>
+                                <TripCard trip={trip} user={user} />
+                            </Box>
+                        ))} 
+                    </Box>}
                 </Box>
             </Container>
             <Snackbar msg={snackbarMsg} setMsg={setSnackbarMsg} />

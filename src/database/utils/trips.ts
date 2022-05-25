@@ -14,3 +14,13 @@ export async function createTrip(tripData:ClientTrip['data']):Promise<Trip>  {
         q.Create(q.Collection('trips'), {data})
     )
 }
+
+export async function getTravelGroupTrips(travelGroupId:string):Promise<{data: Trip[]}> {
+
+    return await client.query(
+        q.Map(
+            q.Paginate(q.Match(q.Index('trips_by_travelGroup'), travelGroupId)),
+            q.Lambda('ref', q.Get(q.Var('ref')))
+        )
+    )
+}
