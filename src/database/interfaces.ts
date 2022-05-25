@@ -483,3 +483,33 @@ export interface ClientTravelGroupNotifications {
     ref: {'@ref': Ref};
     data: ClientTravelGroupNotificationsData;
 }
+
+
+export interface Trip {
+    ref: Ref;
+    data: {
+        travelGroup: string;
+        leader: string;
+        members: string[];
+        name: string;
+        desc: string;
+        date: {
+            start: Expr;
+            end: Expr;
+            unknown: boolean;
+        };
+        destination: {
+            combo: string;
+            region: 'Interregional' | 'U.S. & Canada' | 'Central America' | 'South America' | 'Europe' | 'Asia' | 'Africa' | 'Oceania' | 'Antarctica',
+            country?: string;
+            state?: string;
+            city?: string;
+            address?: string;
+            extraInfo?: string;
+        };
+        image?: {
+            src: string;
+            publicId: string;
+        };
+    }
+}
