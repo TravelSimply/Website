@@ -10,6 +10,15 @@ function insertData(d:string) {
     return q.Select(['data', d], q.Var('travelGroup'))
 }
 
+export async function createTravelGroup(data:ClientTravelGroupData):Promise<TravelGroup> {
+
+    const dbData = {...data, dateCreated: q.Now()}
+
+    return await client.query(
+        q.Create(q.Collection('travelGroups'), {data: dbData})
+    )
+}
+
 function data() {
 
     return {
