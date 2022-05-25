@@ -92,43 +92,6 @@ export async function getAvailabilityAndTravelGroupsOfUser(userId:string):Promis
     )
 }
 
-export async function getAvailabilitiesOfTravelGroupMembers(travelGroupId:string):Promise<PopulateAvailabilitiesProps> {
-
-    return await client.query(
-        q.Let(
-            {
-                members: q.Paginate(q.Match(q.Index('travelGroups_by_id_w_members'), travelGroupId)),
-            },
-            q.Let(
-                {
-                    userInfo: q.Map(q.Var('members'), q.Lambda('member', 
-                        q.Let(
-                            {
-                                availability: getAvailabilityOfUserInnerQuery(q.Var('member')),
-                                travelGroups: q.Paginate(q.Match(q.Index('travelGroups_by_members_w_date_and_type'), q.Var('member')))
-                            },
-                            {
-                                availability: q.Var('availability'),
-                                travelGroups: q.Map(q.Var('travelGroups'), q.Lambda(
-                                    'travelDates',
-                                    [
-                                        q.ToString(q.Select(0, q.Var('travelDates'))),
-                                        q.ToString(q.Select(1, q.Var('travelDates'))),
-                                        q.Select(2, q.Var('travelDates')),
-                                        q.Select(3, q.Var('travelDates'))
-                                    ]
-                                ))
-                            }
-                        ) 
-                    )),
-                },
-                q.Var('userInfo')
-            )
-        )
-    )
-
-}
-
 export async function createAvailability(userId:string):Promise<Availability> {
 
     return await client.query(
