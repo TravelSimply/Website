@@ -24,3 +24,25 @@ export async function getTravelGroupTrips(travelGroupId:string):Promise<{data: T
         )
     )
 }
+
+export async function getTripWithTravelGroupNameAndMembers(travelGroupId:string, tripId:string) {
+
+    const info:{trip:Trip, travelGroupInfo:{data:[string,string][]}} = await client.query(
+        {
+            travelGroupInfo: q.Paginate(q.Match(q.Index('travelGroups_by_id_w_name_and_members'), travelGroupId)),
+            trip: q.Get(q.Ref(q.Collection('trips'), tripId))
+        }
+    )
+
+    return {
+        ...info.trip,
+        data: {
+            ...info.trip.data,
+            travelGroup: {
+                id: info.trip.data.travelGroup,
+                name: info.travelGroupInfo.data[0][0],
+                members: info.travelGroupInfo.data.map(d => d[1])
+            }
+        }
+    }
+}

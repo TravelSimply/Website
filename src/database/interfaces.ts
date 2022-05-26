@@ -531,3 +531,25 @@ export interface ClientTrip {
         image?: Trip['data']['image'];
     }
 }
+
+export interface ClientTripWithTravelGroupBareInfo {
+    ref: ClientTrip['ref'];
+    data: {
+        travelGroup: {
+            id: string;
+            name: string;
+            members: string[];
+        };
+        leader: Trip['data']['leader'];
+        members: Trip['data']['members'];
+        name: Trip['data']['name'];
+        desc: Trip['data']['desc'];
+        date: {
+            start: {'@date': string};
+            end: {'@date': string};
+            unknown: Trip['data']['date']['unknown'];
+        };
+        destination: Trip['data']['destination'];
+        image?: Trip['data']['image'];
+    }
+}
