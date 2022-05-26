@@ -54,7 +54,8 @@ export default function Contact({travellers}:Props) {
         contactMethods.forEach(method => defaultCounts[method] = 0)
 
         const counts = travellers.reduce((total, traveller) => {
-            const contactInfo = traveller.data.contactInfo.data.info
+            const contactInfo = traveller.data.contactInfo?.data.info
+            if (!contactInfo) return total
 
             if (contactInfo?.phones?.home) total['home-phone'] += 1
             if (contactInfo?.phones?.mobile) total['mobile-phone'] += 1
