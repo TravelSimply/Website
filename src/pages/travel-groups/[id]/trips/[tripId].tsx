@@ -9,6 +9,7 @@ import MainFooter from '../../../../components/nav/MainFooter'
 import { useUserNotifications } from "../../../../components/hooks/userNotifications"
 import MainSidebar from "../../../../components/nav/MainSidebar"
 import { Box } from "@mui/material"
+import Main from '../../../../components/travel-groups/[id]/trips/[tripId]/index/Main'
 
 interface Props {
     user: ClientUser;
@@ -48,7 +49,7 @@ export default function Trip({user, trip}:Props) {
                 notifications={notifications} />
                 <MainSidebar breakpoint="md" items={drawerItems} />
                 <Box sx={{gridColumn: {xs: '1 / -1', md: 'auto'}}} >
-                    main section
+                    <Main user={user} trip={trip} />
                 </Box>
                 <Box sx={{gridColumn: '1 / -1'}}>
                     <MainFooter />
