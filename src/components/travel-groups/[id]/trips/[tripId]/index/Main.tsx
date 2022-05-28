@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { ClientPopulatedAvailability, ClientTripWithTravelGroupBareInfo, ClientUser } from "../../../../../../database/interfaces";
 import Calendar from "../../../../../calendar/Calendar";
 import { OrangePrimaryButton } from "../../../../../mui-customizations/buttons";
+import JoinBar from "./JoinBar";
 import Overview from "./Overview";
 
 interface Props {
@@ -35,6 +36,7 @@ export default function Main({user, trip}:Props) {
     return (
         <Box my={3}>
             <Container maxWidth="md">
+                <JoinBar user={user} trip={trip} />
                 <Box mb={3}>
                     <Paper>
                         <Box p={3}>

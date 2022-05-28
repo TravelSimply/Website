@@ -46,3 +46,25 @@ export async function getTripWithTravelGroupNameAndMembers(travelGroupId:string,
         }
     }
 }
+
+export async function joinTrip(tripId:string, userId:string) {
+
+    await client.query(
+        q.Let(
+            {
+                members: q.Select('data', q.Paginate(q.Match(q.Index('trips_by_id_w_members'), tripId)))
+            },
+            q.Update(
+                q.Ref(q.Collection('trips'), tripId),
+                {
+                    data: {
+                        members: q.Append(
+                            userId,
+                            q.Var('members')
+                        )
+                    }
+                }
+            )
+        )
+    )
+}
