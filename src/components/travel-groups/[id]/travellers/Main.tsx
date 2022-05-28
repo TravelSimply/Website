@@ -10,7 +10,7 @@ import { OrangeButtonGroup } from "../../../mui-customizations/buttonGroup";
 import Invites from "./Invites";
 import JoinRequests from "./JoinRequests";
 import SendInvite from "./SendInvite";
-import TravellerCard from "../cards/TravellerCard";
+import {TravelGroupTravellerCard} from "../cards/TravellerCard";
 import Travellers from "./Travellers";
 import Contact from "./Contact";
 
@@ -77,7 +77,7 @@ export default function Main({user, travelGroup}:Props) {
                             <Box>
                                 <Grid container justifyContent="center">
                                     <Grid item flexBasis={600}>
-                                        <TravellerCard user={user} isAdmin={travelGroup.data.owner === user.ref['@ref'].id}
+                                        <TravelGroupTravellerCard user={user} isAdmin={travelGroup.data.owner === user.ref['@ref'].id}
                                         traveller={travellers.find(m => m.ref['@ref'].id === travelGroup.data.owner)}
                                         travellers={travellers} travelGroup={travelGroup} />
                                     </Grid>

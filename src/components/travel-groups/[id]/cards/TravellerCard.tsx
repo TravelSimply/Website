@@ -1,6 +1,6 @@
 import { Avatar, Box, Grid, IconButton, ListItemText, Menu, MenuItem, Paper, Tooltip, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useMemo, useState, MouseEvent } from "react";
-import { ClientFilteredUser, ClientTravelGroup, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
+import { ClientFilteredUser, ClientTravelGroup, ClientTrip, ClientTripWithTravelGroupBareInfo, ClientUser, ClientUserWithContactInfo } from "../../../../database/interfaces";
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import { OrangeDensePrimaryButton, OrangePrimaryButton, OrangePrimaryIconButton } from "../../../mui-customizations/buttons";
@@ -13,8 +13,16 @@ interface Props {
     isAdmin: boolean;
     traveller: ClientUserWithContactInfo;
     travellers: ClientUserWithContactInfo[];
-    travelGroup: ClientTravelGroup;
     onTravellerRemoved?: (remaining:ClientUserWithContactInfo[]) => void;
+    removeURL: string;
+}
+
+interface TravelGroupCardProps extends Omit<Props, 'removeURL'> {
+    travelGroup: ClientTravelGroup;
+}
+
+interface TripCardProps extends Omit<Props, 'removeURL'> {
+    trip: ClientTripWithTravelGroupBareInfo;
 }
 
 function formatPhoneNumber(phone:string) {
@@ -38,7 +46,20 @@ function formatPhoneNumber(phone:string) {
     }).join('')
 }
 
-export default function TravellerCard({user, isAdmin, traveller, travellers, travelGroup, onTravellerRemoved}:Props) {
+export function TripTravellerCard({user, isAdmin, traveller, travellers, trip, onTravellerRemoved}:TripCardProps) {
+
+    return <TravellerCard user={user} isAdmin={isAdmin} traveller={traveller} travellers={travellers}
+    onTravellerRemoved={onTravellerRemoved} 
+    removeURL={`/api/travel-groups/${trip.data.travelGroup.id}/trips/${trip.ref['@ref'].id}/travellers/update`} />
+}
+
+export function TravelGroupTravellerCard({user, isAdmin, traveller, travellers, travelGroup, onTravellerRemoved}:TravelGroupCardProps) {
+
+    return <TravellerCard user={user} isAdmin={isAdmin} traveller={traveller} travellers={travellers}
+    onTravellerRemoved={onTravellerRemoved} removeURL={`/api/travel-groups/${travelGroup.ref['@ref'].id}/travellers/update`} />
+}
+
+function TravellerCard({user, isAdmin, traveller, travellers, onTravellerRemoved, removeURL}:Props) {
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement>(null)
     const [loading, setLoading] = useState(false)
@@ -82,7 +103,7 @@ export default function TravellerCard({user, isAdmin, traveller, travellers, tra
 
             await axios({
                 method: 'POST',
-                url: `/api/travel-groups/${travelGroup.ref['@ref'].id}/travellers/update`,
+                url: removeURL,
                 data: {
                     travellers: remainingTravellers.map(t => t.ref['@ref'].id)
                 }
