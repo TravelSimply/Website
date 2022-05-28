@@ -1,6 +1,7 @@
 import { ClientTrip, Trip } from "../interfaces";
 import {query as q} from 'faunadb'
 import client from '../fauna'
+import { populateUserWithContactInfo } from "./users";
 
 export async function createTrip(tripData:ClientTrip['data']):Promise<Trip>  {
 
@@ -65,6 +66,34 @@ export async function joinTrip(tripId:string, userId:string) {
                     }
                 }
             )
+        )
+    )
+}
+
+export async function getTripMembersWithContactInfo(id:string) {
+
+    return await client.query(
+        q.If(
+            q.Exists(q.Ref(q.Collection('trips'), id)),
+            q.Let(
+                {
+                    members: q.Select('data', q.Paginate(q.Match(q.Index('trips_by_id_w_members'), id)))
+                },
+                q.Map(q.Var('members'), q.Lambda(
+                    'member',
+                    q.If(
+                        q.Exists(q.Ref(q.Collection('users'), q.Var('member'))),
+                        q.Let(
+                            {
+                                user: q.Get(q.Ref(q.Collection('users'), q.Var('member')))
+                            },
+                            populateUserWithContactInfo()
+                        ),
+                        null
+                    )
+                ))
+            ),
+            null
         )
     )
 }
