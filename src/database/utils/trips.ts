@@ -97,3 +97,20 @@ export async function getTripMembersWithContactInfo(id:string) {
         )
     )
 }
+
+export async function updateMembersWithLeaderCheck(id:string, userId:string, members:string[]) {
+
+    await client.query(
+        q.If(
+            q.Equals(
+                userId,
+                q.Select(['data', 0], q.Paginate(q.Match(q.Index('trips_by_id_w_leader'), id)))
+            ),
+            q.Update(
+                q.Ref(q.Collection('trips'), id),
+                {data: {members}}
+            ),
+            null
+        )
+    )
+}
