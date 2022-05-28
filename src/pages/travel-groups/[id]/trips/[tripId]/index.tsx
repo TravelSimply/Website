@@ -1,15 +1,15 @@
 import { GetServerSideProps, GetServerSidePropsContext } from "next"
-import { ClientTripWithTravelGroupBareInfo, ClientUser } from "../../../../database/interfaces"
-import { getTripWithTravelGroupNameAndMembers } from "../../../../database/utils/trips"
-import { getAuthUser } from "../../../../utils/auth"
+import { ClientTripWithTravelGroupBareInfo, ClientUser } from "../../../../../database/interfaces"
+import { getTripWithTravelGroupNameAndMembers } from "../../../../../database/utils/trips"
+import { getAuthUser } from "../../../../../utils/auth"
 import Head from 'next/head'
-import styles from '../../../../styles/pages/HeaderSidebarFooter.module.css'
-import MainHeader from '../../../../components/nav/MainHeader'
-import MainFooter from '../../../../components/nav/MainFooter'
-import { useUserNotifications } from "../../../../components/hooks/userNotifications"
-import MainSidebar from "../../../../components/nav/MainSidebar"
+import styles from '../../../../../styles/pages/HeaderSidebarFooter.module.css'
+import MainHeader from '../../../../../components/nav/MainHeader'
+import MainFooter from '../../../../../components/nav/MainFooter'
+import { useUserNotifications } from "../../../../../components/hooks/userNotifications"
+import MainSidebar from "../../../../../components/nav/MainSidebar"
 import { Box } from "@mui/material"
-import Main from '../../../../components/travel-groups/[id]/trips/[tripId]/index/Main'
+import Main from '../../../../../components/travel-groups/[id]/trips/[tripId]/index/Main'
 
 interface Props {
     user: ClientUser;
