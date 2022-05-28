@@ -59,6 +59,7 @@ export const getServerSideProps:GetServerSideProps = async (ctx:GetServerSidePro
             contactInfo: JSON.parse(JSON.stringify(contactInfo))
         }}
     } catch (e) {
+        console.log(e)
         return {props: {}, redirect: {destination: '/'}}
     }
 }

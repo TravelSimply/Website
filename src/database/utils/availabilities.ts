@@ -38,6 +38,8 @@ export function populateAvailability(info:PopulateAvailabilityProps) {
         return null
     }
 
+    return info.availability 
+
     const {availability, travelGroups} = info
 
     for (const range of travelGroups.data) {
@@ -71,24 +73,25 @@ export function populateAvailability(info:PopulateAvailabilityProps) {
 export async function getAvailabilityAndTravelGroupsOfUser(userId:string):Promise<PopulateAvailabilityProps> {
 
     return await client.query(
-        q.Let(
+        // q.Let(
             {
                 availability: getAvailabilityOfUserInnerQuery(userId),
-                travelGroups: q.Paginate(q.Match(q.Index('travelGroups_by_members_w_date_and_type'), userId))
+                // travelGroups: q.Paginate(q.Match(q.Index('travelGroups_by_members_w_date_and_type'), userId))
+                travelGroups: []
             },
-            {
-                availability: q.Var('availability'),
-                travelGroups: q.Map(q.Var('travelGroups'), q.Lambda(
-                    'travelDates',
-                    [
-                        q.ToString(q.Select(0, q.Var('travelDates'))),
-                        q.ToString(q.Select(1, q.Var('travelDates'))),
-                        q.Select(2, q.Var('travelDates')),
-                        q.Select(3, q.Var('travelDates'))
-                    ]
-                ))
-            }
-        )
+        //     {
+        //         availability: q.Var('availability'),
+        //         travelGroups: q.Map(q.Var('travelGroups'), q.Lambda(
+        //             'travelDates',
+        //             [
+        //                 q.ToString(q.Select(0, q.Var('travelDates'))),
+        //                 q.ToString(q.Select(1, q.Var('travelDates'))),
+        //                 q.Select(2, q.Var('travelDates')),
+        //                 q.Select(3, q.Var('travelDates'))
+        //             ]
+        //         ))
+        //     }
+        // )
     )
 }
 
