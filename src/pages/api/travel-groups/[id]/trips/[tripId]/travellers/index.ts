@@ -8,8 +8,6 @@ export default verifyUser(async function Travelers(req:NextApiRequest, res:NextA
 
         const travellers = await getTripMembersWithContactInfo(req.query.tripId as string)
 
-        console.log(travellers)
-
         return res.status(200).json(travellers)
     } catch (e) {
         console.log(e)

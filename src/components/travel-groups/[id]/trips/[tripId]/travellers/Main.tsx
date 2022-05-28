@@ -1,9 +1,12 @@
 import { Box, CircularProgress, Divider, Grid, Typography } from "@mui/material";
+import { useState } from "react";
 import useSWR from "swr";
 import { ClientTripWithTravelGroupBareInfo, ClientUser } from "../../../../../../database/interfaces";
 import { PrimaryLink } from "../../../../../misc/links";
+import { PrimarySearchBar } from "../../../../../misc/searchBars";
 import {TripTravellerCard} from "../../../cards/TravellerCard";
 import Contact from "../../../travellers/Contact";
+import Travellers from './Travellers'
 
 interface Props {
     user: ClientUser;
@@ -16,6 +19,8 @@ export default function Main({user, trip}:Props) {
         `/api/travel-groups/${trip.data.travelGroup.id}/trips/${trip.ref['@ref'].id}/travellers`,
         {revalidateOnFocus: false, revalidateOnReconnect: false, dedupingInterval: 3600000}
     )
+
+    const [search, setSearch] = useState('')
 
     console.log(travellers)
 
@@ -59,6 +64,26 @@ export default function Main({user, trip}:Props) {
                                         travellers={travellers} trip={trip} />
                                     </Grid>
                                 </Grid>
+                            </Box>
+                        </Box>
+                        <Box mb={3}>
+                            <Box mb={1}>
+                                <Box textAlign="center" color="text.secondary">
+                                    <Typography variant="h4">
+                                        Travelers
+                                    </Typography>
+                                </Box>
+                                <Box mx="auto" maxWidth={300}>
+                                    <Divider />
+                                </Box>
+                            </Box>
+                            <Box mb={2}>
+                                <Box mx="auto" maxWidth="sm">
+                                    <PrimarySearchBar search={search} setSearch={setSearch} />
+                                </Box>
+                            </Box>
+                            <Box>
+                                <Travellers user={user} trip={trip} travellers={travellers} search={search} />
                             </Box>
                         </Box>
                     </Grid>
